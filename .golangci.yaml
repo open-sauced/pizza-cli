@@ -1,0 +1,14 @@
+linters:
+  enable:
+    - errcheck
+    - goimports
+    - ineffassign
+    - misspell
+    - revive
+    - staticcheck
+    - unconvert
+    - unused
+    - vet
+
+run:
+  timeout: 5m
