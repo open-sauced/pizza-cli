@@ -21,6 +21,9 @@ type Options struct {
 
 	// URL is the git repo URL that will be sourced via 'pizza bake'
 	URL string
+
+	// Wait defines the client choice to wait for /bake to finish processing
+	Wait bool
 }
 
 const bakeLongDesc string = `WARNING: Proof of concept feature.
@@ -54,17 +57,20 @@ func NewBakeCommand() *cobra.Command {
 	// TODO - this will need to be a live service URL by default.
 	// For now, localhost is fine.
 	cmd.Flags().StringVarP(&opts.Endpoint, "endpoint", "e", "http://localhost:8080", "The endpoint to send requests to")
+	cmd.Flags().BoolVarP(&opts.Wait, "wait", "w", false, "Wait for bake processing to finish")
 
 	return cmd
 }
 
 type bakePostRequest struct {
-	URL string `json:"url"`
+	URL  string `json:"url"`
+	Wait bool   `json:"wait,omitempty"`
 }
 
 func run(opts *Options) error {
 	bodyPostReq := &bakePostRequest{
-		URL: opts.URL,
+		URL:  opts.URL,
+		Wait: opts.Wait,
 	}
 
 	bodyPostJSON, err := json.Marshal(bodyPostReq)
