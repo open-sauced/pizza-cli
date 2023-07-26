@@ -14,7 +14,13 @@ func TestSendsPost(t *testing.T) {
 		{
 			name: "Sends post request",
 			opts: &Options{
-				URL: "https://test.com",
+				URLs: []string{"https://test.com"},
+			},
+		},
+		{
+			name: "Sends post request with multiple URLs",
+			opts: &Options{
+				URLs: []string{"https://test.com", "https://github.com/open-sauced/pizza", "https://github.com/open-sauced/insights"},
 			},
 		},
 	}
