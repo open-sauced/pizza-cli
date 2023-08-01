@@ -206,7 +206,7 @@ func processIndexChunk(chunk string) {
 	chunkLines := strings.Split(chunk, "\n")
 	eventLine := chunkLines[0]
 	event := strings.Split(eventLine, ": ")[1]
-	
+
 	switch event {
 	case "FETCH_REPO":
 		fmt.Println("Fetching Repository from GitHub...")
