@@ -1,4 +1,4 @@
-package repoQuery
+package repoquery
 
 import (
 	"bufio"
@@ -79,11 +79,10 @@ func run(opts *Options) error {
 	// get repo name and owner name from URL
 	owner, repo := getOwnerAndRepo(opts.URL)
 
-	// loading indicator
 	fmt.Printf("Checking if %s/%s is indexed by us...⏳\n", owner, repo)
 	resp, err := http.Get(fmt.Sprintf("%s/collection?owner=%s&name=%s&branch=%s", repoQueryURL, owner, repo, opts.branch))
 	if err != nil {
-		return err;
+		return err
 	}
 
 	// not found or ok or error
@@ -91,7 +90,7 @@ func run(opts *Options) error {
 		fmt.Println("Repo not found❗")
 	} else if resp.StatusCode == http.StatusOK {
 		fmt.Println("Repo found ✅")
-		
+
 		// this should be an infinite loop
 		for {
 			fmt.Printf("\nWant to ask a question about %s/%s?\n", owner, repo)
@@ -100,7 +99,10 @@ func run(opts *Options) error {
 			scanner := bufio.NewScanner(os.Stdin)
 			if scanner.Scan() {
 				input := scanner.Text()
-				askQuestion(input, owner, repo, opts.branch)
+				err := askQuestion(input, owner, repo, opts.branch)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	} else {
@@ -114,26 +116,26 @@ func run(opts *Options) error {
 
 	return nil
 }
-	
+
 type queryPostRequest struct {
-	Query string `json:"query"`
+	Query      string `json:"query"`
 	Repository struct {
-		Owner string `json:"owner"`
-		Name string `json:"name"`
+		Owner  string `json:"owner"`
+		Name   string `json:"name"`
 		Branch string `json:"branch"`
 	} `json:"repository"`
 }
 
-func askQuestion(question string, owner string, repo string, branch string) error{
+func askQuestion(question string, owner string, repo string, branch string) error {
 	queryPostReq := &queryPostRequest{
 		Query: question,
 		Repository: struct {
-			Owner string `json:"owner"`
-			Name string `json:"name"`
+			Owner  string `json:"owner"`
+			Name   string `json:"name"`
 			Branch string `json:"branch"`
 		}{
-			Owner: owner,
-			Name: repo,
+			Owner:  owner,
+			Name:   repo,
 			Branch: branch,
 		},
 	}
@@ -203,29 +205,23 @@ func processChatChunk(chunk string) {
 	err := json.Unmarshal([]byte(strings.Split(dataLine, ": ")[1]), &data)
 	if err != nil {
 		// remove quotes from string
-		data = strings.Split(dataLine, "data: ")[1][1:len(strings.Split(dataLine, "data: ")[1]) - 2]
+		data = strings.Split(dataLine, "data: ")[1][1 : len(strings.Split(dataLine, "data: ")[1])-2]
 	}
 
 	switch event {
 	case "SEARCH_CODEBASE":
 		fmt.Println("Searching the codebase for your query...🔍")
-		break
 	case "SEARCH_FILE":
 		fmt.Printf("Searching %s for your query...🔍\n", data.(map[string]interface{})["path"])
-		break
 	case "SEARCH_PATH":
 		fmt.Printf("Looking for %s in the codebase...🔍\n", data.(map[string]interface{})["path"])
-		break
 	case "GENERATE_RESPONSE":
 		fmt.Println("Generating a response...🧠")
-		break
 	case "DONE":
 		fmt.Println()
 		fmt.Println(data)
-		break
 	case "ERROR":
 		fmt.Println("Something went wrong. Please try again.")
-		break
 	default:
 		break
 	}
