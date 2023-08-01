@@ -88,6 +88,25 @@ func run(opts *Options) error {
 	// not found or ok or error
 	if resp.StatusCode == http.StatusNotFound {
 		fmt.Println("Repo not found❗")
+		fmt.Println("Indexing repo...⏳")
+		err := indexRepo(owner, repo, opts.branch)
+		if err != nil {
+			return err
+		}
+
+		for {
+			fmt.Printf("\nWant to ask a question about %s/%s?\n", owner, repo)
+			fmt.Printf("> ")
+			// read input
+			scanner := bufio.NewScanner(os.Stdin)
+			if scanner.Scan() {
+				input := scanner.Text()
+				err := askQuestion(input, owner, repo, opts.branch)
+				if err != nil {
+					return err
+				}
+			}
+		}
 	} else if resp.StatusCode == http.StatusOK {
 		fmt.Println("Repo found ✅")
 
@@ -115,6 +134,93 @@ func run(opts *Options) error {
 	}
 
 	return nil
+}
+
+type indexPostRequest struct {
+	Owner  string `json:"owner"`
+	Name   string `json:"name"`
+	Branch string `json:"branch"`
+}
+
+func indexRepo(owner string, repo string, branch string) error {
+	indexPostReq := &indexPostRequest{
+		Owner:  owner,
+		Name:   repo,
+		Branch: branch,
+	}
+
+	indexPostJSON, err := json.Marshal(indexPostReq)
+	if err != nil {
+		return err
+	}
+
+	responseBody := bytes.NewBuffer(indexPostJSON)
+	resp, err := http.Post(fmt.Sprintf("%s/embed", repoQueryURL), "application/json", responseBody)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("An error occurred: %v\n", string(body))
+	}
+
+	// listen for SSEs and send data,event pairs to processIndexChunk
+	reader := bufio.NewReader(resp.Body)
+	for {
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			return err
+		}
+
+		if line == "\n" {
+			continue
+		}
+
+		if strings.HasPrefix(line, "event: ") {
+			chunk := line
+			for {
+				line, err := reader.ReadString('\n')
+				if err != nil {
+					return err
+				}
+
+				if line == "\n" {
+					break
+				}
+
+				chunk += line
+			}
+
+			processIndexChunk(chunk)
+		}
+	}
+}
+
+func processIndexChunk(chunk string) {
+	chunkLines := strings.Split(chunk, "\n")
+	eventLine := chunkLines[0]
+	event := strings.Split(eventLine, ": ")[1]
+	
+	switch event {
+	case "FETCH_REPO":
+		fmt.Println("Fetching Repository from GitHub...")
+	case "EMBED_REPO":
+		fmt.Println("Embedding Repository...")
+	case "SAVE_EMBEDDINGS":
+		fmt.Println("Saving the embeddings to our database...")
+	case "ERROR":
+		fmt.Println("There was an error while indexing this repository. Redirecting to the Home Page.")
+	case "DONE":
+		fmt.Println("Indexing Complete. You can now ask questions about this repository! 🎉")
+	default:
+		break
+	}
 }
 
 type queryPostRequest struct {
