@@ -131,9 +131,8 @@ func run(opts *Options) error {
 		}
 
 		fmt.Printf("An error occurred: %v\n", string(body))
+		return errors.New("error while checking if repo is indexed")
 	}
-
-	return nil
 }
 
 type indexPostRequest struct {
@@ -168,13 +167,17 @@ func indexRepo(owner string, repo string, branch string) error {
 		}
 
 		fmt.Printf("An error occurred: %v\n", string(body))
+		return errors.New("error while indexing repository")
 	}
 
 	// listen for SSEs and send data,event pairs to processIndexChunk
 	reader := bufio.NewReader(resp.Body)
 	for {
 		line, err := reader.ReadString('\n')
-		if err != nil {
+		// if err is eof then break
+		if err == io.EOF {
+			return nil
+		} else if err != nil {
 			return err
 		}
 
@@ -197,12 +200,15 @@ func indexRepo(owner string, repo string, branch string) error {
 				chunk += line
 			}
 
-			processIndexChunk(chunk)
+			err := processIndexChunk(chunk)
+			if err != nil {
+				return err
+			}
 		}
 	}
 }
 
-func processIndexChunk(chunk string) {
+func processIndexChunk(chunk string) error {
 	chunkLines := strings.Split(chunk, "\n")
 	eventLine := chunkLines[0]
 	event := strings.Split(eventLine, ": ")[1]
@@ -215,12 +221,15 @@ func processIndexChunk(chunk string) {
 	case "SAVE_EMBEDDINGS":
 		fmt.Println("Saving the embeddings to our database...")
 	case "ERROR":
-		fmt.Println("There was an error while indexing this repository. Redirecting to the Home Page.")
+		fmt.Println("There was an error while indexing this repository.")
+		return errors.New("error while indexing repository")
 	case "DONE":
 		fmt.Println("Indexing Complete. You can now ask questions about this repository! 🎉")
 	default:
 		break
 	}
+
+	return nil
 }
 
 type queryPostRequest struct {
@@ -265,13 +274,17 @@ func askQuestion(question string, owner string, repo string, branch string) erro
 		}
 
 		fmt.Printf("An error occurred: %v\n", string(body))
+		return errors.New("error while asking question")
 	}
 
 	//  listen for SSEs and send data,event pairs to processChatChunk
 	reader := bufio.NewReader(resp.Body)
 	for {
 		line, err := reader.ReadString('\n')
-		if err != nil {
+		// if err is eof then break
+		if err == io.EOF {
+			return nil
+		} else if err != nil {
 			return err
 		}
 
@@ -294,12 +307,15 @@ func askQuestion(question string, owner string, repo string, branch string) erro
 				chunk += line
 			}
 
-			processChatChunk(chunk)
+			err := processChatChunk(chunk)
+			if err != nil {
+				return err
+			}
 		}
 	}
 }
 
-func processChatChunk(chunk string) {
+func processChatChunk(chunk string) error {
 	chunkLines := strings.Split(chunk, "\n")
 	eventLine := chunkLines[0]
 	dataLine := chunkLines[1]
@@ -328,7 +344,10 @@ func processChatChunk(chunk string) {
 		fmt.Println(data)
 	case "ERROR":
 		fmt.Println("Something went wrong. Please try again.")
+		return errors.New("error while asking question")
 	default:
 		break
 	}
+
+	return nil
 }
