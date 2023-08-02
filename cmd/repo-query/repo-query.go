@@ -55,7 +55,11 @@ func NewRepoQueryCommand() *cobra.Command {
 	return cmd
 }
 
-func getOwnerAndRepo(url string) (owner, repo string) {
+func getOwnerAndRepo(url string) (owner, repo string, err error) {
+	if !strings.HasPrefix(url, "https://github.com/") {
+		return "", "", fmt.Errorf("invalid URL: %s", url)
+	}
+
 	// Remove the "https://github.com/" prefix from the URL
 	url = strings.TrimPrefix(url, "https://github.com/")
 
@@ -67,17 +71,18 @@ func getOwnerAndRepo(url string) (owner, repo string) {
 		owner = segments[0]
 		repo = segments[1]
 	} else {
-		// URL is not in the expected format
-		owner = ""
-		repo = ""
+		return "", "", fmt.Errorf("invalid URL: %s", url)
 	}
 
-	return owner, repo
+	return owner, repo, nil
 }
 
 func run(opts *Options) error {
 	// get repo name and owner name from URL
-	owner, repo := getOwnerAndRepo(opts.URL)
+	owner, repo, err := getOwnerAndRepo(opts.URL)
+	if err != nil {
+		return err
+	}
 
 	fmt.Printf("Checking if %s/%s is indexed by us...⏳\n", owner, repo)
 	resp, err := http.Get(fmt.Sprintf("%s/collection?owner=%s&name=%s&branch=%s", repoQueryURL, owner, repo, opts.branch))
@@ -85,8 +90,9 @@ func run(opts *Options) error {
 		return err
 	}
 
-	// not found or ok or error
-	if resp.StatusCode == http.StatusNotFound {
+	switch resp.StatusCode {
+	case http.StatusNotFound:
+		// repo is not indexed
 		fmt.Println("Repo not found❗")
 		fmt.Println("Indexing repo...⏳")
 		err := indexRepo(owner, repo, opts.branch)
@@ -107,10 +113,10 @@ func run(opts *Options) error {
 				}
 			}
 		}
-	} else if resp.StatusCode == http.StatusOK {
+	case http.StatusOK:
+		// repo is indexed
 		fmt.Println("Repo found ✅")
 
-		// this should be an infinite loop
 		for {
 			fmt.Printf("\nWant to ask a question about %s/%s?\n", owner, repo)
 			fmt.Printf("> ")
@@ -124,7 +130,7 @@ func run(opts *Options) error {
 				}
 			}
 		}
-	} else {
+	default:
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return err
@@ -141,6 +147,20 @@ type indexPostRequest struct {
 	Branch string `json:"branch"`
 }
 
+type queryPostRequest struct {
+	Query      string `json:"query"`
+	Repository struct {
+		Owner  string `json:"owner"`
+		Name   string `json:"name"`
+		Branch string `json:"branch"`
+	} `json:"repository"`
+}
+
+const (
+	IndexChunk = iota
+	ChatChunk
+)
+
 func indexRepo(owner string, repo string, branch string) error {
 	indexPostReq := &indexPostRequest{
 		Owner:  owner,
@@ -153,8 +173,50 @@ func indexRepo(owner string, repo string, branch string) error {
 		return err
 	}
 
-	responseBody := bytes.NewBuffer(indexPostJSON)
-	resp, err := http.Post(fmt.Sprintf("%s/embed", repoQueryURL), "application/json", responseBody)
+	resp, err := http.Post(fmt.Sprintf("%s/embed", repoQueryURL), "application/json", bytes.NewBuffer(indexPostJSON))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("error while indexing repository: %s", err.Error())
+		}
+
+		return fmt.Errorf("error while indexing repository: %s", string(body))
+	}
+
+	reader := bufio.NewReader(resp.Body)
+	err = listenForSSEs(reader, IndexChunk)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func askQuestion(question string, owner string, repo string, branch string) error {
+	queryPostReq := &queryPostRequest{
+		Query: question,
+		Repository: struct {
+			Owner  string `json:"owner"`
+			Name   string `json:"name"`
+			Branch string `json:"branch"`
+		}{
+			Owner:  owner,
+			Name:   repo,
+			Branch: branch,
+		},
+	}
+
+	queryPostJSON, err := json.Marshal(queryPostReq)
+	if err != nil {
+		return err
+	}
+
+	resp, err := http.Post(fmt.Sprintf("%s/query", repoQueryURL), "application/json", bytes.NewBuffer(queryPostJSON))
 	if err != nil {
 		return err
 	}
@@ -167,20 +229,34 @@ func indexRepo(owner string, repo string, branch string) error {
 		}
 
 		fmt.Printf("An error occurred: %v\n", string(body))
-		return errors.New("error while indexing repository")
+		return errors.New("error while asking question")
 	}
 
-	// listen for SSEs and send data,event pairs to processIndexChunk
+	//  listen for SSEs and send data,event pairs to processChatChunk
 	reader := bufio.NewReader(resp.Body)
+	err = listenForSSEs(reader, ChatChunk)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func listenForSSEs(reader *bufio.Reader, chunkType int) error {
+	// listen for SSEs and send data, event pairs to processChunk
+	// we send 2 lines at a time to processChunk so it can process the event and data together.
+	// the server sends empty events sometimes, so we ignore those.
+
 	for {
 		line, err := reader.ReadString('\n')
-		// if err is eof then break
+		// if we have reached the end of the stream, return
 		if err == io.EOF {
 			return nil
 		} else if err != nil {
 			return err
 		}
 
+		// ignore empty events
 		if line == "\n" {
 			continue
 		}
@@ -188,11 +264,13 @@ func indexRepo(owner string, repo string, branch string) error {
 		if strings.HasPrefix(line, "event: ") {
 			chunk := line
 			for {
+				// we read the string again after getting the event, so we can get the data
 				line, err := reader.ReadString('\n')
 				if err != nil {
 					return err
 				}
 
+				// the data data can be empty too.
 				if line == "\n" {
 					break
 				}
@@ -200,7 +278,15 @@ func indexRepo(owner string, repo string, branch string) error {
 				chunk += line
 			}
 
-			err := processIndexChunk(chunk)
+			switch chunkType {
+			case IndexChunk:
+				err = processIndexChunk(chunk)
+			case ChatChunk:
+				err = processChatChunk(chunk)
+			default:
+				break
+			}
+
 			if err != nil {
 				return err
 			}
@@ -209,6 +295,10 @@ func indexRepo(owner string, repo string, branch string) error {
 }
 
 func processIndexChunk(chunk string) error {
+	// we only care about the first line of the chunk, which is the event, when indexing.
+	// the data is irrelevant for now, but we still got it so we can process it later if we need to.
+	// Also, for grouping the events and data together.
+
 	chunkLines := strings.Split(chunk, "\n")
 	eventLine := chunkLines[0]
 	event := strings.Split(eventLine, ": ")[1]
@@ -232,94 +322,17 @@ func processIndexChunk(chunk string) error {
 	return nil
 }
 
-type queryPostRequest struct {
-	Query      string `json:"query"`
-	Repository struct {
-		Owner  string `json:"owner"`
-		Name   string `json:"name"`
-		Branch string `json:"branch"`
-	} `json:"repository"`
-}
-
-func askQuestion(question string, owner string, repo string, branch string) error {
-	queryPostReq := &queryPostRequest{
-		Query: question,
-		Repository: struct {
-			Owner  string `json:"owner"`
-			Name   string `json:"name"`
-			Branch string `json:"branch"`
-		}{
-			Owner:  owner,
-			Name:   repo,
-			Branch: branch,
-		},
-	}
-
-	queryPostJSON, err := json.Marshal(queryPostReq)
-	if err != nil {
-		return err
-	}
-
-	responseBody := bytes.NewBuffer(queryPostJSON)
-	resp, err := http.Post(fmt.Sprintf("%s/query", repoQueryURL), "application/json", responseBody)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-
-		fmt.Printf("An error occurred: %v\n", string(body))
-		return errors.New("error while asking question")
-	}
-
-	//  listen for SSEs and send data,event pairs to processChatChunk
-	reader := bufio.NewReader(resp.Body)
-	for {
-		line, err := reader.ReadString('\n')
-		// if err is eof then break
-		if err == io.EOF {
-			return nil
-		} else if err != nil {
-			return err
-		}
-
-		if line == "\n" {
-			continue
-		}
-
-		if strings.HasPrefix(line, "event: ") {
-			chunk := line
-			for {
-				line, err := reader.ReadString('\n')
-				if err != nil {
-					return err
-				}
-
-				if line == "\n" {
-					break
-				}
-
-				chunk += line
-			}
-
-			err := processChatChunk(chunk)
-			if err != nil {
-				return err
-			}
-		}
-	}
-}
-
 func processChatChunk(chunk string) error {
+	// The event is the first line of the chunk, and the data is the second line.
 	chunkLines := strings.Split(chunk, "\n")
 	eventLine := chunkLines[0]
 	dataLine := chunkLines[1]
 
+	// the event is the part after the colon
+	// eg. - event: SEARCH_PATH
+	//       data: {"path": "src/index.js"}
+	// eg. (with a string as data) - event: DONE
+	//                               data: "Here's the answer to your question"
 	event := strings.Split(eventLine, ": ")[1]
 	var data interface{} // the data can be a string or a JSON object
 
