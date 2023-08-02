@@ -369,6 +369,9 @@ func processChatChunk(chunk string) error {
 		fmt.Println("Generating a response...🧠")
 	case "DONE":
 		fmt.Println()
+		// the server sends the data as a string, with \n, "", and \t escaped.
+		replacer := strings.NewReplacer("\\n", "\n", "\\\"", "\"", "\\t", "\t")
+		data := replacer.Replace(data.(string))
 		fmt.Println(data)
 	case "ERROR":
 		fmt.Println("Something went wrong. Please try again.")
