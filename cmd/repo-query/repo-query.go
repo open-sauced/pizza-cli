@@ -34,7 +34,7 @@ func NewRepoQueryCommand() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "repo-query url [flags]",
-		Short: "Ask questions about a git repository",
+		Short: "Ask questions about a GitHub repository",
 		Long:  repoQueryLongDesc,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) > 1 {
