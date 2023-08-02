@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -118,12 +119,26 @@ func run(opts *Options) error {
 		fmt.Println("Repo found ✅")
 
 		for {
+			// if ctrl+c is pressed, exit
+			c:= make(chan os.Signal, 1)
+			signal.Notify(c, os.Interrupt)
+
+			go func() {
+				<-c
+				fmt.Println("\n🍕Exiting...");
+				os.Exit(0)
+			}()
+
 			fmt.Printf("\nWant to ask a question about %s/%s?\n", owner, repo)
 			fmt.Printf("> ")
 			// read input
 			scanner := bufio.NewScanner(os.Stdin)
 			if scanner.Scan() {
 				input := scanner.Text()
+				if input == "exit" {
+					fmt.Println("🍕Exiting...")
+					os.Exit(0)
+				}
 				err := askQuestion(input, owner, repo, opts.branch)
 				if err != nil {
 					return err
