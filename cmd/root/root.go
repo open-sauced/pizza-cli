@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/open-sauced/pizza-cli/cmd/bake"
+	repoquery "github.com/open-sauced/pizza-cli/cmd/repo-query"
 )
 
 // NewRootCommand bootstraps a new root cobra command for the pizza CLI
@@ -17,6 +18,7 @@ func NewRootCommand() (*cobra.Command, error) {
 	}
 
 	cmd.AddCommand(bake.NewBakeCommand())
+	cmd.AddCommand(repoquery.NewRepoQueryCommand())
 
 	return cmd, nil
 }
