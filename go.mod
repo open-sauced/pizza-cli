@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/charmbracelet/bubbles v0.16.1
+	github.com/charmbracelet/bubbletea v0.24.2
 	github.com/charmbracelet/lipgloss v0.7.1
 	github.com/cli/browser v1.2.0
 	github.com/open-sauced/go-api/client v0.0.0-20230825180028-30fe67759eff
@@ -28,6 +29,7 @@ require (
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.15.1 // indirect
+	github.com/open-sauced/go-api/client v0.0.0-20230825180028-30fe67759eff
 	github.com/rivo/uniseg v0.2.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.9.0 // indirect

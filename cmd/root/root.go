@@ -11,6 +11,8 @@ import (
 	"github.com/open-sauced/pizza-cli/cmd/version"
 	"github.com/open-sauced/pizza-cli/pkg/constants"
 	"github.com/spf13/cobra"
+	"github.com/open-sauced/pizza-cli/cmd/show"
+	"github.com/open-sauced/pizza-cli/pkg/api"
 )
 
 // NewRootCommand bootstraps a new root cobra command for the pizza CLI
@@ -41,6 +43,7 @@ func NewRootCommand() (*cobra.Command, error) {
 	cmd.AddCommand(auth.NewLoginCommand())
 	cmd.AddCommand(insights.NewInsightsCommand())
 	cmd.AddCommand(version.NewVersionCommand())
+	cmd.AddCommand(show.NewShowCommand())
 
 	return cmd, nil
 }
