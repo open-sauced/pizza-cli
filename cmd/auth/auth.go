@@ -49,7 +49,7 @@ func NewLoginCommand() *cobra.Command {
 func run() error {
 	codeVerifier, codeChallenge, err := pkce(codeChallengeLength)
 	if err != nil {
-		return fmt.Errorf("PKCE error: %v", err)
+		return fmt.Errorf("PKCE error: %v", err.Error())
 	}
 
 	supabaseAuthURL := fmt.Sprintf("https://%s.supabase.co/auth/v1/authorize", supabaseID)
@@ -81,7 +81,7 @@ func run() error {
 
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
-			fmt.Println("Error getting home directory:", err)
+			fmt.Println("Error getting home directory:", err.Error())
 			return
 		}
 
@@ -193,7 +193,7 @@ func shutdown(server *http.Server) {
 	go func() {
 		err := server.Shutdown(context.Background())
 		if err != nil {
-			fmt.Println("Graceful shutdown failed", err)
+			fmt.Println("Graceful shutdown failed", err.Error())
 		}
 	}()
 }
