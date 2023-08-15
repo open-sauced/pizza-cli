@@ -4,6 +4,7 @@ package root
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/open-sauced/pizza-cli/cmd/auth"
 	"github.com/open-sauced/pizza-cli/cmd/bake"
 	repoquery "github.com/open-sauced/pizza-cli/cmd/repo-query"
 )
@@ -19,6 +20,7 @@ func NewRootCommand() (*cobra.Command, error) {
 
 	cmd.AddCommand(bake.NewBakeCommand())
 	cmd.AddCommand(repoquery.NewRepoQueryCommand())
+	cmd.AddCommand(auth.NewLoginCommand())
 
 	return cmd, nil
 }

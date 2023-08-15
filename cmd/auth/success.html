@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OpenSauced Pizza-CLI</title>
+    <style>
+      body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(135deg, #ff9900, #ff5500);
+        font-family: Arial, sans-serif;
+        position: relative;
+      }
+      .container {
+        text-align: center;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s;
+      }
+      .container:hover {
+        transform: scale(1.05);
+      }
+      .pizza-icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      .title {
+        color: #ff5500;
+        font-size: 32px;
+        font-weight: bold;
+        margin: 0;
+        margin-bottom: 10px;
+      }
+      .message {
+        color: #555;
+        font-size: 20px;
+      }
+      .opensauced-logo {
+        display: flex;
+        align-items: center;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        color: #fff;
+        font-size: 28px;
+        font-weight: bold;
+      }
+      .logo-image {
+        width: 60px;
+        height: 60px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="pizza-icon">🍕</div>
+      <h1 class="title">Authentication Successful</h1>
+      <p class="message" id="counter">
+        This window will be closed in 3 seconds
+      </p>
+    </div>
+    <div class="opensauced-logo">
+      <img
+        src="https://raw.githubusercontent.com/open-sauced/assets/main/logos/slice-White.png"
+        alt="OpenSauced Logo"
+        class="logo-image"
+      />
+      <div class="logo-text">OpenSauced</div>
+    </div>
+    <script>
+      const counterElement = document.getElementById("counter");
+      let seconds = 3;
+      let interval = setInterval(() => {
+        if (seconds <= 1) {
+          clearInterval(interval);
+          window.close();
+        }
+        counterElement.innerHTML = `This window will be closed in ${--seconds} second${
+          seconds > 1 ? "s" : ""
+        }`;
+      }, 1000);
+    </script>
+  </body>
+</html>
