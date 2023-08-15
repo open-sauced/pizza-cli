@@ -78,8 +78,8 @@ func run(opts *Options) error {
 		return err
 	}
 
-	responseBody := bytes.NewBuffer(bodyPostJSON)
-	resp, err := http.Post(fmt.Sprintf("%s/bake", opts.Endpoint), "application/json", responseBody)
+	requestBody := bytes.NewBuffer(bodyPostJSON)
+	resp, err := http.Post(fmt.Sprintf("%s/bake", opts.Endpoint), "application/json", requestBody)
 	if err != nil {
 		return err
 	}
