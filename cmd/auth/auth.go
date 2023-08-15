@@ -106,8 +106,7 @@ func run() error {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		_, err = w.Write([]byte(successHTML))
 		if err != nil {
-			fmt.Println("Error writing response:", err)
-			return
+			fmt.Println("Error writing response:", err.Error())
 		}
 
 		username := sessionData["user"].(map[string]interface{})["user_metadata"].(map[string]interface{})["user_name"].(string)
