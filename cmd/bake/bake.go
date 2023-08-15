@@ -126,7 +126,7 @@ func bakeRepo(bodyPostReq bakePostRequest, endpoint string) error {
 	}
 
 	requestBody := bytes.NewBuffer(bodyPostJSON)
-	resp, err := http.Post(fmt.Sprintf("%s/bake", opts.Endpoint), "application/json", requestBody)
+	resp, err := http.Post(fmt.Sprintf("%s/bake", endpoint), "application/json", requestBody)
 
 	if err != nil {
 		return err
