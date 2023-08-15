@@ -5,6 +5,8 @@ This CLI can be used for all things OpenSauced!
 ```
 ❯ pizza
 
+A command line utility for insights, metrics, and all things OpenSauced
+
 Usage:
   pizza <command> <subcommand> [flags]
 
@@ -12,6 +14,8 @@ Available Commands:
   bake        Use a pizza-oven to source git commits into OpenSauced
   completion  Generate the autocompletion script for the specified shell
   help        Help about any command
+  login       Log into the CLI application via GitHub
+  repo-query  Ask questions about a GitHub repository
 
 Flags:
   -h, --help   help for pizza
