@@ -31,7 +31,7 @@ const (
 )
 
 //go:embed success.html
-var successHtml string
+var successHTML string
 
 func NewLoginCommand() *cobra.Command {
 	cmd := &cobra.Command{
@@ -104,7 +104,11 @@ func run() error {
 		}
 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.Write([]byte(successHtml))
+		_, err = w.Write([]byte(successHTML))
+		if err != nil {
+			fmt.Println("Error writing response:", err)
+			return
+		}
 
 		username := sessionData["user"].(map[string]interface{})["user_metadata"].(map[string]interface{})["user_name"].(string)
 		fmt.Println("🎉 Login successful 🎉")
@@ -187,5 +191,10 @@ func pkce(length int) (verifier, challenge string, err error) {
 }
 
 func shutdown(server *http.Server) {
-	go server.Shutdown(context.Background())
+	go func() {
+		err := server.Shutdown(context.Background())
+		if err != nil {
+			fmt.Println("Graceful shutdown failed", err)
+		}
+	}()
 }
