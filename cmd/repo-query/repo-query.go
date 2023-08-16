@@ -12,12 +12,15 @@ import (
 	"os/signal"
 	"strings"
 
+	"github.com/open-sauced/pizza-cli/pkg/api"
 	"github.com/spf13/cobra"
 )
 
 const repoQueryURL string = "https://opensauced.tools"
 
 type Options struct {
+	APIClient *api.Client
+
 	// URL is the git repo URL that will be indexed
 	URL string
 
@@ -46,6 +49,22 @@ func NewRepoQueryCommand() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			endpoint, _ := cmd.Flags().GetString("endpoint")
+			useBeta, _ := cmd.Flags().GetBool("beta")
+
+			if useBeta {
+				fmt.Printf("Warning!! Using beta API endpoint not supported for repo-query - using: %s\n", endpoint)
+			}
+
+			// The repo-query is currently not deployed behind "api.opensauced.pizza"
+			// So, if the user has not changed the desired "endpoint", use the default
+			// tools URL to send SSE to the repo-query engine
+			if endpoint == api.APIEndpoint {
+				endpoint = repoQueryURL
+			}
+
+			opts.APIClient = api.NewClient(endpoint)
+
 			opts.URL = args[0]
 			return run(opts)
 		},
@@ -56,7 +75,17 @@ func NewRepoQueryCommand() *cobra.Command {
 	return cmd
 }
 
-func getOwnerAndRepo(url string) (owner, repo string, err error) {
+type repoQueryAgent struct {
+	client *api.Client
+}
+
+func newRepoQueryAgent(apiClient *api.Client) *repoQueryAgent {
+	return &repoQueryAgent{
+		client: apiClient,
+	}
+}
+
+func (rq *repoQueryAgent) getOwnerAndRepo(url string) (owner, repo string, err error) {
 	if !strings.HasPrefix(url, "https://github.com/") {
 		return "", "", fmt.Errorf("invalid URL: %s", url)
 	}
@@ -79,14 +108,16 @@ func getOwnerAndRepo(url string) (owner, repo string, err error) {
 }
 
 func run(opts *Options) error {
+	agent := newRepoQueryAgent(opts.APIClient)
+
 	// get repo name and owner name from URL
-	owner, repo, err := getOwnerAndRepo(opts.URL)
+	owner, repo, err := agent.getOwnerAndRepo(opts.URL)
 	if err != nil {
 		return err
 	}
 
 	fmt.Printf("Checking if %s/%s is indexed by us...⏳\n", owner, repo)
-	resp, err := http.Get(fmt.Sprintf("%s/collection?owner=%s&name=%s&branch=%s", repoQueryURL, owner, repo, opts.branch))
+	resp, err := agent.client.HTTPClient.Get(fmt.Sprintf("%s/collection?owner=%s&name=%s&branch=%s", agent.client.Endpoint, owner, repo, opts.branch))
 	if err != nil {
 		return err
 	}
@@ -96,12 +127,12 @@ func run(opts *Options) error {
 		// repo is not indexed
 		fmt.Println("Repo not found❗")
 		fmt.Println("Indexing repo...⏳")
-		err := indexRepo(owner, repo, opts.branch)
+		err := agent.indexRepo(owner, repo, opts.branch)
 		if err != nil {
 			return err
 		}
 
-		err = startQnALoop(owner, repo, opts.branch)
+		err = agent.startQnALoop(owner, repo, opts.branch)
 		if err != nil {
 			return err
 		}
@@ -109,7 +140,7 @@ func run(opts *Options) error {
 		// repo is indexed
 		fmt.Println("Repo found ✅")
 
-		err = startQnALoop(owner, repo, opts.branch)
+		err = agent.startQnALoop(owner, repo, opts.branch)
 		if err != nil {
 			return err
 		}
@@ -126,7 +157,7 @@ func run(opts *Options) error {
 	return nil
 }
 
-func startQnALoop(owner string, repo string, branch string) error {
+func (rq *repoQueryAgent) startQnALoop(owner string, repo string, branch string) error {
 	for {
 		// if ctrl+c is pressed, exit
 		c := make(chan os.Signal, 1)
@@ -148,7 +179,7 @@ func startQnALoop(owner string, repo string, branch string) error {
 				fmt.Println("🍕Exiting...")
 				os.Exit(0)
 			}
-			err := askQuestion(input, owner, repo, branch)
+			err := rq.askQuestion(input, owner, repo, branch)
 			if err != nil {
 				return err
 			}
@@ -176,7 +207,7 @@ const (
 	ChatChunk
 )
 
-func indexRepo(owner string, repo string, branch string) error {
+func (rq *repoQueryAgent) indexRepo(owner string, repo string, branch string) error {
 	indexPostReq := &indexPostRequest{
 		Owner:  owner,
 		Name:   repo,
@@ -188,7 +219,7 @@ func indexRepo(owner string, repo string, branch string) error {
 		return err
 	}
 
-	resp, err := http.Post(fmt.Sprintf("%s/embed", repoQueryURL), "application/json", bytes.NewBuffer(indexPostJSON))
+	resp, err := rq.client.HTTPClient.Post(fmt.Sprintf("%s/embed", rq.client.Endpoint), "application/json", bytes.NewBuffer(indexPostJSON))
 	if err != nil {
 		return err
 	}
@@ -204,7 +235,7 @@ func indexRepo(owner string, repo string, branch string) error {
 	}
 
 	reader := bufio.NewReader(resp.Body)
-	err = listenForSSEs(reader, IndexChunk)
+	err = rq.listenForSSEs(reader, IndexChunk)
 	if err != nil {
 		return err
 	}
@@ -212,7 +243,7 @@ func indexRepo(owner string, repo string, branch string) error {
 	return nil
 }
 
-func askQuestion(question string, owner string, repo string, branch string) error {
+func (rq *repoQueryAgent) askQuestion(question string, owner string, repo string, branch string) error {
 	queryPostReq := &queryPostRequest{
 		Query: question,
 		Repository: struct {
@@ -231,7 +262,7 @@ func askQuestion(question string, owner string, repo string, branch string) erro
 		return err
 	}
 
-	resp, err := http.Post(fmt.Sprintf("%s/query", repoQueryURL), "application/json", bytes.NewBuffer(queryPostJSON))
+	resp, err := rq.client.HTTPClient.Post(fmt.Sprintf("%s/query", rq.client.Endpoint), "application/json", bytes.NewBuffer(queryPostJSON))
 	if err != nil {
 		return err
 	}
@@ -249,7 +280,7 @@ func askQuestion(question string, owner string, repo string, branch string) erro
 
 	//  listen for SSEs and send data,event pairs to processChatChunk
 	reader := bufio.NewReader(resp.Body)
-	err = listenForSSEs(reader, ChatChunk)
+	err = rq.listenForSSEs(reader, ChatChunk)
 	if err != nil {
 		return err
 	}
@@ -257,7 +288,7 @@ func askQuestion(question string, owner string, repo string, branch string) erro
 	return nil
 }
 
-func listenForSSEs(reader *bufio.Reader, chunkType int) error {
+func (rq *repoQueryAgent) listenForSSEs(reader *bufio.Reader, chunkType int) error {
 	// listen for SSEs and send data, event pairs to processChunk
 	// we send 2 lines at a time to processChunk so it can process the event and data together.
 	// the server sends empty events sometimes, so we ignore those.
@@ -295,9 +326,9 @@ func listenForSSEs(reader *bufio.Reader, chunkType int) error {
 
 			switch chunkType {
 			case IndexChunk:
-				err = processIndexChunk(chunk)
+				err = rq.processIndexChunk(chunk)
 			case ChatChunk:
-				err = processChatChunk(chunk)
+				err = rq.processChatChunk(chunk)
 			default:
 				break
 			}
@@ -309,7 +340,7 @@ func listenForSSEs(reader *bufio.Reader, chunkType int) error {
 	}
 }
 
-func processIndexChunk(chunk string) error {
+func (rq *repoQueryAgent) processIndexChunk(chunk string) error {
 	// we only care about the first line of the chunk, which is the event, when indexing.
 	// the data is irrelevant for now, but we still got it so we can process it later if we need to.
 	// Also, for grouping the events and data together.
@@ -337,7 +368,7 @@ func processIndexChunk(chunk string) error {
 	return nil
 }
 
-func processChatChunk(chunk string) error {
+func (rq *repoQueryAgent) processChatChunk(chunk string) error {
 	// The event is the first line of the chunk, and the data is the second line.
 	chunkLines := strings.Split(chunk, "\n")
 	eventLine := chunkLines[0]

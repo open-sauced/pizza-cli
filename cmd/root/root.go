@@ -2,11 +2,14 @@
 package root
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 
 	"github.com/open-sauced/pizza-cli/cmd/auth"
 	"github.com/open-sauced/pizza-cli/cmd/bake"
 	repoquery "github.com/open-sauced/pizza-cli/cmd/repo-query"
+	"github.com/open-sauced/pizza-cli/pkg/api"
 )
 
 // NewRootCommand bootstraps a new root cobra command for the pizza CLI
@@ -17,6 +20,9 @@ func NewRootCommand() (*cobra.Command, error) {
 		Long:  `A command line utility for insights, metrics, and all things OpenSauced`,
 		RunE:  run,
 	}
+
+	cmd.PersistentFlags().StringP("endpoint", "e", api.APIEndpoint, "The API endpoint to send requests to")
+	cmd.PersistentFlags().Bool("beta", false, fmt.Sprintf("Shorthand for using the beta OpenSauced API endpoint (\"%s\"). Superceds the '--endpoint' flag", api.BetaAPIEndpoint))
 
 	cmd.AddCommand(bake.NewBakeCommand())
 	cmd.AddCommand(repoquery.NewRepoQueryCommand())

@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/open-sauced/pizza-cli/pkg/api"
 )
 
 func TestSendsPost(t *testing.T) {
@@ -42,7 +44,7 @@ func TestSendsPost(t *testing.T) {
 			}))
 			defer testServer.Close()
 
-			tt.opts.Endpoint = testServer.URL
+			tt.opts.APIClient = api.NewClient(testServer.URL)
 
 			err := run(tt.opts)
 			if err != nil {
