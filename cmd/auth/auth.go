@@ -45,22 +45,22 @@ func NewLoginCommand() *cobra.Command {
 }
 
 func run() error {
-	codeVerifier, codeChallenge, err := pkce(CodeChallengeLength)
+	codeVerifier, codeChallenge, err := pkce(codeChallengeLength)
 	if err != nil {
 		return fmt.Errorf("PKCE error: %v", err.Error())
 	}
 
-	supabaseAuthURL := fmt.Sprintf("https://%s.supabase.co/auth/v1/authorize", SupabaseID)
+	supabaseAuthURL := fmt.Sprintf("https://%s.supabase.co/auth/v1/authorize", supabaseID)
 	queryParams := url.Values{
 		"provider":              {"github"},
 		"code_challenge":        {codeChallenge},
 		"code_challenge_method": {"S256"},
-		"redirect_to":           {"http://" + AuthCallbackAddr + "/"},
+		"redirect_to":           {"http://" + authCallbackAddr + "/"},
 	}
 
 	authenticationURL := supabaseAuthURL + "?" + queryParams.Encode()
 
-	server := &http.Server{Addr: AuthCallbackAddr}
+	server := &http.Server{Addr: authCallbackAddr}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		defer shutdown(server)
@@ -144,7 +144,7 @@ func run() error {
 }
 
 func getSession(authCode, codeVerifier string) (*accessTokenResponse, error) {
-	url := fmt.Sprintf("https://%s.supabase.co/auth/v1/token?grant_type=pkce", SupabaseID)
+	url := fmt.Sprintf("https://%s.supabase.co/auth/v1/token?grant_type=pkce", supabaseID)
 
 	payload := map[string]string{
 		"auth_code":     authCode,
@@ -155,7 +155,7 @@ func getSession(authCode, codeVerifier string) (*accessTokenResponse, error) {
 
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonPayload))
 	req.Header.Set("Content-Type", "application/json;charset=UTF-8")
-	req.Header.Set("ApiKey", SupabasePublicKey)
+	req.Header.Set("ApiKey", supabasePublicKey)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
