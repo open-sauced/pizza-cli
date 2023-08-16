@@ -19,16 +19,16 @@ import (
 	"time"
 
 	"github.com/cli/browser"
-	constants "github.com/open-sauced/pizza-cli/pkg"
+	"github.com/open-sauced/pizza-cli/pkg/constants"
 	"github.com/spf13/cobra"
 )
 
 //go:embed success.html
 var successHTML string
 
-const loginLongDesc string = `Log into the application.
+const loginLongDesc string = `Log into OpenSauced.
 
-This command initiates the GitHub auth flow to log you into the application by launching your browser`
+This command initiates the GitHub auth flow to log you into the OpenSauced application by launching your browser`
 
 func NewLoginCommand() *cobra.Command {
 	cmd := &cobra.Command{
@@ -45,22 +45,22 @@ func NewLoginCommand() *cobra.Command {
 }
 
 func run() error {
-	codeVerifier, codeChallenge, err := pkce(constants.CodeChallengeLength)
+	codeVerifier, codeChallenge, err := pkce(CodeChallengeLength)
 	if err != nil {
 		return fmt.Errorf("PKCE error: %v", err.Error())
 	}
 
-	supabaseAuthURL := fmt.Sprintf("https://%s.supabase.co/auth/v1/authorize", constants.SupabaseID)
+	supabaseAuthURL := fmt.Sprintf("https://%s.supabase.co/auth/v1/authorize", SupabaseID)
 	queryParams := url.Values{
 		"provider":              {"github"},
 		"code_challenge":        {codeChallenge},
 		"code_challenge_method": {"S256"},
-		"redirect_to":           {"http://" + constants.AuthCallbackAddr + "/"},
+		"redirect_to":           {"http://" + AuthCallbackAddr + "/"},
 	}
 
 	authenticationURL := supabaseAuthURL + "?" + queryParams.Encode()
 
-	server := &http.Server{Addr: constants.AuthCallbackAddr}
+	server := &http.Server{Addr: AuthCallbackAddr}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		defer shutdown(server)
@@ -143,8 +143,8 @@ func run() error {
 	return nil
 }
 
-func getSession(authCode, codeVerifier string) (*AccessTokenResponse, error) {
-	url := fmt.Sprintf("https://%s.supabase.co/auth/v1/token?grant_type=pkce", constants.SupabaseID)
+func getSession(authCode, codeVerifier string) (*accessTokenResponse, error) {
+	url := fmt.Sprintf("https://%s.supabase.co/auth/v1/token?grant_type=pkce", SupabaseID)
 
 	payload := map[string]string{
 		"auth_code":     authCode,
@@ -155,7 +155,7 @@ func getSession(authCode, codeVerifier string) (*AccessTokenResponse, error) {
 
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonPayload))
 	req.Header.Set("Content-Type", "application/json;charset=UTF-8")
-	req.Header.Set("ApiKey", constants.SupabasePublicKey)
+	req.Header.Set("ApiKey", SupabasePublicKey)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -167,7 +167,7 @@ func getSession(authCode, codeVerifier string) (*AccessTokenResponse, error) {
 		return nil, fmt.Errorf("unexpected status: %s", res.Status)
 	}
 
-	var responseData AccessTokenResponse
+	var responseData accessTokenResponse
 	if err := json.NewDecoder(res.Body).Decode(&responseData); err != nil {
 		return nil, fmt.Errorf("could not decode JSON response: %s", err.Error())
 	}
@@ -193,47 +193,4 @@ func shutdown(server *http.Server) {
 			panic(err.Error())
 		}
 	}()
-}
-
-type AccessTokenResponse struct {
-	AccessToken  string     `json:"access_token"`
-	RefreshToken string     `json:"refresh_token"`
-	TokenType    string     `json:"token_type"`
-	ExpiresIn    int        `json:"expires_in"`
-	ExpiresAt    int        `json:"expires_at"`
-	User         UserSchema `json:"user"`
-}
-
-type UserSchema struct {
-	ID                     string                 `json:"id"`
-	Aud                    string                 `json:"aud,omitempty"`
-	Role                   string                 `json:"role"`
-	Email                  string                 `json:"email"`
-	EmailConfirmedAt       string                 `json:"email_confirmed_at"`
-	Phone                  string                 `json:"phone"`
-	PhoneConfirmedAt       string                 `json:"phone_confirmed_at"`
-	ConfirmationSentAt     string                 `json:"confirmation_sent_at"`
-	ConfirmedAt            string                 `json:"confirmed_at"`
-	RecoverySentAt         string                 `json:"recovery_sent_at"`
-	NewEmail               string                 `json:"new_email"`
-	EmailChangeSentAt      string                 `json:"email_change_sent_at"`
-	NewPhone               string                 `json:"new_phone"`
-	PhoneChangeSentAt      string                 `json:"phone_change_sent_at"`
-	ReauthenticationSentAt string                 `json:"reauthentication_sent_at"`
-	LastSignInAt           string                 `json:"last_sign_in_at"`
-	AppMetadata            map[string]interface{} `json:"app_metadata"`
-	UserMetadata           map[string]interface{} `json:"user_metadata"`
-	Factors                []MFAFactorSchema      `json:"factors"`
-	Identities             []interface{}          `json:"identities"`
-	BannedUntil            string                 `json:"banned_until"`
-	CreatedAt              string                 `json:"created_at"`
-	UpdatedAt              string                 `json:"updated_at"`
-	DeletedAt              string                 `json:"deleted_at"`
-}
-
-type MFAFactorSchema struct {
-	ID           string `json:"id"`
-	Status       string `json:"status"`
-	FriendlyName string `json:"friendly_name"`
-	FactorType   string `json:"factor_type"`
 }
