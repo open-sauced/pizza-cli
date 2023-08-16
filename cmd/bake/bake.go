@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/open-sauced/pizza-cli/pkg/api"
 	"github.com/spf13/cobra"
 
 	"gopkg.in/yaml.v3"
@@ -19,8 +20,8 @@ import (
 // Options are the options for the pizza bake command including user
 // defined configurations
 type Options struct {
-	// Endpoint is the service endpoint to reach out to
-	Endpoint string
+	// The API Client for the calls to bake git repos
+	APIClient *api.Client
 
 	// URLs are the git repo URLs that will be sourced via 'pizza bake'
 	URLs []string
@@ -52,14 +53,20 @@ func NewBakeCommand() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			endpoint, _ := cmd.Flags().GetString("endpoint")
+			useBeta, _ := cmd.Flags().GetBool("beta")
+
+			if useBeta {
+				fmt.Printf("Using beta API endpoint - %s\n", api.BetaAPIEndpoint)
+				endpoint = api.BetaAPIEndpoint
+			}
+			opts.APIClient = api.NewClient(endpoint)
+
 			opts.URLs = append(opts.URLs, args...)
 			return run(opts)
 		},
 	}
 
-	// TODO - this will need to be a live service URL by default.
-	// For now, localhost is fine.
-	cmd.Flags().StringVarP(&opts.Endpoint, "endpoint", "e", "http://localhost:8080", "The endpoint to send requests to")
 	cmd.Flags().BoolVarP(&opts.Wait, "wait", "w", false, "Wait for bake processing to finish")
 	cmd.Flags().StringVarP(&opts.FilePath, "file", "f", "", "The yaml file containing a series of repos to batch to /bake")
 
@@ -68,7 +75,7 @@ func NewBakeCommand() *cobra.Command {
 
 type bakePostRequest struct {
 	URL  string `json:"url"`
-	Wait bool   `json:"wait,omitempty"`
+	Wait bool   `json:"wait"`
 }
 
 type repos struct {
@@ -110,7 +117,7 @@ func run(opts *Options) error {
 			Wait: opts.Wait,
 		}
 
-		err := bakeRepo(bodyPostReq, opts.Endpoint)
+		err := bakeRepo(bodyPostReq, opts.APIClient)
 		if err != nil {
 			fmt.Printf("Error: failed fetch of %s repository (%s)\n", url, err.Error())
 		}
@@ -119,15 +126,14 @@ func run(opts *Options) error {
 	return nil
 }
 
-func bakeRepo(bodyPostReq bakePostRequest, endpoint string) error {
+func bakeRepo(bodyPostReq bakePostRequest, apiClient *api.Client) error {
 	bodyPostJSON, err := json.Marshal(bodyPostReq)
 	if err != nil {
 		return err
 	}
 
-	requestBody := bytes.NewBuffer(bodyPostJSON)
-	resp, err := http.Post(fmt.Sprintf("%s/bake", endpoint), "application/json", requestBody)
-
+	responseBody := bytes.NewBuffer(bodyPostJSON)
+	resp, err := apiClient.HTTPClient.Post(fmt.Sprintf("%s/bake", apiClient.Endpoint), "application/json", responseBody)
 	if err != nil {
 		return err
 	}

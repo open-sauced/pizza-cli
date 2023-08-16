@@ -2,6 +2,9 @@
 
 all: lint test build
 
+fmt:
+	go fmt ./...
+
 lint:
 	docker run \
 		-t \
@@ -22,5 +25,3 @@ install: build
 
 run:
 	go run main.go
-
-
