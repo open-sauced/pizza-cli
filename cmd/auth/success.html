@@ -20,6 +20,7 @@
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.3);
         transition: transform 0.3s;
+        position: relative;
       }
       .container:hover {
         transform: scale(1.05);
@@ -39,6 +40,15 @@
       .message {
         color: #555;
         font-size: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 15px;
+      }
+      .message-link {
+        color: #ff5500;
+        text-decoration: none;
+        font-weight: bold;
       }
       .opensauced-logo {
         display: flex;
@@ -54,36 +64,60 @@
         width: 60px;
         height: 60px;
       }
+      .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+        color: #ff9900;
+        cursor: pointer;
+      }
+      .close-button:hover {
+        color: #ff5500;
+      }
     </style>
   </head>
   <body>
     <div class="container">
+      <div class="close-button" id="closeButton">&#10005;</div>
       <div class="pizza-icon">🍕</div>
       <h1 class="title">Authentication Successful</h1>
       <p class="message" id="counter">
-        This window will be closed in 3 seconds
+        <span>You'll be redirected to </span>
+        <a href="https://insights.opensauced.pizza/" class="message-link"
+          >&nbspInsights&nbsp</a
+        >
+        <span> in 30 seconds</span>
       </p>
     </div>
-    <div class="opensauced-logo">
-      <img
-        src="https://raw.githubusercontent.com/open-sauced/assets/main/logos/slice-White.png"
-        alt="OpenSauced Logo"
-        class="logo-image"
-      />
-      <div class="logo-text">OpenSauced</div>
-    </div>
+    <a href="https://opensauced.pizza" target="_blank" rel="noreferrer">
+      <div class="opensauced-logo">
+        <img
+          src="https://raw.githubusercontent.com/open-sauced/assets/main/logos/slice-White.png"
+          alt="OpenSauced Logo"
+          class="logo-image"
+        />
+        <div class="logo-text">OpenSauced</div>
+      </div>
+    </a>
     <script>
       const counterElement = document.getElementById("counter");
-      let seconds = 3;
+      const closeButton = document.getElementById("closeButton");
+
+      let seconds = 30;
       let interval = setInterval(() => {
         if (seconds <= 1) {
           clearInterval(interval);
-          window.close();
+          window.open("https://insights.opensauced.pizza", "_self");
         }
-        counterElement.innerHTML = `This window will be closed in ${--seconds} second${
-          seconds > 1 ? "s" : ""
-        }`;
+        counterElement.innerHTML = `<span>You'll be redirected to </span>
+          <a href="https://insights.opensauced.pizza/" class="message-link">&nbspInsights&nbsp</a>
+          <span> in ${--seconds} second${seconds > 1 ? "s" : ""}</span>`;
       }, 1000);
+
+      closeButton.addEventListener("click", () => {
+        window.close();
+      });
     </script>
   </body>
 </html>
