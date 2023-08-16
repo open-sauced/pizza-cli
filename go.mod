@@ -10,7 +10,7 @@ require (
 )
 
 require (
+	github.com/cli/browser v1.2.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 // indirect
 	golang.org/x/sys v0.9.0 // indirect
 )
