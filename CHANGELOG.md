@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.0.1](https://github.com/Anush008/pizza-cli/compare/v1.0.0...v1.0.1) (2023-08-18)
+
+
+### 🐛 Bug Fixes
+
+* revert to testing version ([e52a517](https://github.com/Anush008/pizza-cli/commit/e52a5174ef3e936f85f3b2a16088e43d3efd1c98))
+
 ## 1.0.0 (2023-08-18)
 
 
