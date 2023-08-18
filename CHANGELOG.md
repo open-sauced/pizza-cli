@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.2.0](https://github.com/Anush008/pizza-cli/compare/v1.1.0...v1.2.0) (2023-08-18)
+
+
+### 📝 Documentation
+
+* release trigger ([f939c99](https://github.com/Anush008/pizza-cli/commit/f939c99447e710058f4a40775d0b715fd4e0931e))
+
 ## [1.1.0](https://github.com/Anush008/pizza-cli/compare/v1.0.1...v1.1.0) (2023-08-18)
 
 
