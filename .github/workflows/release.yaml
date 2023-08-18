@@ -1,12 +1,41 @@
-name: Build Go release artifacts
-
 on:
-  release:
-    types:
-      - created
+  push:
+    branches:
+      - main
+      - beta
+  workflow_dispatch:
 
 jobs:
+  release:
+    name: Semantic release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: "☁️ checkout repository"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: "🚀 release"
+        id: semantic-release
+        uses: open-sauced/release@v2.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: "Print tags"
+        id: print-tag
+        run: |
+          echo "Release Tag env: ${{ env.RELEASE_TAG }}"
+          echo "Release Tag out: ${{ steps.semantic-release.outputs.release-tag }}"
+    
+    outputs:
+        release-tag: ${{ steps.semantic-release.outputs.release-tag }}
+
+        
   build:
+    needs:
+      - release
     runs-on: ubuntu-latest
     permissions:
       contents: write # release changes require contents write
@@ -28,5 +57,7 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
+        echo "Release Tag env: ${{ env.RELEASE_TAG }}"
+        echo "Release Tag out: ${{ needs.release.outputs.release-tag }}"
         GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o build/pizza-${{ matrix.goos }}-${{ matrix.goarch }}
-        gh release upload ${{ github.event.release.tag_name }} build/pizza-${{ matrix.goos }}-${{ matrix.goarch }}
+        gh release upload ${{ needs.release.outputs.release-tag }} build/pizza-${{ matrix.goos }}-${{ matrix.goarch }}
