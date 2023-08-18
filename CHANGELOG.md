@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.1.0](https://github.com/Anush008/pizza-cli/compare/v1.0.1...v1.1.0) (2023-08-18)
+
+
+### 🍕 Features
+
+* bump begin 1.0.2 ([a003a3f](https://github.com/Anush008/pizza-cli/commit/a003a3f118c27c5398ec68849062d99e10394059))
+
 ## [1.0.1](https://github.com/Anush008/pizza-cli/compare/v1.0.0...v1.0.1) (2023-08-18)
 
 
