@@ -1,63 +1,30 @@
+name: goreleaser
+
 on:
+  pull_request:
   push:
-    branches:
-      - main
-      - beta
-  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  release:
-    name: Semantic release
+  goreleaser:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
-      - name: "☁️ checkout repository"
+      -
+        name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
-      - name: "🚀 release"
-        id: semantic-release
-        uses: open-sauced/release@v2.1.1
+      -
+        name: Set up Go
+        uses: actions/setup-go@v4
+      -
+        name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: "Print tags"
-        id: print-tag
-        run: |
-          echo "Release Tag env: ${{ env.RELEASE_TAG }}"
-          echo "Release Tag out: ${{ steps.semantic-release.outputs.release-tag }}"
-    
-    outputs:
-        release-tag: ${{ steps.semantic-release.outputs.release-tag }}
-
-        
-  build:
-    needs:
-      - release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write # release changes require contents write
-    strategy:
-      matrix:
-        goos: [darwin, linux, windows]
-        goarch: [amd64, arm64]
-
-    steps:
-    - name: Set up Go
-      uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
-      with:
-        go-version: 1.21
-
-    - name: Check out code
-      uses: actions/checkout@v3
-
-    - name: Build and upload Go binaries
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: |
-        echo "Release Tag env: ${{ env.RELEASE_TAG }}"
-        echo "Release Tag out: ${{ needs.release.outputs.release-tag }}"
-        GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o build/pizza-${{ matrix.goos }}-${{ matrix.goarch }}
-        gh release upload ${{ needs.release.outputs.release-tag }} build/pizza-${{ matrix.goos }}-${{ matrix.goarch }}
