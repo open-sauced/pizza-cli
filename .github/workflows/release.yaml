@@ -62,5 +62,5 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -ldflags="-s -w" -o build/pizzarino-cli-${{ matrix.goos }}-${{ matrix.goarch }}
-        gh release upload ${{ needs.release.outputs.release-tag }} build/pizzarino-cli-${{ matrix.goos }}-${{ matrix.goarch }}
+        GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -ldflags="-s -w" -o build/pizza-${{ matrix.goos }}-${{ matrix.goarch }}
+        gh release upload ${{ needs.release.outputs.release-tag }} build/pizza-${{ matrix.goos }}-${{ matrix.goarch }}
