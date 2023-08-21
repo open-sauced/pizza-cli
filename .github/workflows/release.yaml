@@ -1,12 +1,46 @@
-name: Build Go release artifacts
+name: Semantic release
 
 on:
-  release:
-    types:
-      - created
+  push:
+    branches:
+      - main
+      - beta
+  workflow_dispatch:
 
 jobs:
+  release:
+    name: Semantic release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: "☁️ checkout repository"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: "🔧 setup node"
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: "🔧 install npm@latest"
+        run: npm i -g npm@latest
+
+      - name: "🚀 release"
+        id: semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_PACKAGE_ROOT: "npm"
+        uses: open-sauced/release@v2.2.0
+
+    outputs:
+        release-tag: ${{ steps.semantic-release.outputs.release-tag }}
+
+        
   build:
+    needs:
+      - release
     runs-on: ubuntu-latest
     permissions:
       contents: write # release changes require contents write
@@ -28,5 +62,5 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o build/pizza-${{ matrix.goos }}-${{ matrix.goarch }}
-        gh release upload ${{ github.event.release.tag_name }} build/pizza-${{ matrix.goos }}-${{ matrix.goarch }}
+        GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -ldflags="-s -w" -o build/pizzarino-cli-${{ matrix.goos }}-${{ matrix.goarch }}
+        gh release upload ${{ needs.release.outputs.release-tag }} build/pizzarino-cli-${{ matrix.goos }}-${{ matrix.goarch }}
