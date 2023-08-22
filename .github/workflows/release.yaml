@@ -13,6 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.OS_GITHUB_APP_ID }}
+          private_key: ${{ secrets.OS_GITHUB_APP_PRIVATE_KEY }}
       - name: "☁️ checkout repository"
         uses: actions/checkout@v3
         with:
@@ -29,7 +35,7 @@ jobs:
       - name: "🚀 release"
         id: semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_PACKAGE_ROOT: "npm"
         uses: open-sauced/release@v2.2.0
