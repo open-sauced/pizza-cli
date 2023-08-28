@@ -9,6 +9,7 @@ import (
 	"github.com/open-sauced/pizza-cli/cmd/auth"
 	"github.com/open-sauced/pizza-cli/cmd/bake"
 	repoquery "github.com/open-sauced/pizza-cli/cmd/repo-query"
+	"github.com/open-sauced/pizza-cli/cmd/version"
 	"github.com/open-sauced/pizza-cli/pkg/api"
 )
 
@@ -28,6 +29,7 @@ func NewRootCommand() (*cobra.Command, error) {
 	cmd.AddCommand(bake.NewBakeCommand())
 	cmd.AddCommand(repoquery.NewRepoQueryCommand())
 	cmd.AddCommand(auth.NewLoginCommand())
+	cmd.AddCommand(version.NewVersionCommand())
 
 	return cmd, nil
 }
