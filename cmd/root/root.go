@@ -23,6 +23,7 @@ func NewRootCommand() (*cobra.Command, error) {
 
 	cmd.PersistentFlags().StringP("endpoint", "e", api.APIEndpoint, "The API endpoint to send requests to")
 	cmd.PersistentFlags().Bool("beta", false, fmt.Sprintf("Shorthand for using the beta OpenSauced API endpoint (\"%s\"). Superceds the '--endpoint' flag", api.BetaAPIEndpoint))
+	cmd.PersistentFlags().Bool("disable-telemetry", false, "Disable sending telemetry data to OpenSauced")
 
 	cmd.AddCommand(bake.NewBakeCommand())
 	cmd.AddCommand(repoquery.NewRepoQueryCommand())
