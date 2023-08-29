@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.0.0-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.0.0-beta.1...v1.0.0-beta.2) (2023-08-29)
+
+
+### 🍕 Features
+
+* Add posthog telemetry integration ([#37](https://github.com/open-sauced/pizza-cli/issues/37)) ([9829f49](https://github.com/open-sauced/pizza-cli/commit/9829f499dad0651ec97d0969e040d2acc30714e0))
+
 ## 1.0.0-beta.1 (2023-08-22)
 
 
