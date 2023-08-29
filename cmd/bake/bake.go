@@ -12,6 +12,7 @@ import (
 	"os"
 
 	"github.com/open-sauced/pizza-cli/pkg/api"
+	"github.com/open-sauced/pizza-cli/pkg/utils"
 	"github.com/spf13/cobra"
 
 	"gopkg.in/yaml.v3"
@@ -31,6 +32,9 @@ type Options struct {
 
 	// FilePath is the location of the file containing a batch of repos to be baked
 	FilePath string
+
+	// telemetry for capturing CLI events
+	telemetry *utils.PosthogCliClient
 }
 
 const bakeLongDesc string = `WARNING: Proof of concept feature.
@@ -53,6 +57,7 @@ func NewBakeCommand() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			disableTelem, _ := cmd.Flags().GetBool("disable-telemetry")
 			endpoint, _ := cmd.Flags().GetString("endpoint")
 			useBeta, _ := cmd.Flags().GetBool("beta")
 
@@ -63,6 +68,14 @@ func NewBakeCommand() *cobra.Command {
 			opts.APIClient = api.NewClient(endpoint)
 
 			opts.URLs = append(opts.URLs, args...)
+
+			if !disableTelem {
+				opts.telemetry = utils.NewPosthogCliClient()
+				defer opts.telemetry.Done()
+
+				opts.telemetry.CaptureBake(opts.URLs)
+			}
+
 			return run(opts)
 		},
 	}

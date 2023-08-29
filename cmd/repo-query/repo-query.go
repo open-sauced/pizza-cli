@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/open-sauced/pizza-cli/pkg/api"
+	"github.com/open-sauced/pizza-cli/pkg/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -23,6 +24,9 @@ type Options struct {
 
 	// URL is the git repo URL that will be indexed
 	URL string
+
+	// telemetry for capturing CLI events
+	telemetry *utils.PosthogCliClient
 
 	branch string
 }
@@ -49,6 +53,7 @@ func NewRepoQueryCommand() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			disableTelem, _ := cmd.Flags().GetBool("disable-telemetry")
 			endpoint, _ := cmd.Flags().GetString("endpoint")
 			useBeta, _ := cmd.Flags().GetBool("beta")
 
@@ -66,6 +71,14 @@ func NewRepoQueryCommand() *cobra.Command {
 			opts.APIClient = api.NewClient(endpoint)
 
 			opts.URL = args[0]
+
+			if !disableTelem {
+				opts.telemetry = utils.NewPosthogCliClient()
+				defer opts.telemetry.Done()
+
+				opts.telemetry.CaptureRepoQuery(opts.URL)
+			}
+
 			return run(opts)
 		},
 	}
