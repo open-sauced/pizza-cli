@@ -34,17 +34,16 @@ Available Commands:
   bake        Use a pizza-oven to source git commits into OpenSauced
   completion  Generate the autocompletion script for the specified shell
   help        Help about any command
+  insights    Gather insights about git contributors, repositories, users and pull requests
   login       Log into the CLI application via GitHub
   repo-query  Ask questions about a GitHub repository
   version     Displays the build version of the CLI
 
 Flags:
-      --beta              Shorthand for using the beta OpenSauced API endpoint
-                          ("https://beta.api.opensauced.pizza/v1"). Superceds the
-                          '--endpoint' flag
-  -e, --endpoint string   The API endpoint to send requests to (default
-                          "https://api.opensauced.pizza/v1")
-  -h, --help              help for pizza
+      --beta                Shorthand for using the beta OpenSauced API endpoint ("https://beta.api.opensauced.pizza"). Supersedes the '--endpoint' flag
+      --disable-telemetry   Disable sending telemetry data to OpenSauced
+  -e, --endpoint string     The API endpoint to send requests to (default "https://api.opensauced.pizza")
+  -h, --help                help for pizza
 
 Use "pizza [command] --help" for more information about a command.
 ```

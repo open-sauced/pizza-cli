@@ -33,9 +33,12 @@ type Options struct {
 	telemetry *utils.PosthogCliClient
 }
 
-const loginLongDesc string = `Log into OpenSauced.
+const (
+	sessionFileName = "session.json"
+	loginLongDesc   = `Log into OpenSauced.
 
 This command initiates the GitHub auth flow to log you into the OpenSauced application by launching your browser`
+)
 
 func NewLoginCommand() *cobra.Command {
 	opts := &Options{}
@@ -48,7 +51,7 @@ func NewLoginCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			username, err := run()
 
-			disableTelem, _ := cmd.Flags().GetBool("disable-telemetry")
+			disableTelem, _ := cmd.Flags().GetBool(constants.FlagNameTelemetry)
 
 			if !disableTelem {
 				opts.telemetry = utils.NewPosthogCliClient()
@@ -121,7 +124,7 @@ func run() (string, error) {
 			return
 		}
 
-		filePath := path.Join(dirName, constants.SessionFileName)
+		filePath := path.Join(dirName, sessionFileName)
 		if err := os.WriteFile(filePath, jsonData, 0o600); err != nil {
 			http.Error(w, "Error writing to file", http.StatusInternalServerError)
 			return
