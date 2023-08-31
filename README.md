@@ -36,9 +36,15 @@ Available Commands:
   help        Help about any command
   login       Log into the CLI application via GitHub
   repo-query  Ask questions about a GitHub repository
+  version     Displays the build version of the CLI
 
 Flags:
-  -h, --help   help for pizza
+      --beta              Shorthand for using the beta OpenSauced API endpoint
+                          ("https://beta.api.opensauced.pizza/v1"). Superceds the
+                          '--endpoint' flag
+  -e, --endpoint string   The API endpoint to send requests to (default
+                          "https://api.opensauced.pizza/v1")
+  -h, --help              help for pizza
 
 Use "pizza [command] --help" for more information about a command.
 ```
