@@ -34,7 +34,7 @@ type Options struct {
 
 const showLongDesc string = `WARNING: Proof of concept feature.
 
-The show command accepts the name of a git repository in the format 'owner/name' and uses OpenSauced api
+The show command accepts the name of a git repository and uses OpenSauced api
 to retrieve metrics of the repository to be displayed as a TUI.`
 
 // NewShowCommand returns a new cobra command for 'pizza show'

@@ -112,7 +112,6 @@ func (m *ContributorModel) fetchUser() (tea.Model, error) {
 
 // fetchContributorInfo: fetches the contributor info
 func (m *ContributorModel) fetchContributorInfo(name string) (*client.DbUser, error) {
-
 	resp, r, err := m.APIClient.UserServiceAPI.FindOneUserByUserame(m.serverContext, name).Execute()
 	if err != nil {
 		return nil, err
@@ -127,7 +126,6 @@ func (m *ContributorModel) fetchContributorInfo(name string) (*client.DbUser, er
 
 // fetchContributorPRs: fetches the contributor pull requests
 func (m *ContributorModel) fetchContributorPRs(name string) ([]client.DbPullRequest, error) {
-
 	resp, r, err := m.APIClient.UserServiceAPI.FindContributorPullRequests(m.serverContext, name).Execute()
 	if err != nil {
 		return nil, err

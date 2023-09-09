@@ -101,17 +101,14 @@ func (m DashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "q", "esc", "ctrl+c", "ctrl+d":
 			return m, tea.Quit
 		case "enter":
-			var contributorName string
 			switch m.tableView {
 			case newContributorsView:
 				if len(m.newContributorsTable.Rows()) > 0 {
-					contributorName = m.newContributorsTable.SelectedRow()[1]
-					return m, func() tea.Msg { return SelectMsg{contributorName} }
+					return m, func() tea.Msg { return SelectMsg{contributorName: m.newContributorsTable.SelectedRow()[1]} }
 				}
 			case alumniContributorsView:
 				if len(m.alumniContributorsTable.Rows()) > 0 {
-					contributorName = m.alumniContributorsTable.SelectedRow()[1]
-					return m, func() tea.Msg { return SelectMsg{contributorName} }
+					return m, func() tea.Msg { return SelectMsg{contributorName: m.alumniContributorsTable.SelectedRow()[1]} }
 				}
 			}
 		}
@@ -336,11 +333,4 @@ func setupContributorsTable(contributors []client.DbPullRequestContributor) tabl
 
 	contributorTable.SetStyles(s)
 	return contributorTable
-}
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
 }
