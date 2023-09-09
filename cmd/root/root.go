@@ -12,6 +12,7 @@ import (
 	"github.com/open-sauced/pizza-cli/pkg/constants"
 	"github.com/spf13/cobra"
 	"github.com/open-sauced/pizza-cli/cmd/show"
+	"github.com/open-sauced/pizza-cli/cmd/version"
 	"github.com/open-sauced/pizza-cli/pkg/api"
 )
 

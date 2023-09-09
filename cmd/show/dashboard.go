@@ -37,14 +37,14 @@ type SelectMsg struct {
 }
 
 // FetchRepoInfo: initializes the dashboard model
-func InitDashboard(opts *Options) (DashboardModel, error) {
-	model := DashboardModel{}
+func InitDashboard(opts *Options) (tea.Model, error) {
+	var model DashboardModel
 	err := validateShowQuery(opts)
 	if err != nil {
 		return model, err
 	}
-	ownerRepo := strings.Split(opts.RepoName, "/")
 
+	ownerRepo := strings.Split(opts.RepoName, "/")
 	resp, r, err := opts.APIClient.RepositoryServiceAPI.FindOneByOwnerAndRepo(opts.ServerContext, ownerRepo[0], ownerRepo[1]).Execute()
 	if err != nil {
 		return model, err
@@ -60,7 +60,7 @@ func InitDashboard(opts *Options) (DashboardModel, error) {
 	model.APIClient = opts.APIClient
 	model.serverContext = opts.ServerContext
 
-	// Fetching all contributors
+	// fetching the contributor tables
 	err = model.FetchAllContributors()
 	if err != nil {
 		return model, err
@@ -69,21 +69,27 @@ func InitDashboard(opts *Options) (DashboardModel, error) {
 	return model, nil
 }
 
-func (m DashboardModel) Init() tea.Cmd { return nil }
+func (m DashboardModel) Init() tea.Cmd {
+	return nil
+}
 
 func (m DashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
-	case ContributorErrMsg:
-		m.contributorErr = fmt.Sprintf("🚧 could not fetch %s: %s", msg.name, msg.err.Error())
-	default:
-		m.contributorErr = ""
-
 	case tea.WindowSizeMsg:
 		WindowSize = msg
 		width, _ := m.alumniContributorsTable.Width(), m.alumniContributorsTable.Height()
 		m.alumniContributorsTable.SetWidth(max(msg.Width-width, 5))
 		m.newContributorsTable.SetWidth(max(msg.Width-width, 5))
+
+	case ErrMsg:
+		fmt.Printf("Failed to retrieve contributors table data: %s", msg.err.Error())
+		return m, tea.Quit
+
+	case ContributorErrMsg:
+		m.contributorErr = fmt.Sprintf("🚧 could not fetch %s: %s", msg.name, msg.err.Error())
+	default:
+		m.contributorErr = ""
 
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -192,27 +198,9 @@ func (m *DashboardModel) drawDashboardView() string {
 	if WindowSize.Width == 0 {
 		return "Loading..."
 	}
-	var wg sync.WaitGroup
-
-	wg.Add(3)
-	var titleView, repoInfoView, metricsView string
-	go func() {
-		defer wg.Done()
-		titleView = m.drawTitle()
-	}()
-
-	go func() {
-		defer wg.Done()
-		repoInfoView = m.drawRepositoryInfo()
-	}()
-
-	go func() {
-		defer wg.Done()
-		metricsView = m.drawMetrics()
-	}()
-	wg.Wait()
-
+	titleView, repoInfoView, metricsView := m.drawTitle(), m.drawRepositoryInfo(), m.drawMetrics()
 	mainView := lipgloss.JoinVertical(lipgloss.Center, titleView, repoInfoView, metricsView, m.contributorErr)
+
 	_, h := lipgloss.Size(mainView)
 	if WindowSize.Height < h {
 		contentLeft := lipgloss.JoinVertical(lipgloss.Center, titleView, repoInfoView)
@@ -252,7 +240,7 @@ func (m *DashboardModel) FetchAllContributors() error {
 		wg        sync.WaitGroup
 	)
 
-	wg.Add(2)
+	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		newContributors, err := m.FetchNewContributors()
@@ -263,6 +251,7 @@ func (m *DashboardModel) FetchAllContributors() error {
 		m.newContributorsTable = setupContributorsTable(newContributors)
 	}()
 
+	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		alumniContributors, err := m.FetchAlumniContributors()

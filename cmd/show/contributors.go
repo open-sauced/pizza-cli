@@ -13,9 +13,11 @@ import (
 
 // ContributorModel holds all the information related to a contributor
 type ContributorModel struct {
-	username string
-	userInfo *client.DbUser
-	userPrs  []client.DbPullRequest
+	username      string
+	userInfo      *client.DbUser
+	userPrs       []client.DbPullRequest
+	APIClient     *client.APIClient
+	serverContext context.Context
 }
 
 type (
@@ -30,16 +32,12 @@ type (
 )
 
 // InitContributor: initializes the contributorModel
-func InitContributor(contributorName string) (ContributorModel, error) {
-	var contributorModel ContributorModel
-	contributorModel.username = contributorName
+func InitContributor(opts *Options) (tea.Model, error) {
+	var model ContributorModel
+	model.APIClient = opts.APIClient
+	model.serverContext = opts.ServerContext
 
-	err := contributorModel.fetchUser()
-	if err != nil {
-		return contributorModel, err
-	}
-
-	return contributorModel, nil
+	return model, nil
 }
 
 func (m ContributorModel) Init() tea.Cmd { return nil }
@@ -47,6 +45,13 @@ func (m ContributorModel) Init() tea.Cmd { return nil }
 func (m ContributorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
+	case SelectMsg:
+		m.username = msg.contributorName
+		model, err := m.fetchUser()
+		if err != nil {
+			return m, func() tea.Msg { return ContributorErrMsg{name: msg.contributorName, err: err} }
+		}
+		return model, func() tea.Msg { return SuccessMsg{} }
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "backspace":
@@ -63,16 +68,16 @@ func (m ContributorModel) View() string {
 }
 
 // fetchUser: fetches all the user information (general info, and pull requests)
-func (m *ContributorModel) fetchUser() error {
+func (m *ContributorModel) fetchUser() (tea.Model, error) {
 	var (
 		wg      sync.WaitGroup
 		errChan = make(chan error, 2)
 	)
 
-	wg.Add(2)
+	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		userInfo, err := fetchContributorInfo(m.username)
+		userInfo, err := m.fetchContributorInfo(m.username)
 		if err != nil {
 			errChan <- err
 			return
@@ -81,9 +86,10 @@ func (m *ContributorModel) fetchUser() error {
 
 	}()
 
+	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		userPRs, err := fetchContributorPRs(m.username)
+		userPRs, err := m.fetchContributorPRs(m.username)
 		if err != nil {
 			errChan <- err
 			return
@@ -98,19 +104,16 @@ func (m *ContributorModel) fetchUser() error {
 		for err := range errChan {
 			allErrors = errors.Join(allErrors, err)
 		}
-		return allErrors
+		return m, allErrors
 	}
 
-	return nil
+	return m, nil
 }
 
 // fetchContributorInfo: fetches the contributor info
-func fetchContributorInfo(name string) (*client.DbUser, error) {
-	config := client.NewConfiguration()
-	apiClient := client.NewAPIClient(config)
-	ctx := context.WithValue(context.Background(), client.ContextServerIndex, 1)
+func (m *ContributorModel) fetchContributorInfo(name string) (*client.DbUser, error) {
 
-	resp, r, err := apiClient.UserServiceAPI.FindOneUserByUserame(ctx, name).Execute()
+	resp, r, err := m.APIClient.UserServiceAPI.FindOneUserByUserame(m.serverContext, name).Execute()
 	if err != nil {
 		return nil, err
 	}
@@ -123,12 +126,9 @@ func fetchContributorInfo(name string) (*client.DbUser, error) {
 }
 
 // fetchContributorPRs: fetches the contributor pull requests
-func fetchContributorPRs(name string) ([]client.DbPullRequest, error) {
-	config := client.NewConfiguration()
-	apiClient := client.NewAPIClient(config)
-	ctx := context.WithValue(context.Background(), client.ContextServerIndex, 1)
+func (m *ContributorModel) fetchContributorPRs(name string) ([]client.DbPullRequest, error) {
 
-	resp, r, err := apiClient.UserServiceAPI.FindContributorPullRequests(ctx, name).Execute()
+	resp, r, err := m.APIClient.UserServiceAPI.FindContributorPullRequests(m.serverContext, name).Execute()
 	if err != nil {
 		return nil, err
 	}
