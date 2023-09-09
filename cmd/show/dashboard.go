@@ -78,9 +78,6 @@ func (m DashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		WindowSize = msg
-		width, _ := m.alumniContributorsTable.Width(), m.alumniContributorsTable.Height()
-		m.alumniContributorsTable.SetWidth(max(msg.Width-width, 5))
-		m.newContributorsTable.SetWidth(max(msg.Width-width, 5))
 
 	case ErrMsg:
 		fmt.Printf("Failed to retrieve contributors table data: %s", msg.err.Error())
