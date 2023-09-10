@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/charmbracelet/bubbles/table"
@@ -44,8 +43,7 @@ func InitDashboard(opts *Options) (tea.Model, error) {
 		return model, err
 	}
 
-	ownerRepo := strings.Split(opts.RepoName, "/")
-	resp, r, err := opts.APIClient.RepositoryServiceAPI.FindOneByOwnerAndRepo(opts.ServerContext, ownerRepo[0], ownerRepo[1]).Execute()
+	resp, r, err := opts.APIClient.RepositoryServiceAPI.FindOneByOwnerAndRepo(opts.ServerContext, opts.Owner, opts.RepoName).Execute()
 	if err != nil {
 		return model, err
 	}
@@ -206,13 +204,6 @@ func (m *DashboardModel) drawDashboardView() string {
 
 // validateShowQuery: validates fields set to query the contributor tables
 func validateShowQuery(opts *Options) error {
-	if opts.RepoName == "" {
-		return errors.New("no repository was provided")
-	}
-
-	if len(strings.Split(opts.RepoName, "/")) != 2 {
-		return errors.New("wrong repository name format. Must be in the form owner/name, i.e(open-sauced/pizza)")
-	}
 	if opts.Limit < 1 {
 		return errors.New("--limit flag must be a positive integer value")
 	}

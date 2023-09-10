@@ -8,13 +8,17 @@ import (
 
 	client "github.com/open-sauced/go-api/client"
 	"github.com/open-sauced/pizza-cli/pkg/api"
+	"github.com/open-sauced/pizza-cli/pkg/utils"
 	"github.com/spf13/cobra"
 )
 
 // Options are the options for the pizza show command including user
 // defined configurations
 type Options struct {
-	// RepoName is the git repo name to get statistics
+	// Owner: the owner of the repository
+	Owner string
+
+	// RepoName: the name of the repository
 	RepoName string
 
 	// Page is the page to be requested
@@ -49,7 +53,13 @@ func NewShowCommand() *cobra.Command {
 			if len(args) != 1 {
 				return errors.New("must specify the URL of a git repository to analyze")
 			}
-			opts.RepoName = args[0]
+
+			owner, name, err := utils.GetOwnerAndRepoFromURL(args[0])
+			if err != nil {
+				return err
+			}
+			opts.Owner = owner
+			opts.RepoName = name
 
 			return nil
 		},
