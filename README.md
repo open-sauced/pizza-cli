@@ -37,6 +37,7 @@ Available Commands:
   insights    Gather insights about git contributors, repositories, users and pull requests
   login       Log into the CLI application via GitHub
   repo-query  Ask questions about a GitHub repository
+  show        Get visual metrics of a repository
   version     Displays the build version of the CLI
 
 Flags:
@@ -44,6 +45,7 @@ Flags:
       --disable-telemetry   Disable sending telemetry data to OpenSauced
   -e, --endpoint string     The API endpoint to send requests to (default "https://api.opensauced.pizza")
   -h, --help                help for pizza
+  -o, --output string       The formatting style for command output (default "table")
 
 Use "pizza [command] --help" for more information about a command.
 ```
