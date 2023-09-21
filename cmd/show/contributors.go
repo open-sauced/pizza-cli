@@ -4,18 +4,62 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"strings"
 	"sync"
 
+	"github.com/charmbracelet/bubbles/key"
+	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/cli/browser"
 	client "github.com/open-sauced/go-api/client"
 )
+
+// prItem: type for pull request to satisfy the list.Item interface
+type prItem client.DbPullRequest
+
+func (i prItem) FilterValue() string { return i.Title }
+func (i prItem) GetRepoName() string {
+	if i.FullName != nil {
+		return *i.FullName
+	}
+	return ""
+}
+
+type itemDelegate struct{}
+
+func (d itemDelegate) Height() int                             { return 1 }
+func (d itemDelegate) Spacing() int                            { return 1 }
+func (d itemDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }
+func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list.Item) {
+	i, ok := listItem.(prItem)
+	if !ok {
+		return
+	}
+
+	prTitle := i.Title
+	if len(prTitle) >= 60 {
+		prTitle = fmt.Sprintf("%s...", prTitle[:60])
+	}
+
+	str := fmt.Sprintf("#%d %s\n%s\n(%s)", i.Number, i.GetRepoName(), prTitle, i.State)
+
+	fn := ItemStyle.Render
+	if index == m.Index() {
+		fn = func(s ...string) string {
+			return SelectedItemStyle.Render("🍕 " + strings.Join(s, " "))
+		}
+	}
+
+	fmt.Fprint(w, fn(str))
+}
 
 // ContributorModel holds all the information related to a contributor
 type ContributorModel struct {
 	username      string
 	userInfo      *client.DbUser
-	userPrs       []client.DbPullRequest
+	prList        list.Model
 	APIClient     *client.APIClient
 	serverContext context.Context
 }
@@ -45,6 +89,8 @@ func (m ContributorModel) Init() tea.Cmd { return nil }
 func (m ContributorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		WindowSize = msg
 	case SelectMsg:
 		m.username = msg.contributorName
 		model, err := m.fetchUser()
@@ -54,12 +100,25 @@ func (m ContributorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return model, func() tea.Msg { return SuccessMsg{} }
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "backspace":
+		case "B":
 			return m, func() tea.Msg { return BackMsg{} }
-		case "q", "esc", "ctrl+c", "ctrl+d":
+		case "H":
+			m.prList.SetShowHelp(!m.prList.ShowHelp())
+			return m, nil
+		case "O":
+			pr, ok := m.prList.SelectedItem().(prItem)
+			if ok {
+				err := browser.OpenURL(fmt.Sprintf("https://github.com/%s/pull/%d", pr.GetRepoName(), pr.Number))
+				if err != nil {
+					fmt.Println("could not open pull request in browser")
+				}
+			}
+		case "q", "ctrl+c", "ctrl+d":
 			return m, tea.Quit
+
 		}
 	}
+	m.prList, cmd = m.prList.Update(msg)
 	return m, cmd
 }
 
@@ -77,24 +136,21 @@ func (m *ContributorModel) fetchUser() (tea.Model, error) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		userInfo, err := m.fetchContributorInfo(m.username)
+		err := m.fetchContributorInfo(m.username)
 		if err != nil {
 			errChan <- err
 			return
 		}
-		m.userInfo = userInfo
-
 	}()
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		userPRs, err := m.fetchContributorPRs(m.username)
+		err := m.fetchContributorPRs(m.username)
 		if err != nil {
 			errChan <- err
 			return
 		}
-		m.userPrs = userPRs
 	}()
 
 	wg.Wait()
@@ -111,36 +167,68 @@ func (m *ContributorModel) fetchUser() (tea.Model, error) {
 }
 
 // fetchContributorInfo: fetches the contributor info
-func (m *ContributorModel) fetchContributorInfo(name string) (*client.DbUser, error) {
+func (m *ContributorModel) fetchContributorInfo(name string) error {
 	resp, r, err := m.APIClient.UserServiceAPI.FindOneUserByUserame(m.serverContext, name).Execute()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if r.StatusCode != 200 {
-		return nil, fmt.Errorf("HTTP failed: %d", r.StatusCode)
+		return fmt.Errorf("HTTP failed: %d", r.StatusCode)
 	}
 
-	return resp, nil
+	m.userInfo = resp
+	return nil
 }
 
-// fetchContributorPRs: fetches the contributor pull requests
-func (m *ContributorModel) fetchContributorPRs(name string) ([]client.DbPullRequest, error) {
-	resp, r, err := m.APIClient.UserServiceAPI.FindContributorPullRequests(m.serverContext, name).Execute()
+// fetchContributorPRs: fetches the contributor pull requests and creates pull request list
+func (m *ContributorModel) fetchContributorPRs(name string) error {
+	resp, r, err := m.APIClient.UserServiceAPI.FindContributorPullRequests(m.serverContext, name).Limit(10).Execute()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if r.StatusCode != 200 {
-		return nil, fmt.Errorf("HTTP failed: %d", r.StatusCode)
+		return fmt.Errorf("HTTP failed: %d", r.StatusCode)
 	}
 
-	return resp.Data, nil
+	// create contributor pull request list
+	var items []list.Item
+	for _, pr := range resp.Data {
+		items = append(items, prItem(pr))
+	}
+
+	l := list.New(items, itemDelegate{}, WindowSize.Width, 14)
+	l.Title = "✨ Latest Pull Requests"
+	l.Styles.Title = ListItemTitleStyle
+	l.Styles.HelpStyle = HelpStyle
+	l.SetShowStatusBar(false)
+	l.SetStatusBarItemName("pull request", "pull requests")
+	l.AdditionalShortHelpKeys = func() []key.Binding {
+		return []key.Binding{
+			OpenPR,
+			BackToDashboard,
+			ToggleHelpMenu,
+		}
+	}
+
+	m.prList = l
+	return nil
 }
 
 // drawContributorView: view of the contributor model
 func (m *ContributorModel) drawContributorView() string {
-	return Viewport.Copy().Render(lipgloss.JoinVertical(lipgloss.Center, m.drawContributorInfo(), m.drawPullRequests()))
+	contributorInfo := m.drawContributorInfo()
+
+	contributorView := lipgloss.JoinVertical(lipgloss.Left, lipgloss.NewStyle().PaddingLeft(2).Render(contributorInfo),
+		WidgetContainer.Render(m.prList.View()))
+
+	_, h := lipgloss.Size(contributorView)
+	if WindowSize.Height < h {
+		contributorView = lipgloss.JoinHorizontal(lipgloss.Center, contributorInfo, m.prList.View())
+	}
+
+	return contributorView
 }
 
 // drawContributorInfo: view of the contributor info (open issues, pr velocity, pr count, maintainer)
@@ -157,32 +245,4 @@ func (m *ContributorModel) drawContributorInfo() string {
 	contributorView := lipgloss.JoinVertical(lipgloss.Center, m.userInfo.Login, contributorInfo)
 
 	return SquareBorder.Render(contributorView)
-}
-
-// drawPullRequests: view of the contributor pull requests (draws the last 5 pull requests)
-func (m *ContributorModel) drawPullRequests() string {
-	if len(m.userPrs) == 0 {
-		return ""
-	}
-
-	pullRequests := []string{}
-	var numberOfPrs int
-
-	if len(m.userPrs) > 5 {
-		numberOfPrs = 5
-	} else {
-		numberOfPrs = len(m.userPrs)
-	}
-
-	for i := 0; i < numberOfPrs; i++ {
-		prContainer := TextContainer.Render(fmt.Sprintf("#%d %s\n%s\n(%s)", m.userPrs[i].Number, m.userPrs[i].GetFullName(),
-			m.userPrs[i].Title, m.userPrs[i].State))
-		pullRequests = append(pullRequests, prContainer)
-	}
-
-	formattedPrs := lipgloss.JoinVertical(lipgloss.Left, pullRequests...)
-	title := lipgloss.NewStyle().AlignHorizontal(lipgloss.Center).Render("✨ Latest Pull Requests")
-
-	pullRequestView := lipgloss.JoinVertical(lipgloss.Center, title, formattedPrs)
-	return WidgetContainer.Render(pullRequestView)
 }

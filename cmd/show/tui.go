@@ -51,17 +51,14 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	var cmds []tea.Cmd
 	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		WindowSize.Width = msg.Width
-		WindowSize.Height = msg.Height
 	case BackMsg:
 		m.state = dashboardView
+	case SuccessMsg:
+		m.state = contributorView
 	case SelectMsg:
 		newContributor, newCmd := m.contributor.Update(msg)
 		m.contributor = newContributor
 		cmds = append(cmds, newCmd)
-	case SuccessMsg:
-		m.state = contributorView
 	}
 
 	switch m.state {
@@ -70,7 +67,8 @@ func (m MainModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.dashboard = newDashboard
 		cmd = newCmd
 	case contributorView:
-		_, newCmd := m.contributor.Update(msg)
+		newContributor, newCmd := m.contributor.Update(msg)
+		m.contributor = newContributor
 		cmd = newCmd
 	}
 	cmds = append(cmds, cmd)

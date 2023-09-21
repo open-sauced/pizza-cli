@@ -1,6 +1,8 @@
 package show
 
 import (
+	"github.com/charmbracelet/bubbles/key"
+	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -8,9 +10,13 @@ import (
 // WindowSize stores the size of the terminal
 var WindowSize tea.WindowSizeMsg
 
-// STYLES
+// Keymaps
+var OpenPR = key.NewBinding(key.WithKeys("O"), key.WithHelp("O", "open pr"))
+var BackToDashboard = key.NewBinding(key.WithKeys("B"), key.WithHelp("B", "back"))
+var ToggleHelpMenu = key.NewBinding(key.WithKeys("H"), key.WithHelp("H", "toggle help"))
 
-// Viewport: The viewport of the tui (my:2, mx:40)
+// STYLES
+// Viewport: The viewport of the tui (my:2, mx:2)
 var Viewport = lipgloss.NewStyle().Margin(1, 2)
 
 // Container: container styling (width: 80, py: 0, px: 5)
@@ -40,3 +46,18 @@ var ActiveStyle = lipgloss.NewStyle().
 var InactiveStyle = lipgloss.NewStyle().
 	BorderStyle(lipgloss.NormalBorder()).
 	BorderForeground(lipgloss.Color("#FFFFFF"))
+
+// ItemStyle: style applied to items in a list.Model
+var ItemStyle = lipgloss.NewStyle().PaddingLeft(4)
+
+// SelectedItemStyle: style applied when the item is selected in a list.Model
+var SelectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(Color)
+
+// ListItemTitle: style for the list.Model title
+var ListItemTitleStyle = lipgloss.NewStyle().MarginLeft(2)
+
+// PaginationStyle: style for pagination of list.Model
+var PaginationStyle = list.DefaultStyles().PaginationStyle.PaddingLeft(4)
+
+// HelpStyle: style for help menu
+var HelpStyle = list.DefaultStyles().HelpStyle.PaddingLeft(4).PaddingBottom(1)

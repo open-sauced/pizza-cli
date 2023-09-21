@@ -196,7 +196,8 @@ func (m *DashboardModel) drawDashboardView() string {
 	_, h := lipgloss.Size(mainView)
 	if WindowSize.Height < h {
 		contentLeft := lipgloss.JoinVertical(lipgloss.Center, titleView, repoInfoView)
-		mainView = lipgloss.JoinHorizontal(lipgloss.Center, contentLeft, metricsView)
+		contentRight := lipgloss.JoinVertical(lipgloss.Center, metricsView, m.contributorErr)
+		mainView = lipgloss.JoinHorizontal(lipgloss.Center, contentLeft, contentRight)
 	}
 	frame := Viewport.Render(mainView)
 	return frame
