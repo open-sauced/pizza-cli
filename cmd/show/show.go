@@ -8,6 +8,7 @@ import (
 
 	client "github.com/open-sauced/go-api/client"
 	"github.com/open-sauced/pizza-cli/pkg/api"
+	"github.com/open-sauced/pizza-cli/pkg/constants"
 	"github.com/open-sauced/pizza-cli/pkg/utils"
 	"github.com/spf13/cobra"
 )
@@ -72,7 +73,7 @@ func NewShowCommand() *cobra.Command {
 
 			useBeta, _ := cmd.Flags().GetBool("beta")
 			if useBeta {
-				endpoint = api.BetaAPIEndpoint
+				endpoint = constants.EndpointBeta
 			}
 
 			opts.APIClient = api.NewGoClient(endpoint)

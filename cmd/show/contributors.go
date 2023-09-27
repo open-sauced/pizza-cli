@@ -101,21 +101,28 @@ func (m ContributorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "B":
-			return m, func() tea.Msg { return BackMsg{} }
+			if !m.prList.SettingFilter() {
+				return m, func() tea.Msg { return BackMsg{} }
+			}
 		case "H":
-			m.prList.SetShowHelp(!m.prList.ShowHelp())
-			return m, nil
+			if !m.prList.SettingFilter() {
+				m.prList.SetShowHelp(!m.prList.ShowHelp())
+				return m, nil
+			}
 		case "O":
-			pr, ok := m.prList.SelectedItem().(prItem)
-			if ok {
-				err := browser.OpenURL(fmt.Sprintf("https://github.com/%s/pull/%d", pr.GetRepoName(), pr.Number))
-				if err != nil {
-					fmt.Println("could not open pull request in browser")
+			if !m.prList.SettingFilter() {
+				pr, ok := m.prList.SelectedItem().(prItem)
+				if ok {
+					err := browser.OpenURL(fmt.Sprintf("https://github.com/%s/pull/%d", pr.GetRepoName(), pr.Number))
+					if err != nil {
+						fmt.Println("could not open pull request in browser")
+					}
 				}
 			}
 		case "q", "ctrl+c", "ctrl+d":
-			return m, tea.Quit
-
+			if !m.prList.SettingFilter() {
+				return m, tea.Quit
+			}
 		}
 	}
 	m.prList, cmd = m.prList.Update(msg)
@@ -202,6 +209,7 @@ func (m *ContributorModel) fetchContributorPRs(name string) error {
 	l.Title = "✨ Latest Pull Requests"
 	l.Styles.Title = ListItemTitleStyle
 	l.Styles.HelpStyle = HelpStyle
+	l.Styles.NoItems = ItemStyle
 	l.SetShowStatusBar(false)
 	l.SetStatusBarItemName("pull request", "pull requests")
 	l.AdditionalShortHelpKeys = func() []key.Binding {
