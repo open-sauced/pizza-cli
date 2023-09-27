@@ -2,27 +2,34 @@ package utils
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 )
 
-func GetOwnerAndRepoFromURL(url string) (owner, repo string, err error) {
-	if !strings.HasPrefix(url, "https://github.com/") {
-		return "", "", fmt.Errorf("invalid URL: %s", url)
+// GetOwnerAndRepoFromURL: extracts the owner and repository name
+func GetOwnerAndRepoFromURL(input string) (owner, repo string, err error) {
+	var repoOwner, repoName string
+
+	// check (https://github.com/owner/repo) format
+	u, err := url.Parse(input)
+	if err == nil && u.Host == "github.com" {
+		path := strings.Trim(u.Path, "/")
+		parts := strings.Split(path, "/")
+		if len(parts) != 2 {
+			return "", "", fmt.Errorf("invalid URL: %s", input)
+		}
+		repoOwner = parts[0]
+		repoName = parts[1]
+		return repoOwner, repoName, nil
 	}
 
-	// Remove the "https://github.com/" prefix from the URL
-	url = strings.TrimPrefix(url, "https://github.com/")
-
-	// Split the remaining URL path into segments
-	segments := strings.Split(url, "/")
-
-	// The first segment is the owner, and the second segment is the repository name
-	if len(segments) >= 2 {
-		owner = segments[0]
-		repo = segments[1]
-	} else {
-		return "", "", fmt.Errorf("invalid URL: %s", url)
+	// check (owner/repo) format
+	parts := strings.Split(input, "/")
+	if len(parts) != 2 {
+		return "", "", fmt.Errorf("invalid URL: %s", input)
 	}
+	repoOwner = parts[0]
+	repoName = parts[1]
 
-	return owner, repo, nil
+	return repoOwner, repoName, nil
 }
