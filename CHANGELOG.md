@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.0.0-beta.6](https://github.com/open-sauced/pizza-cli/compare/v1.0.0-beta.5...v1.0.0-beta.6) (2023-09-27)
+
+
+### 🐛 Bug Fixes
+
+* Uses correct generated token when checking out cli repo in release ([#44](https://github.com/open-sauced/pizza-cli/issues/44)) ([1e0c9f1](https://github.com/open-sauced/pizza-cli/commit/1e0c9f1ef3c9d0d9bd7f590f6bec021707f4c833))
+
 ## [1.0.0-beta.5](https://github.com/open-sauced/pizza-cli/compare/v1.0.0-beta.4...v1.0.0-beta.5) (2023-09-27)
 
 
