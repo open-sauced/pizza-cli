@@ -60,6 +60,7 @@ type ContributorModel struct {
 	username      string
 	userInfo      *client.DbUser
 	prList        list.Model
+	prVelocity    float64
 	APIClient     *client.APIClient
 	serverContext context.Context
 }
@@ -190,7 +191,7 @@ func (m *ContributorModel) fetchContributorInfo(name string) error {
 
 // fetchContributorPRs: fetches the contributor pull requests and creates pull request list
 func (m *ContributorModel) fetchContributorPRs(name string) error {
-	resp, r, err := m.APIClient.UserServiceAPI.FindContributorPullRequests(m.serverContext, name).Limit(10).Execute()
+	resp, r, err := m.APIClient.UserServiceAPI.FindContributorPullRequests(m.serverContext, name).Range_(30).Execute()
 	if err != nil {
 		return err
 	}
@@ -201,8 +202,19 @@ func (m *ContributorModel) fetchContributorPRs(name string) error {
 
 	// create contributor pull request list
 	var items []list.Item
+	var mergedPullRequests int
 	for _, pr := range resp.Data {
+		if strings.ToLower(pr.State) == "merged" {
+			mergedPullRequests++
+		}
 		items = append(items, prItem(pr))
+	}
+
+	// calculate pr velocity
+	if len(resp.Data) <= 0 {
+		m.prVelocity = 0.0
+	} else {
+		m.prVelocity = (float64(mergedPullRequests) / float64(len(resp.Data))) * 100.0
 	}
 
 	l := list.New(items, itemDelegate{}, WindowSize.Width, 14)
@@ -243,7 +255,7 @@ func (m *ContributorModel) drawContributorView() string {
 func (m *ContributorModel) drawContributorInfo() string {
 	userOpenIssues := fmt.Sprintf("📄 Issues: %d", m.userInfo.OpenIssues)
 	isUserMaintainer := fmt.Sprintf("🔨 Maintainer: %t", m.userInfo.GetIsMaintainer())
-	prVelocity := fmt.Sprintf("🔥 PR Velocity (30d): %d%%", m.userInfo.RecentPullRequestVelocityCount)
+	prVelocity := fmt.Sprintf("🔥 PR Velocity (30d): %dd - %.0f%% merged", m.userInfo.RecentPullRequestVelocityCount, m.prVelocity)
 	prCount := fmt.Sprintf("🚀 PR Count (30d): %d", m.userInfo.RecentPullRequestsCount)
 
 	prStats := lipgloss.JoinVertical(lipgloss.Left, TextContainer.Render(prVelocity), TextContainer.Render(prCount))
