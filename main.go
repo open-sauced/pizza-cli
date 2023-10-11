@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/open-sauced/pizza-cli/cmd/root"
 	"github.com/open-sauced/pizza-cli/pkg/utils"
@@ -12,11 +13,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	utils.SetupRootCommand(rootCmd)
-
 	err = rootCmd.Execute()
 	if err != nil {
-		log.Fatal(err)
+		os.Exit(1)
 	}
 }

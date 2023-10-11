@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/open-sauced/pizza-cli/pkg/api"
+	"github.com/open-sauced/go-api/client"
 )
 
 func TestSendsPost(t *testing.T) {
@@ -16,13 +16,13 @@ func TestSendsPost(t *testing.T) {
 		{
 			name: "Sends post request",
 			opts: &Options{
-				URLs: []string{"https://test.com"},
+				Repos: []string{"https://test.com"},
 			},
 		},
 		{
-			name: "Sends post request with multiple URLs",
+			name: "Sends post request with multiple Repos",
 			opts: &Options{
-				URLs: []string{"https://test.com", "https://github.com/open-sauced/pizza", "https://github.com/open-sauced/insights"},
+				Repos: []string{"https://test.com", "https://github.com/open-sauced/pizza", "https://github.com/open-sauced/insights"},
 			},
 		},
 	}
@@ -33,7 +33,6 @@ func TestSendsPost(t *testing.T) {
 				if r.Method != http.MethodPost {
 					t.Fail()
 				}
-
 				// Always return an ok status with a dummy body from the mock server
 				w.WriteHeader(http.StatusOK)
 				_, err := w.Write([]byte("body"))
@@ -43,9 +42,9 @@ func TestSendsPost(t *testing.T) {
 				}
 			}))
 			defer testServer.Close()
-
-			tt.opts.APIClient = api.NewClient(testServer.URL)
-
+			configuration := client.NewConfiguration()
+			configuration.Servers = client.ServerConfigurations{{URL: testServer.URL}}
+			tt.opts.APIClient = client.NewAPIClient(configuration)
 			err := run(tt.opts)
 			if err != nil {
 				t.Fail()

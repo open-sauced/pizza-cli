@@ -19,11 +19,13 @@ jobs:
         with:
           app_id: ${{ secrets.OS_GITHUB_APP_ID }}
           private_key: ${{ secrets.OS_GITHUB_APP_PRIVATE_KEY }}
+
       - name: "☁️ checkout repository"
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      
+          token: ${{ steps.generate_token.outputs.token }}
+
       - name: "🔧 setup node"
         uses: actions/setup-node@v3
         with:
@@ -43,7 +45,6 @@ jobs:
     outputs:
         release-tag: ${{ steps.semantic-release.outputs.release-tag }}
 
-        
   build:
     needs:
       - release
@@ -59,7 +60,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
       with:
-        go-version: 1.21
+        go-version: 1.21.x
 
     - name: Check out code
       uses: actions/checkout@v3
@@ -68,5 +69,11 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -ldflags="-s -w" -o build/pizza-${{ matrix.goos }}-${{ matrix.goarch }}
+        GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build \
+            -ldflags="-s -w" \
+            -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${{ secrets.POSTHOG_WRITE_PUBLIC_KEY }}'" \
+            -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version={{ needs.release.outputs.release-tag }}'" \
+            -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
+            -o build/pizza-${{ matrix.goos }}-${{ matrix.goarch }}
         gh release upload ${{ needs.release.outputs.release-tag }} build/pizza-${{ matrix.goos }}-${{ matrix.goarch }}
+

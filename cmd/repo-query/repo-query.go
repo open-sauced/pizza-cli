@@ -13,16 +13,19 @@ import (
 	"strings"
 
 	"github.com/open-sauced/pizza-cli/pkg/api"
+	"github.com/open-sauced/pizza-cli/pkg/constants"
+	"github.com/open-sauced/pizza-cli/pkg/utils"
 	"github.com/spf13/cobra"
 )
-
-const repoQueryURL string = "https://opensauced.tools"
 
 type Options struct {
 	APIClient *api.Client
 
 	// URL is the git repo URL that will be indexed
 	URL string
+
+	// telemetry for capturing CLI events
+	telemetry *utils.PosthogCliClient
 
 	branch string
 }
@@ -49,23 +52,29 @@ func NewRepoQueryCommand() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			endpoint, _ := cmd.Flags().GetString("endpoint")
-			useBeta, _ := cmd.Flags().GetBool("beta")
-
+			endpointURL, _ := cmd.Flags().GetString(constants.FlagNameEndpoint)
+			useBeta, _ := cmd.Flags().GetBool(constants.FlagNameBeta)
 			if useBeta {
-				fmt.Printf("Warning!! Using beta API endpoint not supported for repo-query - using: %s\n", endpoint)
+				fmt.Printf("Warning!! Using beta API endpoint not supported for repo-query - using: %s\n", endpointURL)
 			}
 
 			// The repo-query is currently not deployed behind "api.opensauced.pizza"
 			// So, if the user has not changed the desired "endpoint", use the default
 			// tools URL to send SSE to the repo-query engine
-			if endpoint == api.APIEndpoint {
-				endpoint = repoQueryURL
+			if endpointURL == constants.EndpointProd {
+				endpointURL = constants.EndpointTools
+			}
+			opts.APIClient = api.NewClient(endpointURL)
+			opts.URL = args[0]
+
+			disableTelem, _ := cmd.Flags().GetBool(constants.FlagNameTelemetry)
+			if !disableTelem {
+				opts.telemetry = utils.NewPosthogCliClient()
+				defer opts.telemetry.Done()
+
+				opts.telemetry.CaptureRepoQuery(opts.URL)
 			}
 
-			opts.APIClient = api.NewClient(endpoint)
-
-			opts.URL = args[0]
 			return run(opts)
 		},
 	}
@@ -85,33 +94,11 @@ func newRepoQueryAgent(apiClient *api.Client) *repoQueryAgent {
 	}
 }
 
-func (rq *repoQueryAgent) getOwnerAndRepo(url string) (owner, repo string, err error) {
-	if !strings.HasPrefix(url, "https://github.com/") {
-		return "", "", fmt.Errorf("invalid URL: %s", url)
-	}
-
-	// Remove the "https://github.com/" prefix from the URL
-	url = strings.TrimPrefix(url, "https://github.com/")
-
-	// Split the remaining URL path into segments
-	segments := strings.Split(url, "/")
-
-	// The first segment is the owner, and the second segment is the repository name
-	if len(segments) >= 2 {
-		owner = segments[0]
-		repo = segments[1]
-	} else {
-		return "", "", fmt.Errorf("invalid URL: %s", url)
-	}
-
-	return owner, repo, nil
-}
-
 func run(opts *Options) error {
 	agent := newRepoQueryAgent(opts.APIClient)
 
 	// get repo name and owner name from URL
-	owner, repo, err := agent.getOwnerAndRepo(opts.URL)
+	owner, repo, err := utils.GetOwnerAndRepoFromURL(opts.URL)
 	if err != nil {
 		return err
 	}

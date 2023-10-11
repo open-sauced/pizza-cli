@@ -20,34 +20,63 @@ import (
 
 	"github.com/cli/browser"
 	"github.com/open-sauced/pizza-cli/pkg/constants"
+	"github.com/open-sauced/pizza-cli/pkg/utils"
 	"github.com/spf13/cobra"
 )
 
 //go:embed success.html
 var successHTML string
 
-const loginLongDesc string = `Log into OpenSauced.
+// Options are the persistent options for the login command
+type Options struct {
+	// telemetry for capturing CLI events
+	telemetry *utils.PosthogCliClient
+}
+
+const (
+	sessionFileName = "session.json"
+	loginLongDesc   = `Log into OpenSauced.
 
 This command initiates the GitHub auth flow to log you into the OpenSauced application by launching your browser`
+)
 
 func NewLoginCommand() *cobra.Command {
+	opts := &Options{}
+
 	cmd := &cobra.Command{
 		Use:   "login",
 		Short: "Log into the CLI application via GitHub",
 		Long:  loginLongDesc,
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return run()
+			username, err := run()
+
+			disableTelem, _ := cmd.Flags().GetBool(constants.FlagNameTelemetry)
+
+			if !disableTelem {
+				opts.telemetry = utils.NewPosthogCliClient()
+				defer opts.telemetry.Done()
+
+				if err != nil {
+					opts.telemetry.CaptureFailedLogin()
+				} else {
+					opts.telemetry.CaptureLogin(username)
+				}
+			}
+
+			return err
 		},
 	}
 
 	return cmd
 }
 
-func run() error {
+func run() (string, error) {
+	username := ""
+
 	codeVerifier, codeChallenge, err := pkce(codeChallengeLength)
 	if err != nil {
-		return fmt.Errorf("PKCE error: %v", err.Error())
+		return "", fmt.Errorf("PKCE error: %v", err.Error())
 	}
 
 	supabaseAuthURL := fmt.Sprintf("https://%s.supabase.co/auth/v1/authorize", supabaseID)
@@ -95,7 +124,7 @@ func run() error {
 			return
 		}
 
-		filePath := path.Join(dirName, constants.SessionFileName)
+		filePath := path.Join(dirName, sessionFileName)
 		if err := os.WriteFile(filePath, jsonData, 0o600); err != nil {
 			http.Error(w, "Error writing to file", http.StatusInternalServerError)
 			return
@@ -107,7 +136,7 @@ func run() error {
 			fmt.Println("Error writing response:", err.Error())
 		}
 
-		username := sessionData.User.UserMetadata["user_name"]
+		username = sessionData.User.UserMetadata["user_name"].(string)
 		fmt.Println("🎉 Login successful 🎉")
 		fmt.Println("Welcome aboard", username, "🍕")
 	})
@@ -130,17 +159,17 @@ func run() error {
 	select {
 	case err := <-errCh:
 		if err != nil && err != http.ErrServerClosed {
-			return err
+			return "", err
 		}
 	case <-time.After(60 * time.Second):
 		shutdown(server)
-		return errors.New("authentication timeout")
+		return "", errors.New("authentication timeout")
 	case <-interruptCh:
 		fmt.Println("\nAuthentication interrupted❗️")
 		shutdown(server)
 		os.Exit(0)
 	}
-	return nil
+	return username, nil
 }
 
 func getSession(authCode, codeVerifier string) (*accessTokenResponse, error) {
