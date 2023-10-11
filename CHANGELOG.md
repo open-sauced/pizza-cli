@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.0.1-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.0.0...v1.0.1-beta.1) (2023-10-11)
+
+
+### 🐛 Bug Fixes
+
+* Roll forward fix for semantic release ([#51](https://github.com/open-sauced/pizza-cli/issues/51)) ([3a6bb27](https://github.com/open-sauced/pizza-cli/commit/3a6bb27da209caccc4ab092e202516442b1cc621))
+
 ## 1.0.0 (2023-10-11)
 
 
