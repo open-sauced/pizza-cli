@@ -1,7 +1,9 @@
 package insights
 
 import (
+	"bytes"
 	"context"
+	"encoding/csv"
 	"errors"
 	"fmt"
 	"net/http"
@@ -134,9 +136,37 @@ func (cis contributorsInsightsSlice) BuildOutput(format string) (string, error) 
 		return utils.OutputJSON(cis)
 	case constants.OutputYAML:
 		return utils.OutputYAML(cis)
+	case constants.OuputCSV:
+		return cis.OutputCSV()
 	default:
 		return "", fmt.Errorf("unknown output format %s", format)
 	}
+}
+
+func (cis contributorsInsightsSlice) OutputCSV() (string, error) {
+	if len(cis) == 0 {
+		return "", fmt.Errorf("repository is either non-existent or has not been indexed yet")
+	}
+	b := new(bytes.Buffer)
+	writer := csv.NewWriter(b)
+
+	// write headers
+	err := writer.WriteAll([][]string{{"Repository URL", "New Contributors", "Recent Contributors", "Alumni Contributors", "Repeat Contributors"}})
+	if err != nil {
+		return "", err
+	}
+
+	// write records
+	for _, ci := range cis {
+		err := writer.WriteAll([][]string{{ci.RepoURL, strconv.Itoa(len(ci.New)), strconv.Itoa(len(ci.Recent)),
+			strconv.Itoa(len(ci.Alumni)), strconv.Itoa(len(ci.Repeat))}})
+
+		if err != nil {
+			return "", err
+		}
+	}
+
+	return b.String(), nil
 }
 
 func (cis contributorsInsightsSlice) OutputTable() (string, error) {
