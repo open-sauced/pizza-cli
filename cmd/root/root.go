@@ -36,7 +36,7 @@ func NewRootCommand() (*cobra.Command, error) {
 	cmd.PersistentFlags().StringP(constants.FlagNameEndpoint, "e", constants.EndpointProd, "The API endpoint to send requests to")
 	cmd.PersistentFlags().Bool(constants.FlagNameBeta, false, fmt.Sprintf("Shorthand for using the beta OpenSauced API endpoint (\"%s\"). Supersedes the '--%s' flag", constants.EndpointBeta, constants.FlagNameEndpoint))
 	cmd.PersistentFlags().Bool(constants.FlagNameTelemetry, false, "Disable sending telemetry data to OpenSauced")
-	cmd.PersistentFlags().StringP(constants.FlagNameOutput, "o", constants.OutputTable, "The formatting style for command output")
+	cmd.PersistentFlags().StringP(constants.FlagNameOutput, "o", constants.OutputTable, "The formatting for command output. One of: (table, yaml, csv, json)")
 
 	cmd.AddCommand(bake.NewBakeCommand())
 	cmd.AddCommand(repoquery.NewRepoQueryCommand())

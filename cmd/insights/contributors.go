@@ -214,9 +214,7 @@ func findRepositoryByOwnerAndRepoName(ctx context.Context, apiClient *client.API
 	repo, response, err := apiClient.RepositoryServiceAPI.FindOneByOwnerAndRepo(ctx, owner, repoName).Execute()
 	if err != nil {
 		if response != nil && response.StatusCode == http.StatusNotFound {
-			message := fmt.Sprintf("repository %s is either non-existent or has not been indexed yet", repoURL)
-			fmt.Println("ignoring repository issue:", message)
-			return nil, nil
+			return nil, fmt.Errorf("repository %s is either non-existent, private, or has not been indexed yet", repoURL)
 		}
 		return nil, fmt.Errorf("error while calling 'RepositoryServiceAPI.FindOneByOwnerAndRepo' with owner %q and repo %q: %w", owner, repoName, err)
 	}
