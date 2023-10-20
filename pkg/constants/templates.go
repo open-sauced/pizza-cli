@@ -3,12 +3,12 @@ package constants
 const (
 	HelpTemplate = `
 {{with (or .Long .Short)}}{{. | trimTrailingWhitespaces}}
-
 {{end}}{{if or .Runnable .HasSubCommands}}{{.UsageString}}{{end}}`
 
 	// UsageTemplate is identical to the default cobra usage template,
 	// but utilizes wrappedFlagUsages to ensure flag usages don't wrap around
-	UsageTemplate = `Usage:{{if .Runnable}}
+	UsageTemplate = `
+Usage:{{if .Runnable}}
   {{.UseLine}}{{end}}{{if gt (len .Aliases) 0}}
 
 Aliases:

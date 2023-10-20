@@ -39,9 +39,10 @@ type repositoriesOptions struct {
 func NewRepositoriesCommand() *cobra.Command {
 	opts := &repositoriesOptions{}
 	cmd := &cobra.Command{
-		Use:   "repositories url... [flags]",
-		Short: "Gather insights about indexed git repositories",
-		Long:  "Gather insights about indexed git repositories. This command will show info about contributors, pull requests, etc.",
+		Use:     "repositories url... [flags]",
+		Aliases: []string{"repos"},
+		Short:   "Gather insights about indexed git repositories",
+		Long:    "Gather insights about indexed git repositories. This command will show info about contributors, pull requests, etc.",
 		Args: func(cmd *cobra.Command, args []string) error {
 			fileFlag := cmd.Flags().Lookup(constants.FlagNameFile)
 			if !fileFlag.Changed && len(args) == 0 {
