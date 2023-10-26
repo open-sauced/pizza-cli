@@ -103,7 +103,7 @@ func run(opts *Options) error {
 		return err
 	}
 
-	fmt.Printf("Checking if %s/%s is indexed by us...⏳\n", owner, repo)
+	fmt.Printf("Checking if %s/%s is indexed by us ... ⏳\n", owner, repo)
 	resp, err := agent.client.HTTPClient.Get(fmt.Sprintf("%s/collection?owner=%s&name=%s&branch=%s", agent.client.Endpoint, owner, repo, opts.branch))
 	if err != nil {
 		return err
@@ -112,8 +112,8 @@ func run(opts *Options) error {
 	switch resp.StatusCode {
 	case http.StatusNotFound:
 		// repo is not indexed
-		fmt.Println("Repo not found❗")
-		fmt.Println("Indexing repo...⏳")
+		fmt.Println("Repo not found ❗")
+		fmt.Println("Indexing repo ... ⏳")
 		err := agent.indexRepo(owner, repo, opts.branch)
 		if err != nil {
 			return err
@@ -152,7 +152,7 @@ func (rq *repoQueryAgent) startQnALoop(owner string, repo string, branch string)
 
 		go func() {
 			<-c
-			fmt.Println("\n🍕Exiting...")
+			fmt.Println("\n🍕 Exiting ...")
 			os.Exit(0)
 		}()
 
@@ -163,7 +163,7 @@ func (rq *repoQueryAgent) startQnALoop(owner string, repo string, branch string)
 		if scanner.Scan() {
 			input := scanner.Text()
 			if input == "exit" {
-				fmt.Println("🍕Exiting...")
+				fmt.Println("🍕 Exiting ...")
 				os.Exit(0)
 			}
 			err := rq.askQuestion(input, owner, repo, branch)
@@ -338,11 +338,11 @@ func (rq *repoQueryAgent) processIndexChunk(chunk string) error {
 
 	switch event {
 	case "FETCH_REPO":
-		fmt.Println("Fetching Repository from GitHub...")
+		fmt.Println("Fetching Repository from GitHub ...")
 	case "EMBED_REPO":
-		fmt.Println("Embedding Repository...")
+		fmt.Println("Embedding Repository ...")
 	case "SAVE_EMBEDDINGS":
-		fmt.Println("Saving the embeddings to our database...")
+		fmt.Println("Saving the embeddings to our database ...")
 	case "ERROR":
 		fmt.Println("There was an error while indexing this repository.")
 		return errors.New("error while indexing repository")
@@ -378,13 +378,13 @@ func (rq *repoQueryAgent) processChatChunk(chunk string) error {
 
 	switch event {
 	case "SEARCH_CODEBASE":
-		fmt.Println("Searching the codebase for your query...🔍")
+		fmt.Println("Searching the codebase for your query ... 🔍")
 	case "SEARCH_FILE":
-		fmt.Printf("Searching %s for your query...🔍\n", data.(map[string]interface{})["path"])
+		fmt.Printf("Searching %s for your query ... 🔍\n", data.(map[string]interface{})["path"])
 	case "SEARCH_PATH":
-		fmt.Printf("Looking for %s in the codebase...🔍\n", data.(map[string]interface{})["path"])
+		fmt.Printf("Looking for %s in the codebase ... 🔍\n", data.(map[string]interface{})["path"])
 	case "GENERATE_RESPONSE":
-		fmt.Println("Generating a response...🧠")
+		fmt.Println("Generating a response ... 🧠")
 	case "DONE":
 		fmt.Println()
 		// the server sends the data as a string, with \n, "", and \t escaped.
