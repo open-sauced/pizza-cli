@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.1.0-beta.3](https://github.com/open-sauced/pizza-cli/compare/v1.1.0-beta.2...v1.1.0-beta.3) (2023-10-26)
+
+
+### 🍕 Features
+
+* Add filtering for usernames on user-contributions ([d10c1ef](https://github.com/open-sauced/pizza-cli/commit/d10c1ef0bc69d3acd2e9f3ebdab7eee813debe19))
+
 ## [1.1.0-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.1.0-beta.1...v1.1.0-beta.2) (2023-10-26)
 
 
