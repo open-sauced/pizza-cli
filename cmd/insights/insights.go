@@ -16,5 +16,6 @@ func NewInsightsCommand() *cobra.Command {
 	}
 	cmd.AddCommand(NewContributorsCommand())
 	cmd.AddCommand(NewRepositoriesCommand())
+	cmd.AddCommand(NewUserContributionsCommand())
 	return cmd
 }
