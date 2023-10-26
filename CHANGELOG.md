@@ -26,11 +26,14 @@
 
 * add csv support for contributors insights ([51c1897](https://github.com/open-sauced/pizza-cli/commit/51c18978cb9012fa72642fcb77c9f33bf0a88076))
 
+## [1.0.1](https://github.com/open-sauced/pizza-cli/compare/v1.0.0...v1.0.1) (2023-10-11)
+
 
 ### 🐛 Bug Fixes
 
 * Hotfix for broken release workflow file ([e115fe9](https://github.com/open-sauced/pizza-cli/commit/e115fe91ded711ad075e2847b2c73f3f065b50d1))
 * Release pipeline missing some env vars ([21e43e3](https://github.com/open-sauced/pizza-cli/commit/21e43e365d490eb0a9182895aaa5e45a2c00a025))
+* Roll forward fix for semantic release ([#51](https://github.com/open-sauced/pizza-cli/issues/51)) ([3a6bb27](https://github.com/open-sauced/pizza-cli/commit/3a6bb27da209caccc4ab092e202516442b1cc621))
 
 ## [1.0.1-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.0.0...v1.0.1-beta.1) (2023-10-11)
 
