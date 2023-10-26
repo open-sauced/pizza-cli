@@ -24,6 +24,12 @@ type userContributionsOptions struct {
 	// Repos is the array of git repository urls
 	Repos []string
 
+	// Users is the list of usernames to filter for
+	Users []string
+
+	// usersMap is a fast access set of usernames built from the Users string slice
+	usersMap map[string]struct{}
+
 	// FilePath is the path to yaml file containing an array of git repository urls
 	FilePath string
 
@@ -61,6 +67,7 @@ func NewUserContributionsCommand() *cobra.Command {
 
 	cmd.Flags().StringVarP(&opts.FilePath, constants.FlagNameFile, "f", "", "Path to yaml file containing an array of git repository urls")
 	cmd.Flags().Int32VarP(&opts.Period, constants.FlagNamePeriod, "p", 30, "Number of days, used for query filtering")
+	cmd.Flags().StringSliceVarP(&opts.Users, "users", "u", []string{}, "Inclusive comma separated list of GitHub usernames to filter for")
 
 	return cmd
 }
@@ -69,6 +76,12 @@ func (opts *userContributionsOptions) run(ctx context.Context) error {
 	repositories, err := utils.HandleRepositoryValues(opts.Repos, opts.FilePath)
 	if err != nil {
 		return err
+	}
+
+	opts.usersMap = make(map[string]struct{})
+	for _, username := range opts.Users {
+		// For fast access to list of users to filter out, uses an empty struct
+		opts.usersMap[username] = struct{}{}
 	}
 
 	var (
@@ -257,12 +270,15 @@ func findAllUserContributionsInsights(ctx context.Context, opts *userContributio
 	}
 
 	for _, data := range dataPoints {
-		repoUserContributionsInsightGroup.Insights = append(repoUserContributionsInsightGroup.Insights, userContributionsInsights{
-			Login:              *data.Login,
-			Commits:            int(data.Commits),
-			PrsCreated:         int(data.PrsCreated),
-			TotalContributions: int(data.Commits) + int(data.PrsCreated),
-		})
+		_, ok := opts.usersMap[*data.Login]
+		if len(opts.usersMap) == 0 || ok {
+			repoUserContributionsInsightGroup.Insights = append(repoUserContributionsInsightGroup.Insights, userContributionsInsights{
+				Login:              *data.Login,
+				Commits:            int(data.Commits),
+				PrsCreated:         int(data.PrsCreated),
+				TotalContributions: int(data.Commits) + int(data.PrsCreated),
+			})
+		}
 	}
 
 	return repoUserContributionsInsightGroup, nil
