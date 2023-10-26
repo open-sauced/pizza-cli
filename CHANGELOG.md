@@ -5,6 +5,21 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.1.0](https://github.com/open-sauced/pizza-cli/compare/v1.0.1...v1.1.0) (2023-10-26)
+
+
+### 🐛 Bug Fixes
+
+* Hotfix for broken release workflow file ([e115fe9](https://github.com/open-sauced/pizza-cli/commit/e115fe91ded711ad075e2847b2c73f3f065b50d1))
+* Release pipeline missing some env vars ([21e43e3](https://github.com/open-sauced/pizza-cli/commit/21e43e365d490eb0a9182895aaa5e45a2c00a025))
+
+
+### 🍕 Features
+
+* Add "pizza insights user-contributions" command ([248f90a](https://github.com/open-sauced/pizza-cli/commit/248f90a270540c7dd992b9d69dff7da1eb2ceddd))
+* add csv support for contributors insights ([51c1897](https://github.com/open-sauced/pizza-cli/commit/51c18978cb9012fa72642fcb77c9f33bf0a88076))
+* Add filtering for usernames on user-contributions ([d10c1ef](https://github.com/open-sauced/pizza-cli/commit/d10c1ef0bc69d3acd2e9f3ebdab7eee813debe19))
+
 ## [1.1.0-beta.3](https://github.com/open-sauced/pizza-cli/compare/v1.1.0-beta.2...v1.1.0-beta.3) (2023-10-26)
 
 
