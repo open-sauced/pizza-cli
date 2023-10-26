@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.1.0-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.1.0-beta.1...v1.1.0-beta.2) (2023-10-26)
+
+
+### 🍕 Features
+
+* Add "pizza insights user-contributions" command ([248f90a](https://github.com/open-sauced/pizza-cli/commit/248f90a270540c7dd992b9d69dff7da1eb2ceddd))
+
 ## [1.1.0-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.0.1-beta.1...v1.1.0-beta.1) (2023-10-18)
 
 
