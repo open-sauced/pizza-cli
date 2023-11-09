@@ -59,11 +59,15 @@ func NewContributorsCommand() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVarP(&opts.FilePath, constants.FlagNameFile, "f", "", "Path to yaml file containing an array of git repository urls")
-	cmd.Flags().Int32VarP(&opts.Period, constants.FlagNamePeriod, "p", 30, "Number of days, used for query filtering")
+	cmd.Flags().Int32VarP(&opts.Period, constants.FlagNamePeriod, "p", 30, "Number of days, used for query filtering (7,30,90)")
 	return cmd
 }
 
 func (opts *contributorsOptions) run(ctx context.Context) error {
+	if !api.IsValidRange(opts.Period) {
+		return fmt.Errorf("invalid period: %d, accepts (7,30,90)", opts.Period)
+	}
+
 	repositories, err := utils.HandleRepositoryValues(opts.Repos, opts.FilePath)
 	if err != nil {
 		return err
