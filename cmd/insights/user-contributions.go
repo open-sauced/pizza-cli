@@ -6,6 +6,7 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"sort"
 	"strconv"
 	"sync"
 
@@ -38,6 +39,9 @@ type userContributionsOptions struct {
 
 	// Output is the formatting style for command output
 	Output string
+
+	// Sort is the column to be used to sort user contributions (total, commits, pr, none)
+	Sort string
 }
 
 // NewUserContributionsCommand returns a new user-contributions command
@@ -68,6 +72,7 @@ func NewUserContributionsCommand() *cobra.Command {
 	cmd.Flags().StringVarP(&opts.FilePath, constants.FlagNameFile, "f", "", "Path to yaml file containing an array of git repository urls")
 	cmd.Flags().Int32VarP(&opts.Period, constants.FlagNamePeriod, "p", 30, "Number of days, used for query filtering")
 	cmd.Flags().StringSliceVarP(&opts.Users, "users", "u", []string{}, "Inclusive comma separated list of GitHub usernames to filter for")
+	cmd.Flags().StringVarP(&opts.Sort, "sort", "s", "none", "Sort user contributions by (total, commits, prs)")
 
 	return cmd
 }
@@ -128,6 +133,10 @@ func (opts *userContributionsOptions) run(ctx context.Context) error {
 		case <-doneChan:
 			if allErrors != nil {
 				return allErrors
+			}
+
+			if opts.Sort != "none" {
+				sortUserContributions(insights, opts.Sort)
 			}
 
 			for _, insight := range insights {
@@ -282,4 +291,22 @@ func findAllUserContributionsInsights(ctx context.Context, opts *userContributio
 	}
 
 	return repoUserContributionsInsightGroup, nil
+}
+
+func sortUserContributions(ucig []*userContributionsInsightGroup, sortBy string) {
+	for _, group := range ucig {
+		if group != nil {
+			sort.SliceStable(group.Insights, func(i, j int) bool {
+				switch sortBy {
+				case "total":
+					return group.Insights[i].TotalContributions > group.Insights[j].TotalContributions
+				case "prs":
+					return group.Insights[i].PrsCreated > group.Insights[j].PrsCreated
+				case "commits":
+					return group.Insights[i].Commits > group.Insights[j].Commits
+				}
+				return group.Insights[i].Login < group.Insights[j].Login
+			})
+		}
+	}
 }
