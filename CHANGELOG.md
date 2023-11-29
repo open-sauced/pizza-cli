@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.1.1-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.1.0...v1.1.1-beta.1) (2023-11-29)
+
+
+### 🐛 Bug Fixes
+
+* Force publish of package to build go binaries during release ([#69](https://github.com/open-sauced/pizza-cli/issues/69)) ([02177d5](https://github.com/open-sauced/pizza-cli/commit/02177d5c81c330385f4f73c5d5f2df045c96757e))
+
 ## [1.1.0](https://github.com/open-sauced/pizza-cli/compare/v1.0.1...v1.1.0) (2023-10-26)
 
 
