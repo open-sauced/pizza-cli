@@ -18,7 +18,7 @@ test:
 	go test ./...
 
 build:
-	go build -o build/pizza main.go
+	CGO_ENABLED=0 go build -o build/pizza main.go
 
 install: build
 	sudo mv build/pizza /usr/local/bin/

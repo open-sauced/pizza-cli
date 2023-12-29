@@ -72,7 +72,7 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build \
+        CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build \
             -ldflags="-s -w" \
             -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${{ vars.POSTHOG_WRITE_PUBLIC_KEY }}'" \
             -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${{ needs.release.outputs.release-tag }}'" \
