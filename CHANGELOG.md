@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.1.1-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.1...v1.1.1-beta.2) (2024-02-03)
+
+
+### 🐛 Bug Fixes
+
+* avoid requiring CGO for now ([#71](https://github.com/open-sauced/pizza-cli/issues/71)) ([f6d2f1d](https://github.com/open-sauced/pizza-cli/commit/f6d2f1d11bda7760edf585279099f3a874661973))
+
 ## [1.1.1-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.1.0...v1.1.1-beta.1) (2023-11-29)
 
 
