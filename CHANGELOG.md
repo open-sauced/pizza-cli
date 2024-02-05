@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.1.1-beta.3](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.2...v1.1.1-beta.3) (2024-02-05)
+
+
+### 🐛 Bug Fixes
+
+* Upgrade to v2 API ([#73](https://github.com/open-sauced/pizza-cli/issues/73)) ([40b468b](https://github.com/open-sauced/pizza-cli/commit/40b468be69bdffb1fa7170861abf98601acb6c68))
+
 ## [1.1.1-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.1...v1.1.1-beta.2) (2024-02-03)
 
 
