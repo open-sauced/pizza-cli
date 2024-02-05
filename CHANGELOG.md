@@ -5,6 +5,15 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.1.1](https://github.com/open-sauced/pizza-cli/compare/v1.1.0...v1.1.1) (2024-02-05)
+
+
+### 🐛 Bug Fixes
+
+* avoid requiring CGO for now ([#71](https://github.com/open-sauced/pizza-cli/issues/71)) ([f6d2f1d](https://github.com/open-sauced/pizza-cli/commit/f6d2f1d11bda7760edf585279099f3a874661973))
+* Force publish of package to build go binaries during release ([#69](https://github.com/open-sauced/pizza-cli/issues/69)) ([02177d5](https://github.com/open-sauced/pizza-cli/commit/02177d5c81c330385f4f73c5d5f2df045c96757e))
+* Upgrade to v2 API ([#73](https://github.com/open-sauced/pizza-cli/issues/73)) ([40b468b](https://github.com/open-sauced/pizza-cli/commit/40b468be69bdffb1fa7170861abf98601acb6c68))
+
 ## [1.1.1-beta.3](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.2...v1.1.1-beta.3) (2024-02-05)
 
 
