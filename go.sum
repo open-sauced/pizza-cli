@@ -47,6 +47,10 @@ github.com/open-sauced/go-api/client v0.0.0-20231024233005-61e58f577005 h1:qrsKq
 github.com/open-sauced/go-api/client v0.0.0-20231024233005-61e58f577005/go.mod h1:W/TRuLUqYpMvkmElDUQvQ07xlxhK8TOfpwRh8SCAuNA=
 github.com/open-sauced/go-api/client v0.0.0-20231025234817-a8f01f3b26d8 h1:qzSaxN4BdovOr2DjXcYJz4LH7RSXEdhw98zAdnJVqJU=
 github.com/open-sauced/go-api/client v0.0.0-20231025234817-a8f01f3b26d8/go.mod h1:W/TRuLUqYpMvkmElDUQvQ07xlxhK8TOfpwRh8SCAuNA=
+github.com/open-sauced/go-api/client v0.0.0-20240202223515-f3f8157b083d h1:e9c07oVveXyHHhcu85hKHicl2K+ruAcAXX5BUd4StO8=
+github.com/open-sauced/go-api/client v0.0.0-20240202223515-f3f8157b083d/go.mod h1:W/TRuLUqYpMvkmElDUQvQ07xlxhK8TOfpwRh8SCAuNA=
+github.com/open-sauced/go-api/client v0.0.0-20240205155059-a3159bc0517e h1:3j5r7ArokAO+u8vhgQPklp5qnGxA+MkXluRYt2qTnik=
+github.com/open-sauced/go-api/client v0.0.0-20240205155059-a3159bc0517e/go.mod h1:W/TRuLUqYpMvkmElDUQvQ07xlxhK8TOfpwRh8SCAuNA=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/posthog/posthog-go v0.0.0-20230801140217-d607812dee69 h1:01dHVodha5BzrMtVmcpPeA4VYbZEsTXQ6m4123zQXJk=
 github.com/posthog/posthog-go v0.0.0-20230801140217-d607812dee69/go.mod h1:migYMxlAqcnQy+3eN8mcL0b2tpKy6R+8Zc0lxwk4dKM=

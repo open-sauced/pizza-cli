@@ -228,7 +228,7 @@ func findAllContributorsInsights(ctx context.Context, opts *contributorsOptions,
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := findNewRepositoryContributors(ctx, opts.APIClient, repo.Id, opts.Period)
+		response, err := findNewRepositoryContributors(ctx, opts.APIClient, repo.Name, opts.Period)
 		if err != nil {
 			errorChan <- err
 			return
@@ -240,7 +240,7 @@ func findAllContributorsInsights(ctx context.Context, opts *contributorsOptions,
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := findRecentRepositoryContributors(ctx, opts.APIClient, repo.Id, opts.Period)
+		response, err := findRecentRepositoryContributors(ctx, opts.APIClient, repo.Name, opts.Period)
 		if err != nil {
 			errorChan <- err
 			return
@@ -252,7 +252,7 @@ func findAllContributorsInsights(ctx context.Context, opts *contributorsOptions,
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := findAlumniRepositoryContributors(ctx, opts.APIClient, repo.Id, opts.Period)
+		response, err := findAlumniRepositoryContributors(ctx, opts.APIClient, repo.Name, opts.Period)
 		if err != nil {
 			errorChan <- err
 			return
@@ -264,7 +264,7 @@ func findAllContributorsInsights(ctx context.Context, opts *contributorsOptions,
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := findRepeatRepositoryContributors(ctx, opts.APIClient, repo.Id, opts.Period)
+		response, err := findRepeatRepositoryContributors(ctx, opts.APIClient, repo.Name, opts.Period)
 		if err != nil {
 			errorChan <- err
 			return
@@ -285,50 +285,50 @@ func findAllContributorsInsights(ctx context.Context, opts *contributorsOptions,
 	return repoContributorsInsights, nil
 }
 
-func findNewRepositoryContributors(ctx context.Context, apiClient *client.APIClient, repoID, period int32) (*client.SearchAllPullRequestContributors200Response, error) {
+func findNewRepositoryContributors(ctx context.Context, apiClient *client.APIClient, repo string, period int32) (*client.SearchAllPullRequestContributors200Response, error) {
 	data, _, err := apiClient.ContributorsServiceAPI.
 		NewPullRequestContributors(ctx).
-		RepoIds(fmt.Sprintf("%d", repoID)).
+		Repos(repo).
 		Range_(period).
 		Execute()
 	if err != nil {
-		return nil, fmt.Errorf("error while calling 'ContributorsServiceAPI.NewPullRequestContributors' with repository %d': %w", repoID, err)
+		return nil, fmt.Errorf("error while calling 'ContributorsServiceAPI.NewPullRequestContributors' with repository %s': %w", repo, err)
 	}
 	return data, nil
 }
 
-func findRecentRepositoryContributors(ctx context.Context, apiClient *client.APIClient, repoID, period int32) (*client.SearchAllPullRequestContributors200Response, error) {
+func findRecentRepositoryContributors(ctx context.Context, apiClient *client.APIClient, repo string, period int32) (*client.SearchAllPullRequestContributors200Response, error) {
 	data, _, err := apiClient.ContributorsServiceAPI.
 		FindAllRecentPullRequestContributors(ctx).
-		RepoIds(fmt.Sprintf("%d", repoID)).
+		Repos(repo).
 		Range_(period).
 		Execute()
 	if err != nil {
-		return nil, fmt.Errorf("error while calling 'ContributorsServiceAPI.FindAllRecentPullRequestContributors' with repository %d': %w", repoID, err)
+		return nil, fmt.Errorf("error while calling 'ContributorsServiceAPI.FindAllRecentPullRequestContributors' with repository %s': %w", repo, err)
 	}
 	return data, nil
 }
 
-func findAlumniRepositoryContributors(ctx context.Context, apiClient *client.APIClient, repoID, period int32) (*client.SearchAllPullRequestContributors200Response, error) {
+func findAlumniRepositoryContributors(ctx context.Context, apiClient *client.APIClient, repo string, period int32) (*client.SearchAllPullRequestContributors200Response, error) {
 	data, _, err := apiClient.ContributorsServiceAPI.
 		FindAllChurnPullRequestContributors(ctx).
-		RepoIds(fmt.Sprintf("%d", repoID)).
+		Repos(repo).
 		Range_(period).
 		Execute()
 	if err != nil {
-		return nil, fmt.Errorf("error while calling 'ContributorsServiceAPI.FindAllChurnPullRequestContributors' with repository %d': %w", repoID, err)
+		return nil, fmt.Errorf("error while calling 'ContributorsServiceAPI.FindAllChurnPullRequestContributors' with repository %s': %w", repo, err)
 	}
 	return data, nil
 }
 
-func findRepeatRepositoryContributors(ctx context.Context, apiClient *client.APIClient, repoID, period int32) (*client.SearchAllPullRequestContributors200Response, error) {
+func findRepeatRepositoryContributors(ctx context.Context, apiClient *client.APIClient, repo string, period int32) (*client.SearchAllPullRequestContributors200Response, error) {
 	data, _, err := apiClient.ContributorsServiceAPI.
 		FindAllRepeatPullRequestContributors(ctx).
-		RepoIds(fmt.Sprintf("%d", repoID)).
+		Repos(repo).
 		Range_(period).
 		Execute()
 	if err != nil {
-		return nil, fmt.Errorf("error while calling 'ContributorsServiceAPI.FindAllRepeatPullRequestContributors' with repository %d: %w", repoID, err)
+		return nil, fmt.Errorf("error while calling 'ContributorsServiceAPI.FindAllRepeatPullRequestContributors' with repository %s: %w", repo, err)
 	}
 	return data, nil
 }

@@ -270,7 +270,7 @@ func findAllUserContributionsInsights(ctx context.Context, opts *userContributio
 	dataPoints, _, err := opts.
 		APIClient.
 		RepositoryServiceAPI.
-		FindAllContributorsByRepoId(ctx, owner, name).
+		FindContributorsByOwnerAndRepo(ctx, owner, name).
 		Range_(opts.Period).
 		Execute()
 
@@ -278,11 +278,11 @@ func findAllUserContributionsInsights(ctx context.Context, opts *userContributio
 		return nil, fmt.Errorf("error while calling 'RepositoryServiceAPI.FindAllContributorsByRepoId' with repository %s/%s': %w", owner, name, err)
 	}
 
-	for _, data := range dataPoints {
-		_, ok := opts.usersMap[*data.Login]
+	for _, data := range dataPoints.Data {
+		_, ok := opts.usersMap[data.Login]
 		if len(opts.usersMap) == 0 || ok {
 			repoUserContributionsInsightGroup.Insights = append(repoUserContributionsInsightGroup.Insights, userContributionsInsights{
-				Login:              *data.Login,
+				Login:              data.Login,
 				Commits:            int(data.Commits),
 				PrsCreated:         int(data.PrsCreated),
 				TotalContributions: int(data.Commits) + int(data.PrsCreated),
