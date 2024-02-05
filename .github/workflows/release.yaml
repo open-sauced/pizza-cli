@@ -37,6 +37,9 @@ jobs:
       - name: "🚀 release"
         id: semantic-release
         env:
+          # This ensures that publishing happens on every single trigger which then
+          # forces the go binaries to be built in the next step and attached to the GitHub release
+          FORCE_PUBLISH: "patch"
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_PACKAGE_ROOT: "npm"
@@ -69,7 +72,7 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build \
+        CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build \
             -ldflags="-s -w" \
             -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${{ vars.POSTHOG_WRITE_PUBLIC_KEY }}'" \
             -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${{ needs.release.outputs.release-tag }}'" \

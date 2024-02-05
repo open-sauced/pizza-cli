@@ -17,12 +17,12 @@ import (
 )
 
 // prItem: type for pull request to satisfy the list.Item interface
-type prItem client.DbPullRequest
+type prItem client.DbPullRequestGitHubEvents
 
-func (i prItem) FilterValue() string { return i.Title }
+func (i prItem) FilterValue() string { return i.PrTitle }
 func (i prItem) GetRepoName() string {
-	if i.FullName != nil {
-		return *i.FullName
+	if i.RepoName != "" {
+		return i.RepoName
 	}
 	return ""
 }
@@ -38,12 +38,12 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 		return
 	}
 
-	prTitle := i.Title
+	prTitle := i.PrTitle
 	if len(prTitle) >= 60 {
 		prTitle = fmt.Sprintf("%s...", prTitle[:60])
 	}
 
-	str := fmt.Sprintf("#%d %s\n%s\n(%s)", i.Number, i.GetRepoName(), prTitle, i.State)
+	str := fmt.Sprintf("#%d %s\n%s\n(%s)", i.PrNumber, i.GetRepoName(), prTitle, i.PrState)
 
 	fn := ItemStyle.Render
 	if index == m.Index() {
@@ -114,7 +114,7 @@ func (m ContributorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if !m.prList.SettingFilter() {
 				pr, ok := m.prList.SelectedItem().(prItem)
 				if ok {
-					err := browser.OpenURL(fmt.Sprintf("https://github.com/%s/pull/%d", pr.GetRepoName(), pr.Number))
+					err := browser.OpenURL(fmt.Sprintf("https://github.com/%s/pull/%d", pr.GetRepoName(), pr.PrNumber))
 					if err != nil {
 						fmt.Println("could not open pull request in browser")
 					}
@@ -191,7 +191,7 @@ func (m *ContributorModel) fetchContributorInfo(name string) error {
 
 // fetchContributorPRs: fetches the contributor pull requests and creates pull request list
 func (m *ContributorModel) fetchContributorPRs(name string) error {
-	resp, r, err := m.APIClient.UserServiceAPI.FindContributorPullRequests(m.serverContext, name).Range_(30).Execute()
+	resp, r, err := m.APIClient.UserServiceAPI.FindContributorPullRequestGitHubEvents(m.serverContext, name).Range_(30).Execute()
 	if err != nil {
 		return err
 	}
@@ -204,7 +204,7 @@ func (m *ContributorModel) fetchContributorPRs(name string) error {
 	var items []list.Item
 	var mergedPullRequests int
 	for _, pr := range resp.Data {
-		if strings.ToLower(pr.State) == "merged" {
+		if pr.PrIsMerged {
 			mergedPullRequests++
 		}
 		items = append(items, prItem(pr))

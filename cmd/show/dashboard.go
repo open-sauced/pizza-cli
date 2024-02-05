@@ -264,7 +264,7 @@ func (m *DashboardModel) FetchAllContributors() error {
 // FetchNewContributors: Returns all the new contributors
 func (m *DashboardModel) FetchNewContributors() ([]client.DbPullRequestContributor, error) {
 	resp, r, err := m.APIClient.ContributorsServiceAPI.NewPullRequestContributors(m.serverContext).Page(int32(m.queryOptions[0])).
-		Limit(int32(m.queryOptions[1])).RepoIds(strconv.Itoa(int(m.RepositoryInfo.Id))).Execute()
+		Limit(int32(m.queryOptions[1])).Repos(m.RepositoryInfo.FullName).Execute()
 	if err != nil {
 		return nil, err
 	}
@@ -281,7 +281,7 @@ func (m *DashboardModel) FetchNewContributors() ([]client.DbPullRequestContribut
 func (m *DashboardModel) FetchAlumniContributors() ([]client.DbPullRequestContributor, error) {
 	resp, r, err := m.APIClient.ContributorsServiceAPI.FindAllChurnPullRequestContributors(m.serverContext).
 		Page(int32(m.queryOptions[0])).Limit(int32(m.queryOptions[1])).
-		Range_(int32(m.queryOptions[2])).RepoIds(strconv.Itoa(int(m.RepositoryInfo.Id))).Execute()
+		Range_(int32(m.queryOptions[2])).Repos(m.RepositoryInfo.FullName).Execute()
 	if err != nil {
 		return nil, err
 	}

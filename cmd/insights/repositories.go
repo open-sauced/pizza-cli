@@ -197,12 +197,12 @@ func findAllRepositoryInsights(ctx context.Context, opts *repositoriesOptions, r
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := getPullRequestInsights(ctx, opts.APIClient, repo.Id, opts.Period)
+		response, err := getPullRequestInsights(ctx, opts.APIClient, repo.Name, opts.Period)
 		if err != nil {
 			errorChan <- err
 			return
 		}
-		repoInsights.AllPullRequests = int(response.AllPrs)
+		repoInsights.AllPullRequests = int(response.PrCount)
 		repoInsights.AcceptedPullRequests = int(response.AcceptedPrs)
 		repoInsights.SpamPullRequests = int(response.SpamPrs)
 	}()
@@ -232,19 +232,19 @@ func findAllRepositoryInsights(ctx context.Context, opts *repositoriesOptions, r
 	return repoInsights, nil
 }
 
-func getPullRequestInsights(ctx context.Context, apiClient *client.APIClient, repoID, period int32) (*client.DbPRInsight, error) {
-	data, _, err := apiClient.PullRequestsServiceAPI.
-		GetPullRequestInsights(ctx).
-		RepoIds(strconv.Itoa(int(repoID))).
+func getPullRequestInsights(ctx context.Context, apiClient *client.APIClient, repo string, period int32) (*client.DbPullRequestGitHubEventsHistogram, error) {
+	data, _, err := apiClient.HistogramGenerationServiceAPI.
+		PrsHistogram(ctx).
+		Repo(repo).
 		Execute()
 	if err != nil {
-		return nil, fmt.Errorf("error while calling 'PullRequestsServiceAPI.GetPullRequestInsights' with repository %d': %w", repoID, err)
+		return nil, fmt.Errorf("error while calling 'PullRequestsServiceAPI.GetPullRequestInsights' with repository %s': %w", repo, err)
 	}
-	index := slices.IndexFunc(data, func(insight client.DbPRInsight) bool {
-		return insight.Interval == period
+	index := slices.IndexFunc(data, func(prHisto client.DbPullRequestGitHubEventsHistogram) bool {
+		return int32(prHisto.Bucket.Unix()) == period
 	})
 	if index == -1 {
-		return nil, fmt.Errorf("could not find pull request insights for repository %d with interval %d", repoID, period)
+		return nil, fmt.Errorf("could not find pull request insights for repository %s with interval %d", repo, period)
 	}
 	return &data[index], nil
 }
