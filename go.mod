@@ -7,7 +7,7 @@ require (
 	github.com/charmbracelet/bubbletea v0.24.2
 	github.com/charmbracelet/lipgloss v0.9.1
 	github.com/cli/browser v1.3.0
-	github.com/open-sauced/go-api/client v0.0.0-20231025234817-a8f01f3b26d8
+	github.com/open-sauced/go-api/client v0.0.0-20240205155059-a3159bc0517e
 	github.com/posthog/posthog-go v0.0.0-20230801140217-d607812dee69
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
