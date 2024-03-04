@@ -228,7 +228,7 @@ func findAllContributorsInsights(ctx context.Context, opts *contributorsOptions,
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := findNewRepositoryContributors(ctx, opts.APIClient, repo.Name, opts.Period)
+		response, err := findNewRepositoryContributors(ctx, opts.APIClient, repo.FullName, opts.Period)
 		if err != nil {
 			errorChan <- err
 			return
@@ -240,7 +240,7 @@ func findAllContributorsInsights(ctx context.Context, opts *contributorsOptions,
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := findRecentRepositoryContributors(ctx, opts.APIClient, repo.Name, opts.Period)
+		response, err := findRecentRepositoryContributors(ctx, opts.APIClient, repo.FullName, opts.Period)
 		if err != nil {
 			errorChan <- err
 			return
@@ -252,7 +252,7 @@ func findAllContributorsInsights(ctx context.Context, opts *contributorsOptions,
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := findAlumniRepositoryContributors(ctx, opts.APIClient, repo.Name, opts.Period)
+		response, err := findAlumniRepositoryContributors(ctx, opts.APIClient, repo.FullName, opts.Period)
 		if err != nil {
 			errorChan <- err
 			return
@@ -264,7 +264,7 @@ func findAllContributorsInsights(ctx context.Context, opts *contributorsOptions,
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := findRepeatRepositoryContributors(ctx, opts.APIClient, repo.Name, opts.Period)
+		response, err := findRepeatRepositoryContributors(ctx, opts.APIClient, repo.FullName, opts.Period)
 		if err != nil {
 			errorChan <- err
 			return

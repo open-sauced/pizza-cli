@@ -197,7 +197,7 @@ func findAllRepositoryInsights(ctx context.Context, opts *repositoriesOptions, r
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := getPullRequestInsights(ctx, opts.APIClient, repo.Name, opts.Period)
+		response, err := getPullRequestInsights(ctx, opts.APIClient, repo.FullName, opts.Period)
 		if err != nil {
 			errorChan <- err
 			return
