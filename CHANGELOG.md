@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.1.1-beta.4](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.3...v1.1.1-beta.4) (2024-03-04)
+
+
+### 🐛 Bug Fixes
+
+* use repository fullname to fetch contributors ([#77](https://github.com/open-sauced/pizza-cli/issues/77)) ([5326875](https://github.com/open-sauced/pizza-cli/commit/53268758056a25b9135c011425b5854657752885))
+
 ## [1.1.1-beta.3](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.2...v1.1.1-beta.3) (2024-02-05)
 
 
