@@ -68,7 +68,7 @@ func (opts *contributorsOptions) run(ctx context.Context) error {
 		return fmt.Errorf("invalid period: %d, accepts (7,30,90)", opts.Period)
 	}
 
-	repositories, err := utils.HandleRepositoryValues(opts.Repos, opts.FilePath)
+	repositories, err := utils.HandleUniqueValues(opts.Repos, opts.FilePath)
 	if err != nil {
 		return err
 	}

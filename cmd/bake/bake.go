@@ -76,7 +76,7 @@ func NewBakeCommand() *cobra.Command {
 }
 
 func run(opts *Options) error {
-	repositories, err := utils.HandleRepositoryValues(opts.Repos, opts.FilePath)
+	repositories, err := utils.HandleUniqueValues(opts.Repos, opts.FilePath)
 	if err != nil {
 		return err
 	}

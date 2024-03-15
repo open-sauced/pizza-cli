@@ -10,6 +10,7 @@ import (
 	repoquery "github.com/open-sauced/pizza-cli/cmd/repo-query"
 	"github.com/open-sauced/pizza-cli/cmd/show"
 	"github.com/open-sauced/pizza-cli/cmd/version"
+	"github.com/open-sauced/pizza-cli/cmd/workspaces"
 	"github.com/open-sauced/pizza-cli/pkg/constants"
 	"github.com/spf13/cobra"
 )
@@ -44,6 +45,7 @@ func NewRootCommand() (*cobra.Command, error) {
 	cmd.AddCommand(insights.NewInsightsCommand())
 	cmd.AddCommand(version.NewVersionCommand())
 	cmd.AddCommand(show.NewShowCommand())
+	cmd.AddCommand(workspaces.NewWorkspacesCommand())
 
 	return cmd, nil
 }

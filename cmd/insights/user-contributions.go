@@ -78,7 +78,7 @@ func NewUserContributionsCommand() *cobra.Command {
 }
 
 func (opts *userContributionsOptions) run(ctx context.Context) error {
-	repositories, err := utils.HandleRepositoryValues(opts.Repos, opts.FilePath)
+	repositories, err := utils.HandleUniqueValues(opts.Repos, opts.FilePath)
 	if err != nil {
 		return err
 	}

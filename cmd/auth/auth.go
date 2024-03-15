@@ -16,6 +16,7 @@ import (
 	"os"
 	"os/signal"
 	"path"
+	"path/filepath"
 	"time"
 
 	"github.com/cli/browser"
@@ -79,7 +80,7 @@ func run() (string, error) {
 		return "", fmt.Errorf("PKCE error: %v", err.Error())
 	}
 
-	supabaseAuthURL := fmt.Sprintf("https://%s.supabase.co/auth/v1/authorize", supabaseID)
+	supabaseAuthURL := fmt.Sprintf("https://%s.supabase.co/auth/v1/authorize", supabaseBetaID)
 	queryParams := url.Values{
 		"provider":              {"github"},
 		"code_challenge":        {codeChallenge},
@@ -172,8 +173,8 @@ func run() (string, error) {
 	return username, nil
 }
 
-func getSession(authCode, codeVerifier string) (*accessTokenResponse, error) {
-	url := fmt.Sprintf("https://%s.supabase.co/auth/v1/token?grant_type=pkce", supabaseID)
+func getSession(authCode, codeVerifier string) (*AccessTokenResponse, error) {
+	url := fmt.Sprintf("https://%s.supabase.co/auth/v1/token?grant_type=pkce", supabaseBetaID)
 
 	payload := map[string]string{
 		"auth_code":     authCode,
@@ -196,7 +197,7 @@ func getSession(authCode, codeVerifier string) (*accessTokenResponse, error) {
 		return nil, fmt.Errorf("unexpected status: %s", res.Status)
 	}
 
-	var responseData accessTokenResponse
+	var responseData AccessTokenResponse
 	if err := json.NewDecoder(res.Body).Decode(&responseData); err != nil {
 		return nil, fmt.Errorf("could not decode JSON response: %s", err.Error())
 	}
@@ -222,4 +223,30 @@ func shutdown(server *http.Server) {
 			panic(err.Error())
 		}
 	}()
+}
+
+func GetUserSession() (AccessTokenResponse, error) {
+	var accessToken AccessTokenResponse
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return accessToken, err
+	}
+	sessionFilePath := filepath.Join(homeDir, ".pizza", "session.json")
+
+	_, err = os.Stat(sessionFilePath)
+	if err != nil {
+		return accessToken, fmt.Errorf("Authentication is needed to perform this command. Authenticate using 'pizza login'")
+	}
+
+	bytes, err := os.ReadFile(sessionFilePath)
+	if err != nil {
+		return accessToken, fmt.Errorf("could not read session file")
+	}
+
+	err = json.Unmarshal(bytes, &accessToken)
+	if err != nil {
+		return accessToken, fmt.Errorf("could not unmarshal the token")
+	}
+
+	return accessToken, nil
 }
