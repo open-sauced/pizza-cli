@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.1.1-beta.5](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.4...v1.1.1-beta.5) (2024-03-15)
+
+
+### 🐛 Bug Fixes
+
+* update supabase keys for auth ([#80](https://github.com/open-sauced/pizza-cli/issues/80)) ([247c431](https://github.com/open-sauced/pizza-cli/commit/247c431401744833e36ebea797c49062f0e35910))
+
 ## [1.1.1-beta.4](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.3...v1.1.1-beta.4) (2024-03-04)
 
 
