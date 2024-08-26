@@ -1,4 +1,4 @@
-name: Adds all issues opened in the /pizza-cli repo to the Team Dashboard
+name: "Adds issues to Team Dashboard"
 
 on:
   issues:
@@ -16,7 +16,7 @@ jobs:
         with:
           app_id: ${{ secrets.OS_GITHUB_APP_ID }}
           private_key: ${{ secrets.OS_GITHUB_APP_PRIVATE_KEY }}
-    
+
       - name: add issue to team dashboard
         uses: actions/add-to-project@v0.5.0
         with:

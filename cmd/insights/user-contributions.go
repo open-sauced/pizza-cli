@@ -12,10 +12,11 @@ import (
 
 	bubblesTable "github.com/charmbracelet/bubbles/table"
 	"github.com/open-sauced/go-api/client"
+	"github.com/spf13/cobra"
+
 	"github.com/open-sauced/pizza-cli/pkg/api"
 	"github.com/open-sauced/pizza-cli/pkg/constants"
 	"github.com/open-sauced/pizza-cli/pkg/utils"
-	"github.com/spf13/cobra"
 )
 
 type userContributionsOptions struct {
@@ -60,7 +61,7 @@ func NewUserContributionsCommand() *cobra.Command {
 			opts.Repos = append(opts.Repos, args...)
 			return nil
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			endpointURL, _ := cmd.Flags().GetString(constants.FlagNameEndpoint)
 			opts.APIClient = api.NewGoClient(endpointURL)
 			output, _ := cmd.Flags().GetString(constants.FlagNameOutput)

@@ -1,4 +1,4 @@
-name: Semantic release
+name: "Semantic release"
 
 on:
   push:
@@ -7,27 +7,37 @@ on:
       - beta
   workflow_dispatch:
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  test:
+    name: Test, lint, & build
+    uses: ./.github/workflows/test.yaml
+
   release:
+    outputs:
+        release-tag: ${{ steps.semantic-release.outputs.release-tag }}
     name: Semantic release
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Generate token
         id: generate_token
-        uses: tibdex/github-app-token@v1
+        uses: tibdex/github-app-token@v2
         with:
           app_id: ${{ secrets.OS_GITHUB_APP_ID }}
           private_key: ${{ secrets.OS_GITHUB_APP_PRIVATE_KEY }}
 
       - name: "☁️ checkout repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ steps.generate_token.outputs.token }}
 
       - name: "🔧 setup node"
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
@@ -36,47 +46,74 @@ jobs:
 
       - name: "🚀 release"
         id: semantic-release
+        uses: open-sauced/release@v2
         env:
           # This ensures that publishing happens on every single trigger which then
           # forces the go binaries to be built in the next step and attached to the GitHub release
           FORCE_PUBLISH: "patch"
+
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_PACKAGE_ROOT: "npm"
-        uses: open-sauced/release@v2.2.1
 
-    outputs:
-        release-tag: ${{ steps.semantic-release.outputs.release-tag }}
 
   build:
+    name: Build and publish artifacts
     needs:
       - release
+    if: needs.release.outputs.release-tag != ''
     runs-on: ubuntu-latest
     permissions:
-      contents: write # release changes require contents write
+      # release changes require contents write so that it can push Go binaries
+      contents: write
     strategy:
       matrix:
         goos: [darwin, linux, windows]
         goarch: [amd64, arm64]
 
     steps:
-    - name: Set up Go
-      uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753 # v4.0.1
+    - name: "☁️ checkout repository"
+      uses: actions/checkout@v4
+
+    - name: "🐹 Setup Go"
+      uses: actions/setup-go@v5
       with:
-        go-version: 1.21.x
+        go-version: 1.22.x
 
-    - name: Check out code
-      uses: actions/checkout@v3
+    - name: "🤲 Setup Just"
+      uses: extractions/setup-just@v2
 
-    - name: Build and upload Go binaries
+    - name: "🔧 Build all and upload artifacts to release"
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build \
-            -ldflags="-s -w" \
-            -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${{ vars.POSTHOG_WRITE_PUBLIC_KEY }}'" \
-            -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${{ needs.release.outputs.release-tag }}'" \
-            -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
-            -o build/pizza-${{ matrix.goos }}-${{ matrix.goarch }}
-        gh release upload ${{ needs.release.outputs.release-tag }} build/pizza-${{ matrix.goos }}-${{ matrix.goarch }}
+        export RELEASE_TAG_VERSION=${{ needs.release.outputs.release-tag }}
+        just build-${{ matrix.goos }}-${{ matrix.goarch }}
 
+        gh release upload ${{ needs.release.outputs.release-tag }} build/saucectl-${{ matrix.goos }}-${{ matrix.goarch }}
+
+  docker:
+    name: Build and push container
+    needs:
+      - release
+    if: needs.release.outputs.release-tag != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: "☁️ checkout repository"
+        uses: actions/checkout@v4
+
+      - name: "🔧 setup buildx"
+        uses: docker/setup-buildx-action@v3
+
+      - name: "🐳 Login to ghcr"
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "📦 docker build and push"
+        uses: docker/build-push-action@v6
+        with:
+          tags: ghcr.io/${{ github.repository }}:latest,ghcr.io/${{ github.repository }}:${{ needs.release.outputs.release-tag }}
+          push: true

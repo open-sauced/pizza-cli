@@ -10,7 +10,7 @@ func NewInsightsCommand() *cobra.Command {
 		Use:   "insights <command> [flags]",
 		Short: "Gather insights about git contributors, repositories, users and pull requests",
 		Long:  "Gather insights about git contributors, repositories, user and pull requests and display the results",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			return cmd.Help()
 		},
 	}
