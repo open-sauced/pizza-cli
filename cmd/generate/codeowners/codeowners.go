@@ -34,18 +34,18 @@ type Options struct {
 
 const codeownersLongDesc string = `WARNING: Proof of concept feature.
 
-Generates a CODEOWNERS file for a given git repository. This uses a .sauced.yaml
-configuration to attribute emails with GitHub usernames.
+Generates an OWNERS file for a given git repository. This uses a ~/.sauced.yaml
+configuration to attribute emails with given entities.
 
-The generated CODEOWNERS file specifies up to 3 owners for EVERY file based on the
-number of lines touched in that specific file over the lifetime of commits.`
+The generated file specifies up to 3 owners for EVERY file in the git tree based on the
+number of lines touched in that specific file over the specified range of time.`
 
 func NewCodeownersCommand() *cobra.Command {
 	opts := &Options{}
 
 	cmd := &cobra.Command{
 		Use:   "codeowners path/to/repo [flags]",
-		Short: "Generates a CODEOWNERS file for a given repository using a .sauced.yaml config",
+		Short: "Generates a codeowners file for a given repository using a \"~/.sauced.yaml\" config",
 		Long:  codeownersLongDesc,
 		Args: func(_ *cobra.Command, args []string) error {
 			if len(args) != 1 {
@@ -98,7 +98,7 @@ func NewCodeownersCommand() *cobra.Command {
 	}
 
 	cmd.PersistentFlags().IntP("range", "r", 90, "The number of days to lookback")
-	cmd.PersistentFlags().Bool("github-codeowners", false, "Whether to generate a GitHub styles CODEOWNERS file that uses attributions in a provided config")
+	cmd.PersistentFlags().Bool("github-codeowners", false, "Whether to generate a GitHub style CODEOWNERS file. Expects valid GitHub usernames as keys to attributions in the config.")
 
 	return cmd
 }
