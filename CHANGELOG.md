@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.2.0-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.1...v1.2.0-beta.2) (2024-08-26)
+
+
+### 🍕 Features
+
+* Trim down CLI - remove unused, defunct commands ([#93](https://github.com/open-sauced/pizza-cli/issues/93)) ([7ddd4b9](https://github.com/open-sauced/pizza-cli/commit/7ddd4b971eb085b995db8205f7fc718701ec4db4))
+
 ## [1.2.0-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.5...v1.2.0-beta.1) (2024-08-26)
 
 
