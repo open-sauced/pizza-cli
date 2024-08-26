@@ -4,7 +4,7 @@ build:
   echo "Building for local arch"
 
   export VERSION="${RELEASE_TAG_VERSION:-dev}"
-  export DATETIME=$(date -u +"%Y-%m-%dT%H:%M:%S")
+  export DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S")
 
   go build \
     -ldflags="-s -w" \
