@@ -28,6 +28,7 @@ build-darwin-amd64:
   echo "Building darwin amd64"
 
   export VERSION="${RELEASE_TAG_VERSION:-dev}"
+  export DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S")
   export CGO_ENABLED=0
   export GOOS="darwin"
   export GOARCH="amd64"
@@ -45,6 +46,7 @@ build-darwin-arm64:
   echo "Building darwin arm64"
 
   export VERSION="${RELEASE_TAG_VERSION:-dev}"
+  export DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S")
   export CGO_ENABLED=0
   export GOOS="darwin"
   export GOARCH="arm64"
@@ -62,6 +64,7 @@ build-linux-amd64:
   echo "Building linux amd64"
 
   export VERSION="${RELEASE_TAG_VERSION:-dev}"
+  export DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S")
   export CGO_ENABLED=0
   export GOOS="linux"
   export GOARCH="amd64"
@@ -79,6 +82,7 @@ build-linux-arm64:
   echo "Building linux arm64"
 
   export VERSION="${RELEASE_TAG_VERSION:-dev}"
+  export DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S")
   export CGO_ENABLED=0
   export GOOS="linux"
   export GOARCH="arm64"
@@ -96,6 +100,7 @@ build-windows-amd64:
   echo "Building windows amd64"
 
   export VERSION="${RELEASE_TAG_VERSION:-dev}"
+  export DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S")
   export CGO_ENABLED=0
   export GOOS="windows"
   export GOARCH="amd64"
@@ -113,6 +118,7 @@ build-windows-arm64:
   echo "Building windows arm64"
 
   export VERSION="${RELEASE_TAG_VERSION:-dev}"
+  export DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S")
   export CGO_ENABLED=0
   export GOOS="windows"
   export GOARCH="arm64"
