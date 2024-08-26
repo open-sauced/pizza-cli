@@ -12,10 +12,11 @@ import (
 	"os/signal"
 	"strings"
 
+	"github.com/spf13/cobra"
+
 	"github.com/open-sauced/pizza-cli/pkg/api"
 	"github.com/open-sauced/pizza-cli/pkg/constants"
 	"github.com/open-sauced/pizza-cli/pkg/utils"
-	"github.com/spf13/cobra"
 )
 
 type Options struct {
@@ -42,7 +43,7 @@ func NewRepoQueryCommand() *cobra.Command {
 		Use:   "repo-query url [flags]",
 		Short: "Ask questions about a GitHub repository",
 		Long:  repoQueryLongDesc,
-		Args: func(cmd *cobra.Command, args []string) error {
+		Args: func(_ *cobra.Command, args []string) error {
 			if len(args) > 1 {
 				return errors.New("only a single url can be ingested at a time")
 			}

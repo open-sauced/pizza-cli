@@ -8,8 +8,18 @@ linters:
     - staticcheck
     - unconvert
     - unused
-    - vet
+    - govet
     - gci
+
+linters-settings:
+  gci:
+    sections:
+      # include the default standard section, default section, and the "local"
+      # section which can be configured with
+      # 'goimports -local github.com/open-sauced/saucectl'
+      - standard
+      - default
+      - localmodule
 
 run:
   timeout: 5m

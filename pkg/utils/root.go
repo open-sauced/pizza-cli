@@ -3,10 +3,11 @@ package utils
 import (
 	"os"
 
-	"github.com/open-sauced/pizza-cli/pkg/constants"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"golang.org/x/term"
+
+	"github.com/open-sauced/pizza-cli/pkg/constants"
 )
 
 // SetupRootCommand is a convenience utility for applying templates and nice

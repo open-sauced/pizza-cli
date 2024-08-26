@@ -4,6 +4,8 @@ package root
 import (
 	"fmt"
 
+	"github.com/spf13/cobra"
+
 	"github.com/open-sauced/pizza-cli/cmd/auth"
 	"github.com/open-sauced/pizza-cli/cmd/bake"
 	"github.com/open-sauced/pizza-cli/cmd/insights"
@@ -11,7 +13,6 @@ import (
 	"github.com/open-sauced/pizza-cli/cmd/show"
 	"github.com/open-sauced/pizza-cli/cmd/version"
 	"github.com/open-sauced/pizza-cli/pkg/constants"
-	"github.com/spf13/cobra"
 )
 
 // NewRootCommand bootstraps a new root cobra command for the pizza CLI
@@ -21,7 +22,7 @@ func NewRootCommand() (*cobra.Command, error) {
 		Short: "OpenSauced CLI",
 		Long:  "A command line utility for insights, metrics, and all things OpenSauced",
 		RunE:  run,
-		Args: func(cmd *cobra.Command, args []string) error {
+		Args: func(cmd *cobra.Command, _ []string) error {
 			betaFlag := cmd.Flags().Lookup(constants.FlagNameBeta)
 			if betaFlag.Changed {
 				err := cmd.Flags().Lookup(constants.FlagNameEndpoint).Value.Set(constants.EndpointBeta)

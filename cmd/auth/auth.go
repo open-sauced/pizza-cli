@@ -19,9 +19,10 @@ import (
 	"time"
 
 	"github.com/cli/browser"
+	"github.com/spf13/cobra"
+
 	"github.com/open-sauced/pizza-cli/pkg/constants"
 	"github.com/open-sauced/pizza-cli/pkg/utils"
-	"github.com/spf13/cobra"
 )
 
 //go:embed success.html
@@ -48,7 +49,7 @@ func NewLoginCommand() *cobra.Command {
 		Short: "Log into the CLI application via GitHub",
 		Long:  loginLongDesc,
 		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			username, err := run()
 
 			disableTelem, _ := cmd.Flags().GetBool(constants.FlagNameTelemetry)

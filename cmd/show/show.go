@@ -7,10 +7,11 @@ import (
 	"errors"
 
 	client "github.com/open-sauced/go-api/client"
+	"github.com/spf13/cobra"
+
 	"github.com/open-sauced/pizza-cli/pkg/api"
 	"github.com/open-sauced/pizza-cli/pkg/constants"
 	"github.com/open-sauced/pizza-cli/pkg/utils"
-	"github.com/spf13/cobra"
 )
 
 // Options are the options for the pizza show command including user
@@ -50,7 +51,7 @@ func NewShowCommand() *cobra.Command {
 		Use:   "show repository-name [flags]",
 		Short: "Get visual metrics of a repository",
 		Long:  showLongDesc,
-		Args: func(cmd *cobra.Command, args []string) error {
+		Args: func(_ *cobra.Command, args []string) error {
 			if len(args) != 1 {
 				return errors.New("must specify the URL of a git repository to analyze")
 			}
@@ -64,7 +65,7 @@ func NewShowCommand() *cobra.Command {
 
 			return nil
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			var endpoint string
 			customEndpoint, _ := cmd.Flags().GetString("endpoint")
 			if customEndpoint != "" {

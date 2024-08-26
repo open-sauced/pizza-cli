@@ -9,10 +9,11 @@ import (
 	"sync"
 
 	"github.com/open-sauced/go-api/client"
+	"github.com/spf13/cobra"
+
 	"github.com/open-sauced/pizza-cli/pkg/api"
 	"github.com/open-sauced/pizza-cli/pkg/constants"
 	"github.com/open-sauced/pizza-cli/pkg/utils"
-	"github.com/spf13/cobra"
 )
 
 // Options are the options for the pizza bake command including user
@@ -55,7 +56,7 @@ func NewBakeCommand() *cobra.Command {
 			opts.Repos = append(opts.Repos, args...)
 			return nil
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			endpointURL, _ := cmd.Flags().GetString(constants.FlagNameEndpoint)
 			opts.APIClient = api.NewGoClient(endpointURL)
 			disableTelem, _ := cmd.Flags().GetBool(constants.FlagNameTelemetry)

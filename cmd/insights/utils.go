@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/open-sauced/go-api/client"
+
 	"github.com/open-sauced/pizza-cli/pkg/utils"
 )
 
