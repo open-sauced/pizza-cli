@@ -90,7 +90,7 @@ jobs:
         export RELEASE_TAG_VERSION=${{ needs.release.outputs.release-tag }}
         just build-${{ matrix.goos }}-${{ matrix.goarch }}
 
-        gh release upload ${{ needs.release.outputs.release-tag }} build/saucectl-${{ matrix.goos }}-${{ matrix.goarch }}
+        gh release upload ${{ needs.release.outputs.release-tag }} build/pizza-${{ matrix.goos }}-${{ matrix.goarch }}
 
   docker:
     name: Build and push container
