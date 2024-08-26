@@ -10,6 +10,14 @@
 
 ### 🍕 Features
 
+* Skip semantic-release docker build in favor of buildx building ([d782974](https://github.com/open-sauced/pizza-cli/commit/d782974021739f2e23d95d1f9f35ff01b24b628b))
+* Use justfile vs. makefile ([#84](https://github.com/open-sauced/pizza-cli/issues/84)) ([8f38eaf](https://github.com/open-sauced/pizza-cli/commit/8f38eaf4f24947a4035b5ac764899acc55748d38))
+
+## [1.2.0-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.5...v1.2.0-beta.1) (2024-08-26)
+
+
+### 🍕 Features
+
 * Use justfile vs. makefile ([#84](https://github.com/open-sauced/pizza-cli/issues/84)) ([8f38eaf](https://github.com/open-sauced/pizza-cli/commit/8f38eaf4f24947a4035b5ac764899acc55748d38))
 
 ## [1.1.1-beta.5](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.4...v1.1.1-beta.5) (2024-03-15)
