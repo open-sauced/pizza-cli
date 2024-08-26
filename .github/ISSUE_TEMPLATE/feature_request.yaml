@@ -1,0 +1,13 @@
+name: 🚀 Feature request
+description: Suggest an idea for the Pizza CLI 💡
+title: "Feature: "
+labels: [👀 needs triage, 💡 feature, pizza-cli]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this feature request!
+  - type: textarea
+    attributes:
+      label: Suggested solution
+      description: Describe the solution you'd like.
