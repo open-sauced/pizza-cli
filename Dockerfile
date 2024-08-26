@@ -4,6 +4,7 @@ ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 ARG VERSION
 ARG SHA
+ARG DATETIME
 
 # Get the dependencies downloaded
 WORKDIR /app
@@ -16,6 +17,7 @@ COPY . ./
 RUN go build -ldflags="-s -w \
     -X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}' \
     -X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=${SHA}'" \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
     -o pizza .
 
 # Runner layer

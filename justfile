@@ -12,7 +12,7 @@ build:
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
-    -o build/pizza
+    -o build/pizza-${GOOS}-${GOARCH}
 
 install: build
   sudo cp "./build/pizza" "/usr/local/bin/"
@@ -37,6 +37,7 @@ build-darwin-amd64:
     -ldflags="-s -w" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}'" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
+    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
     -o build/pizza-${GOOS}-${GOARCH}
 
 build-darwin-arm64:
@@ -53,6 +54,7 @@ build-darwin-arm64:
     -ldflags="-s -w" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}'" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
+    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
     -o build/pizza-${GOOS}-${GOARCH}
 
 build-linux-amd64:
@@ -69,6 +71,7 @@ build-linux-amd64:
     -ldflags="-s -w" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}'" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
+    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
     -o build/pizza-${GOOS}-${GOARCH}
 
 build-linux-arm64:
@@ -85,6 +88,7 @@ build-linux-arm64:
     -ldflags="-s -w" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}'" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
+    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
     -o build/pizza-${GOOS}-${GOARCH}
 
 build-windows-amd64:
@@ -101,6 +105,7 @@ build-windows-amd64:
     -ldflags="-s -w" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}'" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
+    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
     -o build/pizza-${GOOS}-${GOARCH}
 
 build-windows-arm64:
@@ -117,6 +122,7 @@ build-windows-arm64:
     -ldflags="-s -w" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}'" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
+    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
     -o build/pizza-${GOOS}-${GOARCH}
 
 # Builds the container and marks it tagged as "dev" locally
@@ -124,6 +130,7 @@ build-container:
   docker build \
     --build-arg VERSION=$(git describe --tags --always) \
     --build-arg SHA=$(git rev-parse HEAD) \
+    --build-arg DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S") \
     -t pizza:dev .
 
 clean:
