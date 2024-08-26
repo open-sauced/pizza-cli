@@ -7,10 +7,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/open-sauced/pizza-cli/cmd/auth"
-	"github.com/open-sauced/pizza-cli/cmd/bake"
 	"github.com/open-sauced/pizza-cli/cmd/insights"
-	repoquery "github.com/open-sauced/pizza-cli/cmd/repo-query"
-	"github.com/open-sauced/pizza-cli/cmd/show"
 	"github.com/open-sauced/pizza-cli/cmd/version"
 	"github.com/open-sauced/pizza-cli/pkg/constants"
 )
@@ -39,12 +36,9 @@ func NewRootCommand() (*cobra.Command, error) {
 	cmd.PersistentFlags().Bool(constants.FlagNameTelemetry, false, "Disable sending telemetry data to OpenSauced")
 	cmd.PersistentFlags().StringP(constants.FlagNameOutput, "o", constants.OutputTable, "The formatting for command output. One of: (table, yaml, csv, json)")
 
-	cmd.AddCommand(bake.NewBakeCommand())
-	cmd.AddCommand(repoquery.NewRepoQueryCommand())
 	cmd.AddCommand(auth.NewLoginCommand())
 	cmd.AddCommand(insights.NewInsightsCommand())
 	cmd.AddCommand(version.NewVersionCommand())
-	cmd.AddCommand(show.NewShowCommand())
 
 	return cmd, nil
 }
