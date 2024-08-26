@@ -4,11 +4,14 @@ build:
   echo "Building for local arch"
 
   export VERSION="${RELEASE_TAG_VERSION:-dev}"
+  export DATETIME=$(date -u +"%Y-%m-%dT%H:%M:%S")
 
   go build \
     -ldflags="-s -w" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}'" \
     -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
+    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
+    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
     -o build/pizza
 
 install: build
