@@ -133,9 +133,9 @@ build-windows-arm64:
 # Builds the container and marks it tagged as "dev" locally
 build-container:
   docker build \
-    --build-arg VERSION=$(git describe --tags --always) \
-    --build-arg SHA=$(git rev-parse HEAD) \
-    --build-arg DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S") \
+    --build-arg VERSION="$(git describe --tags --always)" \
+    --build-arg SHA="$(git rev-parse HEAD)" \
+    --build-arg DATETIME="$(date -u +'%Y-%m-%d %H:%M:%S')" \
     -t pizza:dev .
 
 clean:
