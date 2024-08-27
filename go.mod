@@ -1,6 +1,6 @@
 module github.com/open-sauced/pizza-cli
 
-go 1.21
+go 1.22
 
 require (
 	github.com/charmbracelet/bubbles v0.19.0
