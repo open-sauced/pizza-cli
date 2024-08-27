@@ -24,14 +24,14 @@ npm i -g pizza
 ### Docker
 
 ```sh
-$ docker run ghcr.io/open-sauced/pizza-cli:v1.1.0
+$ docker run ghcr.io/open-sauced/pizza-cli:latest
 ```
 
 For commands that require access to your file system (like `generate codeowners`), ensure
 you pass a volume to the docker container:
 
 ```sh
-$ docker run -v /local/path:/container/path ghcr.io/open-sauced/pizza-cli:v1.1.0 \
+$ docker run -v /local/path:/container/path ghcr.io/open-sauced/pizza-cli:latest \
     generate codeowners /container/path
 ```
 
@@ -39,7 +39,7 @@ For example, to mount your entire home directory (which may include a `.sauced.y
 alongside the project you want to generate a `CODEOWNERS` file for):
 
 ```sh
-$ docker run -v ~/:/app ghcr.io/open-sauced/pizza-cli:v1.1.0 \
+$ docker run -v ~/:/app ghcr.io/open-sauced/pizza-cli:latest \
     codeowners /app/workspace/gopherlogs -c /app/.sauced.yaml
 ```
 
@@ -48,7 +48,7 @@ $ docker run -v ~/:/app ghcr.io/open-sauced/pizza-cli:v1.1.0 \
 Using the Go tool-chain, you can install the binary directly:
 
 ```sh
-$ go install github.com/open-sauced/pizza-cli
+$ go install github.com/open-sauced/pizza-cli@latest
 ```
 
 Warning! You should have the `GOBIN` env var setup to point to a persistent
