@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.2.0-beta.4](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.3...v1.2.0-beta.4) (2024-08-27)
+
+
+### 🍕 Features
+
+* Upgrade Go module to use Go 1.22 ([#96](https://github.com/open-sauced/pizza-cli/issues/96)) ([690b6e9](https://github.com/open-sauced/pizza-cli/commit/690b6e92549b4478e0d6a8cf1814052158c851cd))
+
 ## [1.2.0-beta.3](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.2...v1.2.0-beta.3) (2024-08-27)
 
 
