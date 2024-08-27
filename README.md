@@ -115,7 +115,7 @@ most context and knowledge on certain parts of a codebase.
 
 WARNING: Proof of concept feature.
 
-Generates an OWNERS file for a given git repository. This uses a ~/.sauced.yaml
+Generates a CODEOWNERS file for a given git repository. This uses a ~/.sauced.yaml
 configuration to attribute emails with given entities.
 
 The generated file specifies up to 3 owners for EVERY file in the git tree based on the
@@ -125,8 +125,7 @@ Usage:
   pizza generate codeowners path/to/repo [flags]
 
 Flags:
-      --github-codeowners   Whether to generate a GitHub style CODEOWNERS file. Expects valid GitHub usernames
-                            as the keys to attributions in the config.
+      --owners-style-file   Whether to generate an agnostic OWNERS style file.
   -h, --help                help for codeowners
   -r, --range int           The number of days to lookback (default 90)
 

@@ -20,8 +20,9 @@ type Options struct {
 	// the path to the git repository on disk to generate a codeowners file for
 	path string
 
-	// whether to make a github style codeowners file or not
-	githubCodeowners bool
+	// whether to generate an agnostic "OWENRS" style codeowners file.
+	// The default should be to generate a GitHub style "CODEOWNERS" file.
+	ownersStyleFile bool
 
 	// the number of days to look back
 	previousDays int
@@ -34,7 +35,7 @@ type Options struct {
 
 const codeownersLongDesc string = `WARNING: Proof of concept feature.
 
-Generates an OWNERS file for a given git repository. This uses a ~/.sauced.yaml
+Generates a CODEOWNERS file for a given git repository. This uses a ~/.sauced.yaml
 configuration to attribute emails with given entities.
 
 The generated file specifies up to 3 owners for EVERY file in the git tree based on the
@@ -45,7 +46,7 @@ func NewCodeownersCommand() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "codeowners path/to/repo [flags]",
-		Short: "Generates a codeowners file for a given repository using a \"~/.sauced.yaml\" config",
+		Short: "Generates a CODEOWNERS file for a given repository using a \"~/.sauced.yaml\" config",
 		Long:  codeownersLongDesc,
 		Args: func(_ *cobra.Command, args []string) error {
 			if len(args) != 1 {
@@ -76,7 +77,7 @@ func NewCodeownersCommand() *cobra.Command {
 				return err
 			}
 
-			opts.githubCodeowners, _ = cmd.Flags().GetBool("github-codeowners")
+			opts.ownersStyleFile, _ = cmd.Flags().GetBool("owners-style-file")
 			opts.previousDays, _ = cmd.Flags().GetInt("range")
 			opts.tty, _ = cmd.Flags().GetBool("tty-disable")
 
@@ -98,7 +99,7 @@ func NewCodeownersCommand() *cobra.Command {
 	}
 
 	cmd.PersistentFlags().IntP("range", "r", 90, "The number of days to lookback")
-	cmd.PersistentFlags().Bool("github-codeowners", false, "Whether to generate a GitHub style CODEOWNERS file. Expects valid GitHub usernames as keys to attributions in the config.")
+	cmd.PersistentFlags().Bool("owners-style-file", false, "Whether to generate an agnostic OWNERS style file.")
 
 	return cmd
 }
@@ -134,14 +135,14 @@ func run(opts *Options) error {
 
 	// Bootstrap codeowners
 	outputPath := ""
-	if opts.githubCodeowners {
-		outputPath = filepath.Join(opts.path, "CODEOWNERS")
-	} else {
+	if opts.ownersStyleFile {
 		outputPath = filepath.Join(opts.path, "OWNERS")
+	} else {
+		outputPath = filepath.Join(opts.path, "CODEOWNERS")
 	}
 
 	logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Processing codeowners file at: %s\n", outputPath)
-	err = generateOutputFile(codeowners, outputPath, opts.githubCodeowners, opts.config)
+	err = generateOutputFile(codeowners, outputPath, opts.ownersStyleFile, opts.config)
 	if err != nil {
 		return fmt.Errorf("error generating github style codeowners file: %w", err)
 	}

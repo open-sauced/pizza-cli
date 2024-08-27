@@ -9,7 +9,7 @@ import (
 	"github.com/open-sauced/pizza-cli/pkg/config"
 )
 
-func generateOutputFile(fileStats FileStats, outputPath string, githubCodeowners bool, config *config.Spec) error {
+func generateOutputFile(fileStats FileStats, outputPath string, ownersStyleFile bool, config *config.Spec) error {
 	// Open the file for writing
 	file, err := os.Create(outputPath)
 	if err != nil {
@@ -33,13 +33,13 @@ func generateOutputFile(fileStats FileStats, outputPath string, githubCodeowners
 	// Process each file
 	for _, filename := range filenames {
 		authorStats := fileStats[filename]
-		if githubCodeowners {
-			_, err := writeGitHubCodeownersChunk(authorStats, config, file, filename, outputPath)
+		if ownersStyleFile {
+			err = writeOwnersChunk(authorStats, config, file, filename, outputPath)
 			if err != nil {
 				return fmt.Errorf("error writing to %s file: %w", outputPath, err)
 			}
 		} else {
-			err = writeOwnersChunk(authorStats, config, file, filename, outputPath)
+			_, err := writeGitHubCodeownersChunk(authorStats, config, file, filename, outputPath)
 			if err != nil {
 				return fmt.Errorf("error writing to %s file: %w", outputPath, err)
 			}
