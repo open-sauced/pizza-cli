@@ -1,0 +1,40 @@
+# This file is generated automatically by OpenSauced pizza-cli. DO NOT EDIT. Stay saucy!
+
+.github/ISSUE_TEMPLATE/bug_report.yaml @jpmcb
+.github/ISSUE_TEMPLATE/config.yaml @jpmcb
+.github/ISSUE_TEMPLATE/feature_request.yaml @jpmcb
+.github/workflows/auto-add-to-project.yml @jpmcb
+.github/workflows/release.yaml @jpmcb
+.github/workflows/test.yaml @jpmcb
+.golangci.yaml @jpmcb
+CHANGELOG.md @jpmcb @brandonroberts @nickytonline
+Dockerfile @jpmcb @nickytonline
+Makefile @jpmcb
+README.md @jpmcb
+cmd/auth/auth.go @jpmcb
+cmd/bake/bake.go @jpmcb
+cmd/bake/bake_test.go @jpmcb
+cmd/generate/codeowners/codeowners.go @jpmcb
+cmd/generate/codeowners/output.go @jpmcb @brandonroberts
+cmd/generate/codeowners/output_test.go @brandonroberts
+cmd/generate/codeowners/spec.go @jpmcb
+cmd/generate/codeowners/traversal.go @jpmcb
+cmd/generate/generate.go @jpmcb
+cmd/insights/contributors.go @jpmcb
+cmd/insights/insights.go @jpmcb
+cmd/insights/repositories.go @jpmcb
+cmd/insights/user-contributions.go @jpmcb
+cmd/insights/utils.go @jpmcb
+cmd/repo-query/repo-query.go @jpmcb
+cmd/root/root.go @jpmcb
+cmd/show/show.go @jpmcb
+cmd/version/version.go @jpmcb @nickytonline
+go.mod @jpmcb
+go.sum @jpmcb
+justfile @jpmcb @nickytonline
+npm/package.json @jpmcb @brandonroberts @nickytonline
+pkg/config/config.go @jpmcb
+pkg/config/spec.go @jpmcb
+pkg/logging/constants.go @jpmcb
+pkg/utils/root.go @jpmcb
+pkg/utils/version.go @nickytonline
