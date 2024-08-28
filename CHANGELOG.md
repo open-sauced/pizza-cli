@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.2.0-beta.7](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.6...v1.2.0-beta.7) (2024-08-28)
+
+
+### 🍕 Features
+
+* Refactors Auth code into api/ directory ([#105](https://github.com/open-sauced/pizza-cli/issues/105)) ([d851499](https://github.com/open-sauced/pizza-cli/commit/d851499690b0038d10a17ea67019021ffe7c70f2))
+
 ## [1.2.0-beta.6](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.5...v1.2.0-beta.6) (2024-08-28)
 
 
