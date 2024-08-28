@@ -12,6 +12,10 @@ func TestCleanFilename(testRunner *testing.T) {
 		{"path/to/[home].go", "path/to/[home].go", `path/to/\[home\].go`},
 		{"path/to/+page.go", "path/to/+page.go", `path/to/\+page.go`},
 		{"path/to/go-home.go", "path/to/go-home.go", `path/to/go-home.go`},
+		{`path\to\(home).go`, `path\to\(home).go`, `path\to\\(home\).go`},
+		{`path\to\[home].go`, `path\to\[home].go`, `path\to\\[home\].go`},
+		{`path\to\+page.go`, `path\to\+page.go`, `path\to\\+page.go`},
+		{`path\to\go-home.go`, `path\to\go-home.go`, `path\to\go-home.go`},
 	}
 
 	for _, testItem := range tests {
