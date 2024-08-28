@@ -34,13 +34,14 @@ func LoadConfig(path string, fallbackPath string) (*Spec, error) {
 
 	data, err := os.ReadFile(absPath)
 	if err != nil {
-
 		// If the file does not exist, check if the fallback path exists
 		if os.IsNotExist(err) {
 			_, err = os.Stat(fallbackPath)
 			if err != nil {
 				return nil, fmt.Errorf("error reading config file from %s or %s", absPath, fallbackPath)
 			}
+		} else {
+			return nil, fmt.Errorf("error reading config file: %w", err)
 		}
 	}
 
