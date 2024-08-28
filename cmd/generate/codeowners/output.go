@@ -3,6 +3,7 @@ package codeowners
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -58,13 +59,13 @@ func writeGitHubCodeownersChunk(authorStats AuthorStats, config *config.Spec, fi
 	}
 
 	if len(topContributors) > 0 {
-		_, err := fmt.Fprintf(file, "%s @%s\n", srcFilename, strings.Join(resultSlice, " @"))
+		_, err := fmt.Fprintf(file, "%s @%s\n", cleanFilename(srcFilename), strings.Join(resultSlice, " @"))
 		if err != nil {
 			return nil, fmt.Errorf("error writing to %s file: %w", outputPath, err)
 		}
 	} else {
 		// no code owners to attribute to file
-		_, err := fmt.Fprintf(file, "%s\n", srcFilename)
+		_, err := fmt.Fprintf(file, "%s\n", cleanFilename(srcFilename))
 		if err != nil {
 			return nil, fmt.Errorf("error writing to %s file: %w", outputPath, err)
 		}
@@ -115,4 +116,14 @@ func getTopContributorAttributions(authorStats AuthorStats, n int, config *confi
 	}
 
 	return topContributors
+}
+
+func cleanFilename(filename string) string {
+	// Split the filename in case its rename, see https://github.com/open-sauced/pizza-cli/issues/101
+	parsedFilename := strings.Split(filename, " ")[0]
+	// Replace anything that is not a word, period, single quote, dash, space, forward slash, or backslash with an escaped version
+	re := regexp.MustCompile(`([^\w\.\'\-\s\/\\])`)
+	escapedFilename := re.ReplaceAllString(parsedFilename, "\\$0")
+
+	return escapedFilename
 }
