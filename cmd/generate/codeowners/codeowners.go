@@ -72,7 +72,7 @@ func NewCodeownersCommand() *cobra.Command {
 			var err error
 
 			configPath, _ := cmd.Flags().GetString("config")
-			opts.config, err = config.LoadConfig(configPath)
+			opts.config, err = config.LoadConfig(configPath, opts.path+"/.sauced.yaml")
 			if err != nil {
 				return err
 			}
