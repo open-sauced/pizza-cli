@@ -3,9 +3,9 @@ package codeowners
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
-	"regexp"
 
 	"github.com/open-sauced/pizza-cli/pkg/config"
 )

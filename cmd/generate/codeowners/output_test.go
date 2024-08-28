@@ -1,19 +1,17 @@
 package codeowners
 
-import (
-		"testing"
-)
+import "testing"
 
 func TestCleanFilename(testRunner *testing.T) {
 	var tests = []struct {
-		name string
-		input string
-		expected  string
+		name     string
+		input    string
+		expected string
 	}{
-			{"path/to/(home).go", "path/to/(home).go", `path/to/\(home\).go`},
-			{"path/to/[home].go", "path/to/[home].go", `path/to/\[home\].go`},
-			{"path/to/+page.go", "path/to/+page.go", `path/to/\+page.go`},
-			{"path/to/go-home.go", "path/to/go-home.go", `path/to/go-home.go`},
+		{"path/to/(home).go", "path/to/(home).go", `path/to/\(home\).go`},
+		{"path/to/[home].go", "path/to/[home].go", `path/to/\[home\].go`},
+		{"path/to/+page.go", "path/to/+page.go", `path/to/\+page.go`},
+		{"path/to/go-home.go", "path/to/go-home.go", `path/to/go-home.go`},
 	}
 
 	for _, testItem := range tests {
