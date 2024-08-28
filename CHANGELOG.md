@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.2.0-beta.6](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.5...v1.2.0-beta.6) (2024-08-28)
+
+
+### 🐛 Bug Fixes
+
+* escape non-standard characters in the filename path ([#106](https://github.com/open-sauced/pizza-cli/issues/106)) ([418951f](https://github.com/open-sauced/pizza-cli/commit/418951f2629412c0855161a82eae1fd87502091b))
+
 ## [1.2.0-beta.5](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.4...v1.2.0-beta.5) (2024-08-27)
 
 
