@@ -9,12 +9,7 @@ import (
 )
 
 func TestLoadConfig(t *testing.T) {
-	// Create a temporary directory for test files
-	tmpDir, err := os.MkdirTemp("", "config_test")
-	if err != nil {
-		t.Fatalf("Failed to create temp directory: %v", err)
-	}
-	defer os.RemoveAll(tmpDir)
+	tmpDir := t.TempDir()
 
 	// Create an empty file for testing
 	configFilePath := filepath.Join(tmpDir, ".sauced.yaml")
