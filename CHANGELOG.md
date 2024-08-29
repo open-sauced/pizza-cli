@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.2.0-beta.11](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.10...v1.2.0-beta.11) (2024-08-29)
+
+
+### 🐛 Bug Fixes
+
+* mark endpoint and beta flags as hidden ([#113](https://github.com/open-sauced/pizza-cli/issues/113)) ([6aa250f](https://github.com/open-sauced/pizza-cli/commit/6aa250f45bde6486189270da2c70589f475ca39c))
+
 ## [1.2.0-beta.10](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.9...v1.2.0-beta.10) (2024-08-29)
 
 
