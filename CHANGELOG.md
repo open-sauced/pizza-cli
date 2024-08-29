@@ -5,6 +5,25 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.2.0-beta.9](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.8...v1.2.0-beta.9) (2024-08-29)
+
+
+### 🍕 Features
+
+* now generate codeowners checks in user root but also repository root folder for .sauced.yaml ([a0298b1](https://github.com/open-sauced/pizza-cli/commit/a0298b1b8bd0348918d579785cc859cefa594ada))
+
+
+### 📝 Documentation
+
+* updated comment for LoadConfig ([ab5206b](https://github.com/open-sauced/pizza-cli/commit/ab5206b9a76ca35e2cf18c0fa68c4958a7d37ca6))
+
+
+### ✅ Tests
+
+* added setup and teardown ([aba6310](https://github.com/open-sauced/pizza-cli/commit/aba631095495fc70b2ba520a1e59e5d7c6f93a13))
+* added tests for LoadConfig ([2a5f85d](https://github.com/open-sauced/pizza-cli/commit/2a5f85de3bbe3a3d2812fcfe1ba4640ad7b55827))
+* made tests parallel ([2b3d8ca](https://github.com/open-sauced/pizza-cli/commit/2b3d8ca28e7a92f81953e16a982acda5a36a4e6d))
+
 ## [1.2.0-beta.8](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.7...v1.2.0-beta.8) (2024-08-28)
 
 
