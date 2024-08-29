@@ -10,71 +10,45 @@ import (
 )
 
 func TestLoadConfig(t *testing.T) {
-	var tmpDir string
+	t.Parallel()
 
-	setup := func() {
-		tmpDir = t.TempDir()
-	}
+	t.Run("Existing file", func(t *testing.T) {
+		t.Parallel()
+		tmpDir := t.TempDir()
+		configFilePath := filepath.Join(tmpDir, ".sauced.yaml")
+		require.NoError(t, os.WriteFile(configFilePath, []byte("key: value"), 0644))
 
-	teardown := func() {
-		os.RemoveAll(tmpDir)
-	}
+		config, err := LoadConfig(configFilePath, "")
+		assert.NoError(t, err)
+		assert.NotNil(t, config)
+	})
 
-	tests := []struct {
-		name          string
-		setup         func(t *testing.T) (string, string)
-		expectedError bool
-	}{
-		{
-			name: "Existing file",
-			setup: func(t *testing.T) (string, string) {
-				configFilePath := filepath.Join(tmpDir, ".sauced.yaml")
-				require.NoError(t, os.WriteFile(configFilePath, []byte("key: value"), 0644))
-				return configFilePath, ""
-			},
-			expectedError: false,
-		},
-		{
-			name: "Non-existent file",
-			setup: func(_ *testing.T) (string, string) {
-				return filepath.Join(tmpDir, ".sauced.yaml"), ""
-			},
-			expectedError: true,
-		},
-		{
-			name: "Non-existent file with fallback",
-			setup: func(_ *testing.T) (string, string) {
-				fallbackPath := filepath.Join(tmpDir, ".sauced.yaml")
-				require.NoError(t, os.WriteFile(fallbackPath, []byte("key: fallback"), 0644))
-				nonExistentPath := filepath.Join(tmpDir, ".sauced.yaml")
-				return nonExistentPath, fallbackPath
-			},
-			expectedError: false,
-		},
-		{
-			name: "Default path",
-			setup: func(_ *testing.T) (string, string) {
-				return DefaultConfigPath, ""
-			},
-			expectedError: true,
-		},
-	}
+	t.Run("Non-existent file", func(t *testing.T) {
+		t.Parallel()
+		tmpDir := t.TempDir()
+		nonExistentPath := filepath.Join(tmpDir, ".sauced.yaml")
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(_ *testing.T) {
-			setup()
-			defer teardown()
+		config, err := LoadConfig(nonExistentPath, "")
+		assert.Error(t, err)
+		assert.Nil(t, config)
+	})
 
-			path, fallbackPath := tt.setup(t)
-			config, err := LoadConfig(path, fallbackPath)
+	t.Run("Non-existent file with fallback", func(t *testing.T) {
+		t.Parallel()
+		tmpDir := t.TempDir()
+		fallbackPath := filepath.Join(tmpDir, ".sauced.yaml")
+		require.NoError(t, os.WriteFile(fallbackPath, []byte("key: fallback"), 0644))
+		nonExistentPath := filepath.Join(tmpDir, "non-existent.yaml")
 
-			if tt.expectedError {
-				assert.Error(t, err)
-				assert.Nil(t, config)
-			} else {
-				assert.NoError(t, err)
-				assert.NotNil(t, config)
-			}
-		})
-	}
+		config, err := LoadConfig(nonExistentPath, fallbackPath)
+		assert.NoError(t, err)
+		assert.NotNil(t, config)
+	})
+
+	t.Run("Default path", func(t *testing.T) {
+		t.Parallel()
+		config, err := LoadConfig(DefaultConfigPath, "")
+		assert.Error(t, err)
+		assert.Nil(t, config)
+	})
 }
