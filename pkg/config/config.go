@@ -13,8 +13,9 @@ const DefaultConfigPath = "~/.sauced.yaml"
 
 // LoadConfig loads a configuration file at a given path. It attempts to load
 // the default location of a ".sauced.yaml" in the user's home directory if an
-// empty path is not provided.
-func LoadConfig(path string, fallbackPath string) (*Spec, error) {
+// empty path is provided. If none is found in the user's home directory, it tries to load
+// ".sauced.yaml" from the fallback path, which is the root path of a repository.
+func LoadConfig(path string, repoRootPathConfig string) (*Spec, error) {
 	config := &Spec{}
 
 	if path == DefaultConfigPath || path == "" {
@@ -36,9 +37,9 @@ func LoadConfig(path string, fallbackPath string) (*Spec, error) {
 	if err != nil {
 		// If the file does not exist, check if the fallback path exists
 		if os.IsNotExist(err) {
-			_, err = os.Stat(fallbackPath)
+			_, err = os.Stat(repoRootPathConfig)
 			if err != nil {
-				return nil, fmt.Errorf("error reading config file from %s or %s", absPath, fallbackPath)
+				return nil, fmt.Errorf("error reading config file from %s or %s", absPath, repoRootPathConfig)
 			}
 		} else {
 			return nil, fmt.Errorf("error reading config file: %w", err)
