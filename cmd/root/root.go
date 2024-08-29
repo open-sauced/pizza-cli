@@ -44,8 +44,16 @@ func NewRootCommand() (*cobra.Command, error) {
 	cmd.AddCommand(generate.NewGenerateCommand())
 	cmd.AddCommand(insights.NewInsightsCommand())
 	cmd.AddCommand(version.NewVersionCommand())
-	cmd.PersistentFlags().MarkHidden(constants.FlagNameEndpoint)
-	cmd.PersistentFlags().MarkHidden(constants.FlagNameBeta)
+
+	endpointHiddenErr := cmd.Flags().MarkHidden(constants.FlagNameEndpoint)
+	if endpointHiddenErr != nil {
+		return nil, endpointHiddenErr
+	}
+
+	betaHiddenErr := cmd.Flags().MarkHidden(constants.FlagNameBeta)
+	if betaHiddenErr != nil {
+		return nil, betaHiddenErr
+	}
 
 	return cmd, nil
 }
