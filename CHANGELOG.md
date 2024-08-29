@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.2.0-beta.10](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.9...v1.2.0-beta.10) (2024-08-29)
+
+
+### 🍕 Features
+
+* pizza login success page style refresh ([#112](https://github.com/open-sauced/pizza-cli/issues/112)) ([9357dac](https://github.com/open-sauced/pizza-cli/commit/9357dac1bf07cc3459cae100e78ecdf451747544))
+
 ## [1.2.0-beta.9](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.8...v1.2.0-beta.9) (2024-08-29)
 
 
