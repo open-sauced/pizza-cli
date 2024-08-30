@@ -8,18 +8,30 @@ import (
 	"strings"
 
 	"github.com/open-sauced/pizza-cli/pkg/config"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
-func generateOutputFile(fileStats FileStats, outputPath string, ownersStyleFile bool, config *config.Spec) error {
+func generateOutputFile(fileStats FileStats, outputPath string, opts *Options, cmd *cobra.Command) error {
 	// Open the file for writing
 	file, err := os.Create(outputPath)
 	if err != nil {
 		return fmt.Errorf("error creating %s file: %w", outputPath, err)
 	}
 	defer file.Close()
+  var flags []string
+
+  cmd.Flags().Visit(func(f *pflag.Flag) {
+    flags = append(flags, fmt.Sprintf("--%s %v", f.Name, f.Value.String()))
+  })
+  generatedCommand := fmt.Sprintf("# $ pizza generate codeowners %s ", opts.path)
+  if (len(flags) > 0) {
+    generatedCommand += strings.Join(flags, " ")
+  }
 
 	// Write the header
-	_, err = file.WriteString("# This file is generated automatically by OpenSauced pizza-cli. DO NOT EDIT. Stay saucy!\n\n")
+	_, err = file.WriteString(fmt.Sprintf("# This file is generated automatically by OpenSauced pizza-cli. DO NOT EDIT. Stay saucy!\n#\n# Generated with command:\n%s\n\n", generatedCommand))
+
 	if err != nil {
 		return fmt.Errorf("error writing to %s file: %w", outputPath, err)
 	}
@@ -34,20 +46,20 @@ func generateOutputFile(fileStats FileStats, outputPath string, ownersStyleFile 
 	// Process each file
 	for _, filename := range filenames {
 		authorStats := fileStats[filename]
-		if ownersStyleFile {
-			err = writeOwnersChunk(authorStats, config, file, filename, outputPath)
+		if opts.ownersStyleFile {
+			err = writeOwnersChunk(authorStats, opts.config, file, filename, outputPath)
 			if err != nil {
 				return fmt.Errorf("error writing to %s file: %w", outputPath, err)
 			}
 		} else {
-			_, err := writeGitHubCodeownersChunk(authorStats, config, file, filename, outputPath)
+			_, err := writeGitHubCodeownersChunk(authorStats, opts.config, file, filename, outputPath)
 			if err != nil {
 				return fmt.Errorf("error writing to %s file: %w", outputPath, err)
 			}
 		}
 	}
 
-	return nil
+	return nil 
 }
 
 func writeGitHubCodeownersChunk(authorStats AuthorStats, config *config.Spec, file *os.File, srcFilename string, outputPath string) ([]string, error) {

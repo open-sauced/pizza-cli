@@ -94,7 +94,7 @@ func NewCodeownersCommand() *cobra.Command {
 				opts.loglevel = logging.LogDebug
 			}
 
-			return run(opts)
+			return run(opts, cmd)
 		},
 	}
 
@@ -104,7 +104,7 @@ func NewCodeownersCommand() *cobra.Command {
 	return cmd
 }
 
-func run(opts *Options) error {
+func run(opts *Options, cmd *cobra.Command) error {
 	logger, err := gopherlogs.NewLogger(
 		gopherlogs.WithLogVerbosity(opts.loglevel),
 		gopherlogs.WithTty(!opts.tty),
@@ -142,7 +142,7 @@ func run(opts *Options) error {
 	}
 
 	logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Processing codeowners file at: %s\n", outputPath)
-	err = generateOutputFile(codeowners, outputPath, opts.ownersStyleFile, opts.config)
+	err = generateOutputFile(codeowners, outputPath, opts, cmd)
 	if err != nil {
 		return fmt.Errorf("error generating github style codeowners file: %w", err)
 	}
