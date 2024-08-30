@@ -2,6 +2,8 @@ package insights
 
 import (
 	"github.com/spf13/cobra"
+
+	"github.com/open-sauced/pizza-cli/pkg/constants"
 )
 
 // NewInsightsCommand returns a new cobra command for 'pizza insights'
@@ -14,6 +16,7 @@ func NewInsightsCommand() *cobra.Command {
 			return cmd.Help()
 		},
 	}
+	cmd.PersistentFlags().StringP(constants.FlagNameOutput, "o", constants.OutputTable, "The formatting for command output. One of: (table, yaml, csv, json)")
 	cmd.AddCommand(NewContributorsCommand())
 	cmd.AddCommand(NewRepositoriesCommand())
 	cmd.AddCommand(NewUserContributionsCommand())
