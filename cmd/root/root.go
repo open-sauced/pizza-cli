@@ -44,14 +44,14 @@ func NewRootCommand() (*cobra.Command, error) {
 	cmd.AddCommand(insights.NewInsightsCommand())
 	cmd.AddCommand(version.NewVersionCommand())
 
-	err := cmd.Flags().MarkHidden(constants.FlagNameEndpoint)
+	err := cmd.PersistentFlags().MarkHidden(constants.FlagNameEndpoint)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error marking %s as hidden: %w", constants.FlagNameEndpoint, err)
 	}
 
-	err = cmd.Flags().MarkHidden(constants.FlagNameBeta)
+	err = cmd.PersistentFlags().MarkHidden(constants.FlagNameBeta)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error marking %s as hidden: %w", constants.FlagNameBeta, err)
 	}
 
 	return cmd, nil
