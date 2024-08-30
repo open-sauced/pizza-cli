@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.2.0-beta.12](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.11...v1.2.0-beta.12) (2024-08-30)
+
+
+### 🐛 Bug Fixes
+
+* move output flag to insights command ([#115](https://github.com/open-sauced/pizza-cli/issues/115)) ([be7f8cd](https://github.com/open-sauced/pizza-cli/commit/be7f8cdda34552c5f845e995c84a3a1aa4be01d2))
+
 ## [1.2.0-beta.11](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.10...v1.2.0-beta.11) (2024-08-29)
 
 
