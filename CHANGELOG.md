@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.2.1](https://github.com/open-sauced/pizza-cli/compare/v1.2.0...v1.2.1) (2024-08-30)
+
+
+### 🐛 Bug Fixes
+
+* Root command persistent flags are marked hidden correctly ([#126](https://github.com/open-sauced/pizza-cli/issues/126)) ([727a82e](https://github.com/open-sauced/pizza-cli/commit/727a82e6488699ae854df6d7dc1ac0778ef03542))
+
 ## [1.2.1-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.2.0...v1.2.1-beta.1) (2024-08-30)
 
 
