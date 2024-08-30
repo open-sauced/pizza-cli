@@ -1,15 +1,15 @@
 package auth
 
-type accessTokenResponse struct {
-	AccessToken  string     `json:"access_token"`
-	RefreshToken string     `json:"refresh_token"`
-	TokenType    string     `json:"token_type"`
-	ExpiresIn    int        `json:"expires_in"`
-	ExpiresAt    int        `json:"expires_at"`
-	User         userSchema `json:"user"`
+type session struct {
+	AccessToken  string      `json:"access_token"`
+	RefreshToken string      `json:"refresh_token"`
+	TokenType    string      `json:"token_type"`
+	ExpiresIn    int64       `json:"expires_in"`
+	ExpiresAt    int64       `json:"expires_at"`
+	User         sessionUser `json:"user"`
 }
 
-type userSchema struct {
+type sessionUser struct {
 	ID                     string                 `json:"id"`
 	Aud                    string                 `json:"aud,omitempty"`
 	Role                   string                 `json:"role"`
@@ -28,7 +28,7 @@ type userSchema struct {
 	LastSignInAt           string                 `json:"last_sign_in_at"`
 	AppMetadata            map[string]interface{} `json:"app_metadata"`
 	UserMetadata           map[string]interface{} `json:"user_metadata"`
-	Factors                []mfaFactorSchema      `json:"factors"`
+	Factors                []sessionUseFactor     `json:"factors"`
 	Identities             []interface{}          `json:"identities"`
 	BannedUntil            string                 `json:"banned_until"`
 	CreatedAt              string                 `json:"created_at"`
@@ -36,7 +36,7 @@ type userSchema struct {
 	DeletedAt              string                 `json:"deleted_at"`
 }
 
-type mfaFactorSchema struct {
+type sessionUseFactor struct {
 	ID           string `json:"id"`
 	Status       string `json:"status"`
 	FriendlyName string `json:"friendly_name"`

@@ -5,14 +5,127 @@
 
 > All notable changes to this project will be documented in this file
 
-## [1.1.1](https://github.com/open-sauced/pizza-cli/compare/v1.1.0...v1.1.1) (2024-02-05)
+## [1.2.0-beta.12](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.11...v1.2.0-beta.12) (2024-08-30)
 
 
 ### 🐛 Bug Fixes
 
+* move output flag to insights command ([#115](https://github.com/open-sauced/pizza-cli/issues/115)) ([be7f8cd](https://github.com/open-sauced/pizza-cli/commit/be7f8cdda34552c5f845e995c84a3a1aa4be01d2))
+
+## [1.2.0-beta.11](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.10...v1.2.0-beta.11) (2024-08-29)
+
+
+### 🐛 Bug Fixes
+
+* mark endpoint and beta flags as hidden ([#113](https://github.com/open-sauced/pizza-cli/issues/113)) ([6aa250f](https://github.com/open-sauced/pizza-cli/commit/6aa250f45bde6486189270da2c70589f475ca39c))
+
+## [1.2.0-beta.10](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.9...v1.2.0-beta.10) (2024-08-29)
+
+
+### 🍕 Features
+
+* pizza login success page style refresh ([#112](https://github.com/open-sauced/pizza-cli/issues/112)) ([9357dac](https://github.com/open-sauced/pizza-cli/commit/9357dac1bf07cc3459cae100e78ecdf451747544))
+
+## [1.2.0-beta.9](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.8...v1.2.0-beta.9) (2024-08-29)
+
+
+### 🍕 Features
+
+* now generate codeowners checks in user root but also repository root folder for .sauced.yaml ([a0298b1](https://github.com/open-sauced/pizza-cli/commit/a0298b1b8bd0348918d579785cc859cefa594ada))
+
+
+### 📝 Documentation
+
+* updated comment for LoadConfig ([ab5206b](https://github.com/open-sauced/pizza-cli/commit/ab5206b9a76ca35e2cf18c0fa68c4958a7d37ca6))
+
+
+### ✅ Tests
+
+* added setup and teardown ([aba6310](https://github.com/open-sauced/pizza-cli/commit/aba631095495fc70b2ba520a1e59e5d7c6f93a13))
+* added tests for LoadConfig ([2a5f85d](https://github.com/open-sauced/pizza-cli/commit/2a5f85de3bbe3a3d2812fcfe1ba4640ad7b55827))
+* made tests parallel ([2b3d8ca](https://github.com/open-sauced/pizza-cli/commit/2b3d8ca28e7a92f81953e16a982acda5a36a4e6d))
+
+## [1.2.0-beta.8](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.7...v1.2.0-beta.8) (2024-08-28)
+
+
+### 🍕 Features
+
+* added .sauced.yaml and updated CODEOWNERS file ([#109](https://github.com/open-sauced/pizza-cli/issues/109)) ([dfc56cb](https://github.com/open-sauced/pizza-cli/commit/dfc56cbafd0f061bc0742e3f8a1d8be93ed7bfda))
+
+## [1.2.0-beta.7](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.6...v1.2.0-beta.7) (2024-08-28)
+
+
+### 🍕 Features
+
+* Refactors Auth code into api/ directory ([#105](https://github.com/open-sauced/pizza-cli/issues/105)) ([d851499](https://github.com/open-sauced/pizza-cli/commit/d851499690b0038d10a17ea67019021ffe7c70f2))
+
+## [1.2.0-beta.6](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.5...v1.2.0-beta.6) (2024-08-28)
+
+
+### 🐛 Bug Fixes
+
+* escape non-standard characters in the filename path ([#106](https://github.com/open-sauced/pizza-cli/issues/106)) ([418951f](https://github.com/open-sauced/pizza-cli/commit/418951f2629412c0855161a82eae1fd87502091b))
+
+## [1.2.0-beta.5](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.4...v1.2.0-beta.5) (2024-08-27)
+
+
+### 🍕 Features
+
+* added built at to version command ([#94](https://github.com/open-sauced/pizza-cli/issues/94)) ([9960fc0](https://github.com/open-sauced/pizza-cli/commit/9960fc0733e3f6c22692b0bc89ff00c674a97274))
+
+## [1.2.0-beta.4](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.3...v1.2.0-beta.4) (2024-08-27)
+
+
+### 🍕 Features
+
+* Upgrade Go module to use Go 1.22 ([#96](https://github.com/open-sauced/pizza-cli/issues/96)) ([690b6e9](https://github.com/open-sauced/pizza-cli/commit/690b6e92549b4478e0d6a8cf1814052158c851cd))
+
+## [1.2.0-beta.3](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.2...v1.2.0-beta.3) (2024-08-27)
+
+
+### 🍕 Features
+
+* Codeowners generation ([#95](https://github.com/open-sauced/pizza-cli/issues/95)) ([79cf8a2](https://github.com/open-sauced/pizza-cli/commit/79cf8a2b47c701505bd889df569c592bfed49dbd))
+
+## [1.2.0-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.2.0-beta.1...v1.2.0-beta.2) (2024-08-26)
+
+
+### 🍕 Features
+
+* Trim down CLI - remove unused, defunct commands ([#93](https://github.com/open-sauced/pizza-cli/issues/93)) ([7ddd4b9](https://github.com/open-sauced/pizza-cli/commit/7ddd4b971eb085b995db8205f7fc718701ec4db4))
+
+## [1.2.0-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.5...v1.2.0-beta.1) (2024-08-26)
+
+
+### 🍕 Features
+
+* Skip semantic-release docker build in favor of buildx building ([d782974](https://github.com/open-sauced/pizza-cli/commit/d782974021739f2e23d95d1f9f35ff01b24b628b))
+* Use justfile vs. makefile ([#84](https://github.com/open-sauced/pizza-cli/issues/84)) ([8f38eaf](https://github.com/open-sauced/pizza-cli/commit/8f38eaf4f24947a4035b5ac764899acc55748d38))
+
+## [1.2.0-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.5...v1.2.0-beta.1) (2024-08-26)
+
+
+### 🍕 Features
+
+* Use justfile vs. makefile ([#84](https://github.com/open-sauced/pizza-cli/issues/84)) ([8f38eaf](https://github.com/open-sauced/pizza-cli/commit/8f38eaf4f24947a4035b5ac764899acc55748d38))
+
+## [1.1.1-beta.5](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.4...v1.1.1-beta.5) (2024-03-15)
+
+
+### 🐛 Bug Fixes
+
+* update supabase keys for auth ([#80](https://github.com/open-sauced/pizza-cli/issues/80)) ([247c431](https://github.com/open-sauced/pizza-cli/commit/247c431401744833e36ebea797c49062f0e35910))
+
+## [1.1.1-beta.4](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.3...v1.1.1-beta.4) (2024-03-04)
+
+
+### 🐛 Bug Fixes
+
+* use repository fullname to fetch contributors ([#77](https://github.com/open-sauced/pizza-cli/issues/77)) ([5326875](https://github.com/open-sauced/pizza-cli/commit/53268758056a25b9135c011425b5854657752885))
 * avoid requiring CGO for now ([#71](https://github.com/open-sauced/pizza-cli/issues/71)) ([f6d2f1d](https://github.com/open-sauced/pizza-cli/commit/f6d2f1d11bda7760edf585279099f3a874661973))
 * Force publish of package to build go binaries during release ([#69](https://github.com/open-sauced/pizza-cli/issues/69)) ([02177d5](https://github.com/open-sauced/pizza-cli/commit/02177d5c81c330385f4f73c5d5f2df045c96757e))
 * Upgrade to v2 API ([#73](https://github.com/open-sauced/pizza-cli/issues/73)) ([40b468b](https://github.com/open-sauced/pizza-cli/commit/40b468be69bdffb1fa7170861abf98601acb6c68))
+
 
 ## [1.1.1-beta.3](https://github.com/open-sauced/pizza-cli/compare/v1.1.1-beta.2...v1.1.1-beta.3) (2024-02-05)
 

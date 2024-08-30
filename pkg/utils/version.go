@@ -1,6 +1,7 @@
 package utils
 
 var (
-	Version = "dev"
-	Sha     = "HEAD"
+	Version  = "dev"
+	Sha      = "HEAD"
+	Datetime = "dev"
 )

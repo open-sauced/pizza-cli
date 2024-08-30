@@ -2,59 +2,12 @@
   <br>
   <img alt="Open Sauced" src="https://i.ibb.co/7jPXt0Z/logo1-92f1a87f.png" width="300px">
   <h1>🍕 Pizza CLI 🍕</h1>
-  <strong>A Go command line interface for all things OpenSauced!</strong>
+  <strong>A command line interface and tool for all things OpenSauced!</strong>
   <br>
 </div>
 <br>
-<p align="center">
-  <img src="https://img.shields.io/github/languages/code-size/open-sauced/pizza" alt="GitHub code size in bytes">
-  <a href="https://github.com/open-sauced/pizza/issues">
-    <img src="https://img.shields.io/github/issues/open-sauced/pizza" alt="GitHub issues">
-  </a>
-  <a href="https://github.com/open-sauced/api.opensauced.pizza/releases">
-    <img src="https://img.shields.io/github/v/release/open-sauced/pizza.svg?style=flat" alt="GitHub Release">
-  </a>
-  <a href="https://discord.gg/U2peSNf23P">
-    <img src="https://img.shields.io/discord/714698561081704529.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" alt="Discord">
-  </a>
-  <a href="https://twitter.com/saucedopen">
-    <img src="https://img.shields.io/twitter/follow/saucedopen?label=Follow&style=social" alt="Twitter">
-  </a>
-</p>
 
-```
-❯ pizza
-
-A command line utility for insights, metrics, and all things OpenSauced
-
-Usage:
-  pizza <command> <subcommand> [flags]
-
-Available Commands:
-  bake        Use a pizza-oven to source git commits into OpenSauced
-  completion  Generate the autocompletion script for the specified shell
-  help        Help about any command
-  insights    Gather insights about git contributors, repositories, users and pull requests
-  login       Log into the CLI application via GitHub
-  repo-query  Ask questions about a GitHub repository
-  show        Get visual metrics of a repository
-  version     Displays the build version of the CLI
-
-Flags:
-      --beta                Shorthand for using the beta OpenSauced API endpoint ("https://beta.api.opensauced.pizza"). Supersedes the '--endpoint' flag
-      --disable-telemetry   Disable sending telemetry data to OpenSauced
-  -e, --endpoint string     The API endpoint to send requests to (default "https://api.opensauced.pizza")
-  -h, --help                help for pizza
-  -o, --output string       The formatting style for command output (default "table")
-
-Use "pizza [command] --help" for more information about a command.
-```
-
----
-
-### 📦 Install
-
-There are several methods for downloading and installing the `pizza` CLI:
+# 📦 Install
 
 #### Homebrew
 
@@ -66,6 +19,52 @@ brew install open-sauced/tap/pizza
 
 ```sh
 npm i -g pizza
+```
+
+### Docker
+
+```sh
+$ docker run ghcr.io/open-sauced/pizza-cli:latest
+```
+
+For commands that require access to your file system (like `generate codeowners`), ensure
+you pass a volume to the docker container:
+
+```sh
+$ docker run -v /local/path:/container/path ghcr.io/open-sauced/pizza-cli:latest \
+    generate codeowners /container/path
+```
+
+For example, to mount your entire home directory (which may include a `.sauced.yaml` file
+alongside the project you want to generate a `CODEOWNERS` file for):
+
+```sh
+$ docker run -v ~/:/app ghcr.io/open-sauced/pizza-cli:latest \
+    codeowners /app/workspace/gopherlogs -c /app/.sauced.yaml
+```
+
+### Go install
+
+Using the Go tool-chain, you can install the binary directly:
+
+```sh
+$ go install github.com/open-sauced/pizza-cli@latest
+```
+
+Warning! You should have the `GOBIN` env var setup to point to a persistent
+location in your `PATH`. After Go 1.16, this defaults to `GOPATH[0]/bin`.
+
+### Manual install
+
+Download a pre-built artifact from [the GitHub releases](https://github.com/open-sauced/pizza-cli/releases):
+
+```sh
+# Make the binary executable
+$ chmod +x ~/Downloads/pizza-linux-arm64
+
+# Move the binary into a location in the PATH
+# Warning: the location where you drop the binary may differ!
+$ mv ~/Downloads/pizza-linux-arm64 /usr/local/share/bin/pizza
 ```
 
 #### Direct script install
@@ -82,9 +81,9 @@ Once download is completed, you can move the binary to a convenient location in
 your system's `$PATH`.
 
 > [!WARNING]
-> It may not be advisable to pipe scripts from GitHub directly into
+> It's _probably_ not advisable to pipe scripts from GitHub directly into
 > a command line interpreter! If you do not fully trust the source, first
-> download the script, inspect it manually to ensure its integrity, and then
+> download the script, inspect it manually to ensure integrity, and then
 > run it:
 > ```sh
 > curl -fsSL https://raw.githubusercontent.com/open-sauced/pizza-cli/main/install.sh > install.sh
@@ -92,24 +91,88 @@ your system's `$PATH`.
 > ./install.sh
 > ```
 
-#### Manual build and install
+#### Manual build
+
+Clone this repository. Then, using the Go tool-chain, you can build a binary:
 
 ```
-make install
+$ go build -o build/pizza main.go
 ```
 
-This is a convenience `make` target for building and dropping the pizza CLI into
-`/usr/local/bin/` (which requires `sudo` permissions).
-Make sure you have that directory in your path: `export PATH="$PATH:/usr/local/bin"`.
-Otherwise, you can build it manually with `make build` and `mv build/pizza <somewhere-in-your-path>`.
+Warning! There may be unsupported features, breaking changes, or experimental
+patches on the tip of the repository. Go and build with caution!
 
+# ✨ Usage
 
-### 🖥️ Local Development
+### Codeowners generation
 
-You'll need a few tools to get started:
+Use the `codeowners` command to generate an `OWNERS` file or GitHub style `CODEOWNERS` file.
+This can be used to granularly define what experts and entities have the
+most context and knowledge on certain parts of a codebase.
 
-- The [Go toolchain](https://go.dev/doc/install)
-- [Docker](https://docs.docker.com/engine/install/) (for linting and other tooling)
-- Make
+```
+❯ pizza generate codeowners -h
 
-To lint, run `make lint`. To run tests, run `make test`. To build, run `make build`.
+WARNING: Proof of concept feature.
+
+Generates a CODEOWNERS file for a given git repository. This uses a ~/.sauced.yaml
+configuration to attribute emails with given entities.
+
+The generated file specifies up to 3 owners for EVERY file in the git tree based on the
+number of lines touched in that specific file over the specified range of time.
+
+Usage:
+  pizza generate codeowners path/to/repo [flags]
+
+Flags:
+      --owners-style-file   Whether to generate an agnostic OWNERS style file.
+  -h, --help                help for codeowners
+  -r, --range int           The number of days to lookback (default 90)
+
+Global Flags:
+      --beta                Shorthand for using the beta OpenSauced API endpoint ("https://beta.api.opensauced.pizza").
+                            Supersedes the '--endpoint' flag
+  -c, --config string       The saucectl config (default "~/.sauced.yaml")
+      --disable-telemetry   Disable sending telemetry data to OpenSauced
+  -e, --endpoint string     The API endpoint to send requests to (default "https://api.opensauced.pizza")
+  -l, --log-level string    The logging level. Options: error, warn, info, debug (default "info")
+  -o, --output string       The formatting for command output. One of: (table, yaml, csv, json) (default "table")
+      --tty-disable         Disable log stylization. Suitable for CI/CD and automation
+```
+
+### Configuration
+
+```yaml
+# Configuration for attributing commits with emails to individual entities.
+# Used during "pizza generate codeowners".
+attribution:
+
+  # Keys can be GitHub usernames. For the "--github-codeowners" style codeowners
+  # generation, these keys must be valid GitHub usernames.
+  jpmcb:
+
+    # List of emails associated with the given entity.
+    # The commits associated with these emails will be attributed to
+    # the entity in this yaml map. Any number of emails may be listed.
+    - john@opensauced.pizza
+    - hello@johncodes.com
+
+  # Entities may also be GitHub teams.
+  open-sauced/engineering:
+    - john@opensauced.pizza
+    - other-user@email.com
+    - other-user@no-reply.github.com
+
+  # They can also be agnostic names which will land as keys in OWNERS files
+  John McBride
+    - john@opensauced.pizza
+```
+
+# 🚜 Development
+
+### 🔨 Requirements
+
+There are a few things you'll need to get started:
+
+- The [1.22 `go` programming language](https://go.dev/doc/install) toolchain and dev environment (for example, the [VScode Go plugin](https://code.visualstudio.com/docs/languages/go) is very good).
+- The [`just` command runner](https://github.com/casey/just) for easy operations

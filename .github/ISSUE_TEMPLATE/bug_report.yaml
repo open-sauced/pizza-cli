@@ -1,0 +1,30 @@
+name: 🐛 Bug report
+description: Create a bug report to help us improve the OpenSauced CLI 🍕
+title: "Bug: "
+labels: [👀 needs triage, 🐛 bug, pizza-cli]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: Describe how to reproduce the behavior.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        Please include the following
+
+        1. System settings
+        2. Operating system version and special configurations
+        3. Shell environment (`echo $SHELL`) and version
+        4. `pizza version` output
