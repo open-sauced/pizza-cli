@@ -3,13 +3,15 @@ package codeowners
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
 
-	"github.com/open-sauced/pizza-cli/pkg/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+
+	"github.com/open-sauced/pizza-cli/pkg/config"
 )
 
 func generateOutputFile(fileStats FileStats, outputPath string, opts *Options, cmd *cobra.Command) error {
@@ -19,15 +21,15 @@ func generateOutputFile(fileStats FileStats, outputPath string, opts *Options, c
 		return fmt.Errorf("error creating %s file: %w", outputPath, err)
 	}
 	defer file.Close()
-  var flags []string
+	var flags []string
 
-  cmd.Flags().Visit(func(f *pflag.Flag) {
-    flags = append(flags, fmt.Sprintf("--%s %v", f.Name, f.Value.String()))
-  })
-  generatedCommand := fmt.Sprintf("# $ pizza generate codeowners %s ", opts.path)
-  if (len(flags) > 0) {
-    generatedCommand += strings.Join(flags, " ")
-  }
+	cmd.Flags().Visit(func(f *pflag.Flag) {
+		flags = append(flags, fmt.Sprintf("--%s %v", f.Name, f.Value.String()))
+	})
+	generatedCommand := fmt.Sprintf("# $ pizza generate codeowners %s ", filepath.Base(opts.path))
+	if len(flags) > 0 {
+		generatedCommand += strings.Join(flags, " ")
+	}
 
 	// Write the header
 	_, err = file.WriteString(fmt.Sprintf("# This file is generated automatically by OpenSauced pizza-cli. DO NOT EDIT. Stay saucy!\n#\n# Generated with command:\n%s\n\n", generatedCommand))
@@ -59,7 +61,7 @@ func generateOutputFile(fileStats FileStats, outputPath string, opts *Options, c
 		}
 	}
 
-	return nil 
+	return nil
 }
 
 func writeGitHubCodeownersChunk(authorStats AuthorStats, config *config.Spec, file *os.File, srcFilename string, outputPath string) ([]string, error) {
