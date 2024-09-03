@@ -26,8 +26,9 @@ func generateOutputFile(fileStats FileStats, outputPath string, opts *Options, c
 	cmd.Flags().Visit(func(f *pflag.Flag) {
 		flags = append(flags, fmt.Sprintf("--%s %v", f.Name, f.Value.String()))
 	})
-	generatedCommand := fmt.Sprintf("# $ pizza generate codeowners %s/ ", filepath.Base(opts.path))
+	generatedCommand := fmt.Sprintf("# $ pizza generate codeowners %s/", filepath.Base(opts.path))
 	if len(flags) > 0 {
+		generatedCommand += " "
 		generatedCommand += strings.Join(flags, " ")
 	}
 
