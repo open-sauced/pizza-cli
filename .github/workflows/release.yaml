@@ -40,7 +40,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
+          cache: "npm"
+          cache-dependency-path: "./npm/package-lock.json"
 
       - name: "🔧 install npm@latest"
         run: npm i -g npm@latest
