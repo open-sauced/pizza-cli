@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.3.0-beta.3](https://github.com/open-sauced/pizza-cli/compare/v1.3.0-beta.2...v1.3.0-beta.3) (2024-09-04)
+
+
+### 🐛 Bug Fixes
+
+* NPM cache now looks at package-lock file ([#136](https://github.com/open-sauced/pizza-cli/issues/136)) ([cd4b8da](https://github.com/open-sauced/pizza-cli/commit/cd4b8da75e1a0c0aa3d7e6f76d6b560a4dea941f))
+
 ## [1.3.0-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.3.0-beta.1...v1.3.0-beta.2) (2024-09-04)
 
 
