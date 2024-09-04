@@ -6,6 +6,8 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/open-sauced/pizza-cli/cmd/generate/codeowners"
+
+	"github.com/open-sauced/pizza-cli/cmd/generate/config"
 )
 
 const generateLongDesc string = `WARNING: Proof of concept feature.
@@ -28,6 +30,7 @@ func NewGenerateCommand() *cobra.Command {
 	}
 
 	cmd.AddCommand(codeowners.NewCodeownersCommand())
+	cmd.AddCommand(config.NewConfigCommand())
 
 	return cmd
 }
