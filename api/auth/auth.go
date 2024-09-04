@@ -33,8 +33,8 @@ const (
 	codeChallengeLength = 87
 	sessionFileName     = "session.json"
 
-	prodSupabaseURL       = "https://fcqqkxwlntnrtjfbcioz.supabase.co"
-	prodSupabasePublicKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjcXFreHdsbnRucnRqZmJjaW96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTg0MTkyNzQsImV4cCI6MjAxMzk5NTI3NH0.ymWWYdnJC2gsnrJx4lZX2cfSOp-1xVuWFGt1Wr6zwtg"
+	prodSupabaseURL       = "https://ibcwmlhcimymasokhgvn.supabase.co"
+	prodSupabasePublicKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImliY3dtbGhjaW15bWFzb2toZ3ZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTkyOTU1MzMsImV4cCI6MjAxNDg3MTUzM30.Mr-ucuNDBjy9BC7NJzOBBi0Qz8WYiKI4n0JtWr4_woY"
 
 	// TODO (jpmcb) - in the future, we'll want to encorporate the ability to
 	// authenticate to our beta auth service as well
@@ -175,6 +175,16 @@ func (a *Authenticator) CheckSession() error {
 	}
 
 	return nil
+}
+
+// GetSessionToken returns the access token for a given session
+func (a *Authenticator) GetSessionToken() (string, error) {
+	session, err := a.readSessionFile()
+	if err != nil {
+		return "", fmt.Errorf("failed to read session file: %w", err)
+	}
+
+	return session.AccessToken, nil
 }
 
 // readSessionFile reads a session file and returns the session struct.

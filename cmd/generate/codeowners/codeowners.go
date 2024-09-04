@@ -11,6 +11,10 @@ import (
 	"github.com/jpmcb/gopherlogs/pkg/colors"
 	"github.com/spf13/cobra"
 
+	"github.com/open-sauced/pizza-cli/api"
+	"github.com/open-sauced/pizza-cli/api/auth"
+	"github.com/open-sauced/pizza-cli/api/services/workspaces"
+	"github.com/open-sauced/pizza-cli/api/services/workspaces/userlists"
 	"github.com/open-sauced/pizza-cli/pkg/config"
 	"github.com/open-sauced/pizza-cli/pkg/logging"
 )
@@ -27,6 +31,10 @@ type Options struct {
 	// the number of days to look back
 	previousDays int
 
+	// the session token adding codeowners to a workspace contributor list
+	token string
+
+	logger   gopherlogs.Logger
 	tty      bool
 	loglevel int
 
@@ -105,28 +113,29 @@ func NewCodeownersCommand() *cobra.Command {
 }
 
 func run(opts *Options, cmd *cobra.Command) error {
-	logger, err := gopherlogs.NewLogger(
+	var err error
+	opts.logger, err = gopherlogs.NewLogger(
 		gopherlogs.WithLogVerbosity(opts.loglevel),
 		gopherlogs.WithTty(!opts.tty),
 	)
 	if err != nil {
 		return fmt.Errorf("could not build logger: %w", err)
 	}
-	logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Built logger with log level: %d\n", opts.loglevel)
+	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Built logger with log level: %d\n", opts.loglevel)
 
 	repo, err := git.PlainOpen(opts.path)
 	if err != nil {
 		return fmt.Errorf("error opening repo: %w", err)
 	}
-	logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Opened repo at: %s\n", opts.path)
+	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Opened repo at: %s\n", opts.path)
 
 	processOptions := ProcessOptions{
 		repo,
 		opts.previousDays,
 		opts.path,
-		logger,
+		opts.logger,
 	}
-	logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Looking back %d days\n", opts.previousDays)
+	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Looking back %d days\n", opts.previousDays)
 
 	codeowners, err := processOptions.process()
 	if err != nil {
@@ -141,12 +150,183 @@ func run(opts *Options, cmd *cobra.Command) error {
 		outputPath = filepath.Join(opts.path, "CODEOWNERS")
 	}
 
-	logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Processing codeowners file at: %s\n", outputPath)
+	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Processing codeowners file at: %s\n", outputPath)
 	err = generateOutputFile(codeowners, outputPath, opts, cmd)
 	if err != nil {
 		return fmt.Errorf("error generating github style codeowners file: %w", err)
 	}
-	logger.V(logging.LogInfo).Style(0, colors.FgGreen).Infof("Finished generating file: %s\n", outputPath)
+	opts.logger.V(logging.LogInfo).Style(0, colors.FgGreen).Infof("Finished generating file: %s\n", outputPath)
+
+	// 1. Ask if they want to add users to a list
+	var input string
+	fmt.Print("Do you want to add these codeowners to an OpenSauced Contributor Insight? (y/n): ")
+	_, err = fmt.Scanln(&input)
+	if err != nil {
+		return fmt.Errorf("could not scan input from terminal: %w", err)
+	}
+
+	switch input {
+	case "y", "Y", "yes":
+		opts.logger.V(logging.LogInfo).Style(0, colors.FgGreen).Infof("Adding codeowners to contributor insight\n")
+	case "n", "N", "no":
+		return nil
+	default:
+		return fmt.Errorf("invalid answer. Please enter y or n")
+	}
+
+	// 2. Check if user is logged in. Log them in if not.
+	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Initiating log in flow\n")
+	authenticator := auth.NewAuthenticator()
+	err = authenticator.CheckSession()
+	if err != nil {
+		opts.logger.V(logging.LogInfo).Style(0, colors.FgRed).Infof("Log in session invalid: %s\n", err)
+		fmt.Print("Do you want to log into OpenSauced? (y/n): ")
+		_, err := fmt.Scanln(&input)
+		if err != nil {
+			return fmt.Errorf("could not scan input from terminal: %w", err)
+		}
+
+		switch input {
+		case "y", "Y", "yes":
+			user, err := authenticator.Login()
+			if err != nil {
+				opts.logger.V(logging.LogInfo).Style(0, colors.FgRed).Infof("Error logging in\n")
+				return fmt.Errorf("could not log in: %w", err)
+			}
+			opts.logger.V(logging.LogInfo).Style(0, colors.FgGreen).Infof("Logged in as: %s\n", user)
+
+		case "n", "N", "no":
+			return nil
+
+		default:
+			return fmt.Errorf("invalid answer. Please enter y or n")
+		}
+	}
+
+	opts.token, err = authenticator.GetSessionToken()
+	if err != nil {
+		opts.logger.V(logging.LogInfo).Style(0, colors.FgRed).Infof("Error getting session token\n")
+		return fmt.Errorf("could not get session token: %w", err)
+	}
+
+	listName := filepath.Base(opts.path)
+
+	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Looking up OpenSauced workspace: Pizza CLI\n")
+	workspace, err := findCreatePizzaCliWorkspace(opts)
+	if err != nil {
+		return err
+	}
+	opts.logger.V(logging.LogDebug).Style(0, colors.FgGreen).Infof("Found workspace: Pizza CLI\n")
+
+	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Looking up Contributor Insight for local repository: %s\n", listName)
+	userList, err := updateCreateLocalWorkspaceUserList(opts, listName, workspace, codeowners)
+	if err != nil {
+		return err
+	}
+	opts.logger.V(logging.LogDebug).Style(0, colors.FgGreen).Infof("Updated Contributor Insight for local repository: %s\n", listName)
+
+	opts.logger.V(logging.LogInfo).Style(0, colors.FgCyan).Infof("Access list on OpenSauced:\n%s\n", fmt.Sprintf("https://app.opensauced.pizza/workspaces/%s/contributor-insights/%s", workspace.ID, userList.ID))
 
 	return nil
+}
+
+// findCreatePizzaCliWorkspace finds or creates a "Pizza CLI" workspace
+// for the authenticated user
+func findCreatePizzaCliWorkspace(opts *Options) (*workspaces.DbWorkspace, error) {
+	nextPage := true
+	page := 1
+	apiClient := api.NewClient("https://api.opensauced.pizza")
+
+	for nextPage {
+		opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Query user workspaces page: %d\n", page)
+		workspaceResp, _, err := apiClient.WorkspacesService.GetWorkspaces(opts.token, page, 100)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, workspace := range workspaceResp.Data {
+			if workspace.Name == "Pizza CLI" {
+				opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Found existing workspace named: Pizza CLI\n")
+				return &workspace, nil
+			}
+		}
+
+		nextPage = workspaceResp.Meta.HasNextPage
+		page++
+	}
+
+	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Creating new user workspace: Pizza CLI\n")
+	newWorkspace, _, err := apiClient.WorkspacesService.CreateWorkspaceForUser(opts.token, "Pizza CLI", "A workspace for the Pizza CLI", []string{})
+	if err != nil {
+		return nil, err
+	}
+
+	return newWorkspace, nil
+}
+
+// updateCreateLocalWorkspaceUserList updates or creates a workspace contributor list
+// for the authenticated user with the given codeowners
+func updateCreateLocalWorkspaceUserList(opts *Options, listName string, workspace *workspaces.DbWorkspace, codeowners FileStats) (*userlists.DbUserList, error) {
+	nextPage := true
+	page := 1
+	apiClient := api.NewClient("https://api.opensauced.pizza")
+
+	var targetUserListID string
+
+	for nextPage {
+		opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Query user Workspace Contributor Insight page: %d\n", page)
+		userListsResp, _, err := apiClient.WorkspacesService.UserListService.GetUserLists(opts.token, workspace.ID, page, 100)
+		if err != nil {
+			return nil, err
+		}
+
+		nextPage = userListsResp.Meta.HasNextPage
+		page++
+
+		for _, userList := range userListsResp.Data {
+			if userList.Name == listName {
+				opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Found existing Workspace Contributor Insight named: %s\n", listName)
+				targetUserListID = userList.ID
+				nextPage = false
+			}
+		}
+	}
+
+	if targetUserListID == "" {
+		var err error
+
+		opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Creating new user Workspace Contributor List: %s\n", listName)
+		createdUserList, _, err := apiClient.WorkspacesService.UserListService.CreateUserListForUser(opts.token, workspace.ID, listName, []string{})
+		if err != nil {
+			return nil, err
+		}
+
+		targetUserListID = createdUserList.UserListID
+	}
+
+	targetUserList, _, err := apiClient.WorkspacesService.UserListService.GetUserList(opts.token, workspace.ID, targetUserListID)
+	if err != nil {
+		return nil, err
+	}
+
+	// create a mapping of author logins to empty structs (i.e., a unique set).
+	// this de-structures the { filename: author-stats } mapping that originally
+	// built the codeowners
+	uniqueLogins := make(map[string]struct{})
+	for _, codeowner := range codeowners {
+		for _, k := range codeowner {
+			if k.GitHubAlias != "" {
+				uniqueLogins[k.GitHubAlias] = struct{}{}
+			}
+		}
+	}
+
+	logins := []string{}
+	for login := range uniqueLogins {
+		logins = append(logins, login)
+	}
+
+	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Updating Contributor Insight with codeowners with GitHub aliases: %v\n", logins)
+	userlist, _, err := apiClient.WorkspacesService.UserListService.PatchUserListForUser(opts.token, workspace.ID, targetUserList.ID, targetUserList.Name, logins)
+	return userlist, err
 }
