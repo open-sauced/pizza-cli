@@ -17,11 +17,30 @@ func TestLoadConfig(t *testing.T) {
 		t.Parallel()
 		tmpDir := t.TempDir()
 		configFilePath := filepath.Join(tmpDir, ".sauced.yaml")
-		require.NoError(t, os.WriteFile(configFilePath, []byte("key: value"), 0644))
+
+		fileContents := `# Configuration for attributing commits with emails to GitHub user profiles
+# Used during codeowners generation.
+# List the emails associated with the given username.
+# The commits associated with these emails will be attributed to
+# the username in this yaml map. Any number of emails may be listed.
+attribution:
+  brandonroberts:
+    - robertsbt@gmail.com
+  jpmcb:
+    - john@opensauced.pizza`
+
+		require.NoError(t, os.WriteFile(configFilePath, []byte(fileContents), 0644))
 
 		config, err := LoadConfig(configFilePath, "")
 		assert.NoError(t, err)
 		assert.NotNil(t, config)
+
+		// Assert that config contains all the Attributions in fileContents
+		assert.Equal(t, 2, len(config.Attributions))
+
+		// Check specific attributions
+		assert.Equal(t, []string{"robertsbt@gmail.com"}, config.Attributions["brandonroberts"])
+		assert.Equal(t, []string{"john@opensauced.pizza"}, config.Attributions["jpmcb"])
 	})
 
 	t.Run("Non-existent file", func(t *testing.T) {
