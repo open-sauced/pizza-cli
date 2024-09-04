@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -76,16 +75,12 @@ attribution:
 		require.NoError(t, os.WriteFile(fallbackPath, []byte(fileContents), 0644))
 
 		// Print out the contents of the file we just wrote
-		writtenData, err := os.ReadFile(fallbackPath)
+		_, err := os.ReadFile(fallbackPath)
 		require.NoError(t, err)
-		fmt.Printf("Contents written to file:\n%s\n", string(writtenData))
 
 		nonExistentPath := filepath.Join(tmpDir, "non-existent.yaml")
 
 		config, err := LoadConfig(nonExistentPath, fallbackPath)
-
-		fmt.Printf("Loaded config: %+v\n", config)
-		fmt.Printf("Error: %v\n", err)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, config)

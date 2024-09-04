@@ -59,7 +59,5 @@ func LoadConfig(path string, repoRootPathConfig string) (*Spec, error) {
 		return nil, fmt.Errorf("error unmarshaling config: %w", err)
 	}
 
-	fmt.Printf("Loaded config %v", config)
-
 	return config, nil
 }
