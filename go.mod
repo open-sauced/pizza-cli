@@ -8,7 +8,6 @@ require (
 	github.com/cli/browser v1.3.0
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/jpmcb/gopherlogs v0.2.0
-	github.com/open-sauced/go-api/client v0.0.0-20240205155059-a3159bc0517e
 	github.com/posthog/posthog-go v1.2.19
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
