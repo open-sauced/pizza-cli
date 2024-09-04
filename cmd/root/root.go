@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/open-sauced/pizza-cli/cmd/auth"
+	"github.com/open-sauced/pizza-cli/cmd/docs"
 	"github.com/open-sauced/pizza-cli/cmd/generate"
 	"github.com/open-sauced/pizza-cli/cmd/insights"
 	"github.com/open-sauced/pizza-cli/cmd/version"
@@ -43,6 +44,7 @@ func NewRootCommand() (*cobra.Command, error) {
 	cmd.AddCommand(generate.NewGenerateCommand())
 	cmd.AddCommand(insights.NewInsightsCommand())
 	cmd.AddCommand(version.NewVersionCommand())
+	cmd.AddCommand(docs.NewDocsCommand())
 
 	err := cmd.PersistentFlags().MarkHidden(constants.FlagNameEndpoint)
 	if err != nil {

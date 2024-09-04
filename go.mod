@@ -16,7 +16,11 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require github.com/charmbracelet/bubbletea v0.27.1 // indirect
+require (
+	github.com/charmbracelet/bubbletea v0.27.1 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+)
 
 require (
 	dario.cat/mergo v1.0.0 // indirect
