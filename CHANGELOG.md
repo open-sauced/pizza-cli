@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.3.0-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.2.1...v1.3.0-beta.1) (2024-09-04)
+
+
+### 🍕 Features
+
+* Refactors API client into hand rolled sdk in api/ directory ([#111](https://github.com/open-sauced/pizza-cli/issues/111)) ([e16e889](https://github.com/open-sauced/pizza-cli/commit/e16e8899a4ef69641dc614887d065dc8b70adb35))
+
 ## [1.2.1](https://github.com/open-sauced/pizza-cli/compare/v1.2.0...v1.2.1) (2024-08-30)
 
 
