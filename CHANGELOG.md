@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.3.0-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.3.0-beta.1...v1.3.0-beta.2) (2024-09-04)
+
+
+### 🍕 Features
+
+* update `CODEOWNERS` copy with command ([#130](https://github.com/open-sauced/pizza-cli/issues/130)) ([a477959](https://github.com/open-sauced/pizza-cli/commit/a477959020cfcbb3dc4707efb1700e17e05e3981))
+
 ## [1.3.0-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.2.1...v1.3.0-beta.1) (2024-09-04)
 
 
