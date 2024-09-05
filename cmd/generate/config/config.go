@@ -1,7 +1,6 @@
 package config
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -18,12 +17,7 @@ import (
 // Options for the codeowners generation command
 type Options struct {
 	// the path to the git repository on disk to generate a codeowners file for
-	path string
-
-	previousDays int
-	tty          bool
-	loglevel     int
-
+	path   string
 	config *config.Spec
 }
 
@@ -72,7 +66,6 @@ func NewConfigCommand() *cobra.Command {
 
 func run(opts *Options) error {
 	attributionMap := make(map[string][]string)
-	fmt.Println("CONFIG", attributionMap)
 
 	// Open repo
 	repo, err := git.PlainOpen(opts.path)
@@ -86,17 +79,23 @@ func run(opts *Options) error {
 		name := c.Author.Name
 		email := c.Author.Email
 
+		// TODO: edge case- same email multiple names
+		// eg: 'coding@zeu.dev' = 'zeudev' & 'Zeu Capua'
+
+		// AUTOMATIC: set every name and associated emails
 		doesEmailExist := slices.Contains(attributionMap[name], email)
 		if !doesEmailExist {
 			attributionMap[name] = append(attributionMap[name], email)
 		}
 
+		// TODO: INTERACTIVE: per unique email, set a name (existing or new)
+
 		return nil
 	})
 
-	// for pretty print test
-	test, err := json.MarshalIndent(attributionMap, "", " ")
-	fmt.Println(string(test))
+	// generate an output file
+	// default: `~/.sauced.yaml`
+	generateOutputFile(".sauced.yaml", attributionMap)
 
 	return nil
 }
