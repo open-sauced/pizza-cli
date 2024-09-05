@@ -1,10 +1,12 @@
 package config
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
@@ -61,16 +63,16 @@ func NewConfigCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			// TODO: error checking based on given command
 
-			return run(opts, cmd)
+			return run(opts)
 		},
 	}
 
 	return cmd
 }
 
-func run(opts *Options, cmd *cobra.Command) error {
-	configuration := &config.Spec{}
-	fmt.Println("CONFIG", configuration)
+func run(opts *Options) error {
+	attributionMap := make(map[string][]string)
+	fmt.Println("CONFIG", attributionMap)
 
 	// Open repo
 	repo, err := git.PlainOpen(opts.path)
@@ -81,9 +83,20 @@ func run(opts *Options, cmd *cobra.Command) error {
 	commitIter, err := repo.CommitObjects()
 
 	commitIter.ForEach(func(c *object.Commit) error {
-		fmt.Println("COMMIT", c.Author.Email, c.Author.Name)
+		name := c.Author.Name
+		email := c.Author.Email
+
+		doesEmailExist := slices.Contains(attributionMap[name], email)
+		if !doesEmailExist {
+			attributionMap[name] = append(attributionMap[name], email)
+		}
+
 		return nil
 	})
+
+	// for pretty print test
+	test, err := json.MarshalIndent(attributionMap, "", " ")
+	fmt.Println(string(test))
 
 	return nil
 }
