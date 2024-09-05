@@ -1,6 +1,12 @@
 package codeowners
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/open-sauced/pizza-cli/pkg/config"
+)
 
 func TestCleanFilename(testRunner *testing.T) {
 	var tests = []struct {
@@ -26,4 +32,38 @@ func TestCleanFilename(testRunner *testing.T) {
 			}
 		})
 	}
+}
+
+func TestGetTopContributorAttributions(testRunner *testing.T) {
+	configSpec := config.Spec{
+		Attributions: map[string][]string{
+			"brandonroberts": {"brandon@opensauced.pizza"},
+		},
+		AttributionFallback: []string{"open-sauced/engineering"},
+	}
+
+	var authorStats = AuthorStats{
+		"brandon": {GitHubAlias: "brandon", Email: "brandon@opensauced.pizza", Lines: 20},
+		"john":    {GitHubAlias: "john", Email: "john@opensauced.pizza", Lines: 15},
+	}
+
+	results := getTopContributorAttributions(authorStats, 3, &configSpec)
+
+	assert.Equal(testRunner, len(results), 1, "Expected 1 result")
+	assert.Equal(testRunner, results[0].GitHubAlias, "brandonroberts", "Expected brandonroberts")
+}
+
+func TestGetFallbackAttributions(testRunner *testing.T) {
+	configSpec := config.Spec{
+		Attributions: map[string][]string{
+			"jpmcb":          {"jpmcb@opensauced.pizza"},
+			"brandonroberts": {"brandon@opensauced.pizza"},
+		},
+		AttributionFallback: []string{"open-sauced/engineering"},
+	}
+
+	results := getTopContributorAttributions(AuthorStats{}, 3, &configSpec)
+
+	assert.Equal(testRunner, len(results), 1, "Expected 1 result")
+	assert.Equal(testRunner, results[0].GitHubAlias, "open-sauced/engineering", "Expected open-sauced/engineering")
 }
