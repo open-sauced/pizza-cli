@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.3.0-beta.6](https://github.com/open-sauced/pizza-cli/compare/v1.3.0-beta.5...v1.3.0-beta.6) (2024-09-05)
+
+
+### 🍕 Features
+
+* support fallback attributions when generating codeowners file ([#145](https://github.com/open-sauced/pizza-cli/issues/145)) ([35af4da](https://github.com/open-sauced/pizza-cli/commit/35af4dafc4ed088ba1396ff28e1536723c914a2b))
+
 ## [1.3.0-beta.5](https://github.com/open-sauced/pizza-cli/compare/v1.3.0-beta.4...v1.3.0-beta.5) (2024-09-05)
 
 
