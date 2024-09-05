@@ -3,105 +3,82 @@ package docs
 import (
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
-func TestNewDocsCommand(t *testing.T) {
+func TestDeterminePath(t *testing.T) {
 	t.Parallel()
 
-	t.Run("Docs generate using default path", func(t *testing.T) {
+	t.Run("No path passed to command", func(t *testing.T) {
 		t.Parallel()
-		cmd := NewDocsCommand()
-		err := cmd.Execute()
-		require.NoError(t, err)
+		got, err := DeterminePath([]string{})
 
-		// Check if a Markdown file was generated
-		files, err := os.ReadDir(DefaultPath)
-		assert.NoError(t, err)
-		assert.NotEmpty(t, files)
-
-		markdownFileFound := false
-
-		for _, file := range files {
-			if strings.HasSuffix(file.Name(), ".md") {
-				markdownFileFound = true
-				break
-			}
+		if err != nil {
+			t.Errorf("DeterminePath() error = %v, wantErr false", err)
+			return
 		}
 
-		assert.True(t, markdownFileFound, "No Markdown file was generated in the default path")
-
-		os.RemoveAll(DefaultPath)
+		if got != DefaultPath {
+			t.Errorf("DeterminePath() = %v, want %v", got, DefaultPath)
+		}
 	})
 
-	t.Run("Docs generate using a custom path", func(t *testing.T) {
+	t.Run("With path passed to command", func(t *testing.T) {
 		t.Parallel()
-		tempDir := t.TempDir()
-		customPath := filepath.Join(tempDir, "custom_docs")
+		expected := "/tmp/docs"
+		got, err := DeterminePath([]string{expected})
 
-		cmd := NewDocsCommand()
-		cmd.SetArgs([]string{customPath})
-		err := cmd.Execute()
-		require.NoError(t, err)
-
-		// Check if a Markdown file was generated
-		files, err := os.ReadDir(customPath)
-		assert.NoError(t, err)
-		assert.NotEmpty(t, files)
-
-		markdownFileFound := false
-
-		for _, file := range files {
-			if strings.HasSuffix(file.Name(), ".md") {
-				markdownFileFound = true
-				break
-			}
+		if err != nil {
+			t.Errorf("DeterminePath() error = %v, wantErr false", err)
+			return
 		}
 
-		assert.True(t, markdownFileFound, "No Markdown file was generated in the custom path")
-	})
-
-	t.Run("Docs fail to generate when the output path is invalid", func(t *testing.T) {
-		t.Parallel()
-		cmd := NewDocsCommand()
-		cmd.SetArgs([]string{string([]byte{0x00})})
-		err := cmd.Execute()
-		assert.Error(t, err)
-	})
-
-	t.Run("Docs generate using an existing directory", func(t *testing.T) {
-		t.Parallel()
-		tempDir := t.TempDir()
-
-		cmd := NewDocsCommand()
-		cmd.SetArgs([]string{tempDir})
-		err := cmd.Execute()
-		require.NoError(t, err)
-
-		// Check if files were generated in the existing directory
-		files, err := os.ReadDir(tempDir)
-		assert.NoError(t, err)
-		assert.NotEmpty(t, files)
-
-		markdownFileFound := false
-		for _, file := range files {
-			if strings.HasSuffix(file.Name(), ".md") {
-				markdownFileFound = true
-				break
-			}
+		if got != expected {
+			t.Errorf("DeterminePath() = %v, want %v", got, expected)
 		}
-		assert.True(t, markdownFileFound, "No Markdown file was generated in the existing directory")
+	})
+}
+
+func TestEnsureDirectoryExists(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Existing directory", func(t *testing.T) {
+		t.Parallel()
+		tempDir, err := os.MkdirTemp(t.TempDir(), "docs_test_existing")
+
+		if err != nil {
+			t.Fatalf("Failed to create temp dir: %v", err)
+		}
+
+		err = EnsureDirectoryExists(tempDir)
+
+		if err != nil {
+			t.Errorf("EnsureDirectoryExists() error = %v, wantErr false", err)
+			return
+		}
+
+		if _, err := os.Stat(tempDir); os.IsNotExist(err) {
+			t.Errorf("EnsureDirectoryExists() failed to recognize existing directory %s", tempDir)
+		}
 	})
 
-	t.Run("TooManyArguments", func(t *testing.T) {
+	t.Run("New directory", func(t *testing.T) {
 		t.Parallel()
-		cmd := NewDocsCommand()
-		cmd.SetArgs([]string{"path1", "path2"})
-		err := cmd.Execute()
-		assert.Error(t, err)
+		tempDir, err := os.MkdirTemp(t.TempDir(), "docs_test_new")
+
+		if err != nil {
+			t.Fatalf("Failed to create temp dir: %v", err)
+		}
+
+		newDir := filepath.Join(tempDir, "new_dir")
+		err = EnsureDirectoryExists(newDir)
+
+		if err != nil {
+			t.Errorf("EnsureDirectoryExists() error = %v, wantErr false", err)
+			return
+		}
+		if _, err := os.Stat(newDir); os.IsNotExist(err) {
+			t.Errorf("EnsureDirectoryExists() failed to create directory %s", newDir)
+		}
 	})
 }

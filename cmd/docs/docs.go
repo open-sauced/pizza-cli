@@ -10,15 +10,49 @@ import (
 )
 
 type Options struct {
-	// the path to generate the documentation in
-	path string
+	Path string
 }
 
 const DefaultPath = "./docs"
 
-func NewDocsCommand() *cobra.Command {
-	opts := &Options{}
+func DeterminePath(args []string) (string, error) {
+	if len(args) == 0 {
+		fmt.Printf("No path was provided. Using default path: %s\n", DefaultPath)
+		return DefaultPath, nil
+	}
 
+	absPath, err := filepath.Abs(args[0])
+
+	if err != nil {
+		return "", err
+	}
+
+	return absPath, nil
+}
+
+func EnsureDirectoryExists(path string) error {
+	_, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		fmt.Printf("The directory %s does not exist. Creating it...\n", path)
+		return os.MkdirAll(path, os.ModePerm)
+	}
+	return err
+}
+
+func GenerateDocumentation(rootCmd *cobra.Command, path string) error {
+	fmt.Printf("Generating documentation in %s...\n", path)
+	err := doc.GenMarkdownTree(rootCmd, path)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Finished generating documentation in %s\n", path)
+
+	return nil
+}
+
+func NewDocsCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "docs",
 		Short: "Generates the documentation for the CLI",
@@ -26,40 +60,17 @@ func NewDocsCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cmd.Parent().Root().DisableAutoGenTag = true
 
-			// Use default path if no argument is provided
-			if len(args) == 0 {
-				opts.path = DefaultPath
-				fmt.Printf("No path was provided. Using default path: %s\n", DefaultPath)
-			} else {
-				absPath, err := filepath.Abs(args[0])
-				if err != nil {
-					return err
-				}
-				opts.path = absPath
-			}
+			path, err := DeterminePath(args)
 
-			// Create the directory if it doesn't exist
-			_, err := os.Stat(opts.path)
-			if os.IsNotExist(err) {
-				fmt.Printf("The directory %s does not exist. Creating it...\n", opts.path)
-
-				err := os.MkdirAll(opts.path, os.ModePerm)
-				if err != nil {
-					return fmt.Errorf("error creating documentation output directory %s: %s", opts.path, err)
-				}
-			}
-
-			// Generate markdown documentation
-			fmt.Printf("Generating documentation in %s...\n", opts.path)
-
-			err = doc.GenMarkdownTree(cmd.Parent().Root(), opts.path)
 			if err != nil {
 				return err
 			}
 
-			fmt.Printf("Finished generating documentation in %s\n", opts.path)
+			if err := EnsureDirectoryExists(path); err != nil {
+				return fmt.Errorf("error creating documentation output directory %s: %s", path, err)
+			}
 
-			return nil
+			return GenerateDocumentation(cmd.Parent().Root(), path)
 		},
 	}
 }
