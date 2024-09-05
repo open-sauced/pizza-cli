@@ -44,7 +44,11 @@ func NewRootCommand() (*cobra.Command, error) {
 	cmd.AddCommand(generate.NewGenerateCommand())
 	cmd.AddCommand(insights.NewInsightsCommand())
 	cmd.AddCommand(version.NewVersionCommand())
-	cmd.AddCommand(docs.NewDocsCommand())
+
+	// The docs command is hidden as it's only used by the pizza-cli maintainers
+	docsCmd := docs.NewDocsCommand()
+	docsCmd.Hidden = true
+	cmd.AddCommand(docsCmd)
 
 	err := cmd.PersistentFlags().MarkHidden(constants.FlagNameEndpoint)
 	if err != nil {
