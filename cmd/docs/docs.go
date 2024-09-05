@@ -51,7 +51,8 @@ func NewDocsCommand() *cobra.Command {
 
 			// Generate markdown documentation
 			fmt.Printf("Generating documentation in %s...\n", opts.path)
-			err = doc.GenMarkdownTree(cmd, opts.path)
+
+			err = doc.GenMarkdownTree(cmd.Parent().Root(), opts.path)
 			if err != nil {
 				return err
 			}
