@@ -9,7 +9,7 @@ type Spec struct {
 	// "github_username" has 2 emails attributed to them and their work.
 	Attributions map[string][]string `yaml:"attribution"`
 
-	// AttributionFallback is the default username to attribute to the filename
+	// AttributionFallback is the default username/group(s) to attribute to the filename
 	// if no other attributions were found.
 	AttributionFallback []string `yaml:"attribution-fallback"`
 }
