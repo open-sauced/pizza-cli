@@ -24,7 +24,7 @@ func NewDocsCommand() *cobra.Command {
 		Short: "Generates the documentation for the CLI",
 		Args:  cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cmd.DisableAutoGenTag = true
+			cmd.Parent().Root().DisableAutoGenTag = true
 
 			// Use default path if no argument is provided
 			if len(args) == 0 {
