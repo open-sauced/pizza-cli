@@ -21,13 +21,7 @@ func DeterminePath(args []string) (string, error) {
 		return DefaultPath, nil
 	}
 
-	absPath, err := filepath.Abs(args[0])
-
-	if err != nil {
-		return "", err
-	}
-
-	return absPath, nil
+	return filepath.Abs(args[0])
 }
 
 func EnsureDirectoryExists(path string) error {
