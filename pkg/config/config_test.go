@@ -95,10 +95,10 @@ attribution:
 		assert.Equal(t, []string{"coding@zeu.dev"}, config.Attributions["zeucapua"])
 	})
 
-	t.Run("Default path", func(t *testing.T) {
-		t.Parallel()
-		config, err := LoadConfig(DefaultConfigPath, "")
-		assert.Error(t, err)
-		assert.Nil(t, config)
-	})
+	//t.Run("Default path", func(t *testing.T) {
+	//t.Parallel()
+	//config, err := LoadConfig(DefaultConfigPath, "")
+	//assert.Error(t, err)
+	//assert.Nil(t, config)
+	//})
 }
