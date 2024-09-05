@@ -3,9 +3,9 @@ package codeowners
 import (
 	"testing"
 
-	"github.com/open-sauced/pizza-cli/pkg/config"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/open-sauced/pizza-cli/pkg/config"
 )
 
 func TestCleanFilename(testRunner *testing.T) {
