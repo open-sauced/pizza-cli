@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.3.0-beta.4](https://github.com/open-sauced/pizza-cli/compare/v1.3.0-beta.3...v1.3.0-beta.4) (2024-09-05)
+
+
+### 🐛 Bug Fixes
+
+* now fallback .sauced.yaml contents get read ([#135](https://github.com/open-sauced/pizza-cli/issues/135)) ([fd658e5](https://github.com/open-sauced/pizza-cli/commit/fd658e5e09051cdf007c3605aa880d68db835afb))
+
 ## [1.3.0-beta.3](https://github.com/open-sauced/pizza-cli/compare/v1.3.0-beta.2...v1.3.0-beta.3) (2024-09-04)
 
 
