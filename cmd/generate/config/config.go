@@ -10,18 +10,18 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/spf13/cobra"
-
-	"github.com/open-sauced/pizza-cli/pkg/config"
 )
 
-// Options for the codeowners generation command
+// Options for the config generation command
 type Options struct {
 	// the path to the git repository on disk to generate a codeowners file for
 	path   string
-	config *config.Spec
+
+	// where the '.sauced.yaml' file will go
+	outputPath string
 }
 
-const codeownersLongDesc string = `WARNING: Proof of concept feature.
+const configLongDesc string = `WARNING: Proof of concept feature.
 
 Generates a ~/.sauced.yaml configuration file. The attribution of emails to given entities
 is based on the repository this command is ran in.`
@@ -32,7 +32,7 @@ func NewConfigCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "config path/to/repo [flags]",
 		Short: "Generates a \"~/.sauced.yaml\" config based on the current repository",
-		Long:  codeownersLongDesc,
+		Long:  configLongDesc,
 		Args: func(_ *cobra.Command, args []string) error {
 			if len(args) != 1 {
 				return errors.New("you must provide exactly one argument: the path to the repository")
@@ -57,10 +57,13 @@ func NewConfigCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			// TODO: error checking based on given command
 
+			opts.outputPath, _ = cmd.Flags().GetString("output-path");
+
 			return run(opts)
 		},
 	}
 
+	cmd.PersistentFlags().StringP("output-path", "o", "~/", "Directory to create the `.sauced.yaml` file.")
 	return cmd
 }
 
@@ -94,8 +97,14 @@ func run(opts *Options) error {
 	})
 
 	// generate an output file
-	// default: `~/.sauced.yaml`
-	generateOutputFile(".sauced.yaml", attributionMap)
+	// default: `~/.sauced.yaml`	
+	if opts.outputPath == "~/" {
+		homeDir, _ := os.UserHomeDir()
+		generateOutputFile(filepath.Join(homeDir, ".sauced.yaml"), attributionMap)
+	} else {
+		generateOutputFile(filepath.Join(opts.outputPath, ".sauced.yaml"), attributionMap)
+	}
+
 
 	return nil
 }
