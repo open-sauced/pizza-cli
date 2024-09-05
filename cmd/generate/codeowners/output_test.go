@@ -35,7 +35,7 @@ func TestCleanFilename(testRunner *testing.T) {
 }
 
 func TestGetTopContributorAttributions(testRunner *testing.T) {
-	var configSpec = config.Spec{
+	configSpec := config.Spec{
 		Attributions: map[string][]string{
 			"brandonroberts": {"brandon@opensauced.pizza"},
 		},
@@ -54,7 +54,7 @@ func TestGetTopContributorAttributions(testRunner *testing.T) {
 }
 
 func TestGetFallbackAttributions(testRunner *testing.T) {
-	var configSpec = config.Spec{
+	configSpec := config.Spec{
 		Attributions: map[string][]string{
 			"jpmcb":          {"jpmcb@opensauced.pizza"},
 			"brandonroberts": {"brandon@opensauced.pizza"},
