@@ -5,7 +5,7 @@ const (
 	FlagNameEndpoint  = "endpoint"
 	FlagNameFile      = "file"
 	FlagNameOutput    = "output"
-	FlagNamePeriod    = "period"
+	FlagNameRange     = "range"
 	FlagNameTelemetry = "disable-telemetry"
 	FlagNameWait      = "wait"
 )

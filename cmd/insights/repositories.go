@@ -1,26 +1,25 @@
 package insights
 
 import (
-	"context"
 	"errors"
 	"fmt"
-	"slices"
 	"strconv"
 	"strings"
 	"sync"
 
 	bubblesTable "github.com/charmbracelet/bubbles/table"
-	"github.com/open-sauced/go-api/client"
 	"github.com/spf13/cobra"
 
-	"github.com/open-sauced/pizza-cli/pkg/api"
+	"github.com/open-sauced/pizza-cli/api"
+	"github.com/open-sauced/pizza-cli/api/services/contributors"
+	"github.com/open-sauced/pizza-cli/api/services/histogram"
 	"github.com/open-sauced/pizza-cli/pkg/constants"
 	"github.com/open-sauced/pizza-cli/pkg/utils"
 )
 
 type repositoriesOptions struct {
 	// APIClient is the http client for making calls to the open-sauced api
-	APIClient *client.APIClient
+	APIClient *api.Client
 
 	// Repos is the array of git repository urls
 	Repos []string
@@ -28,12 +27,14 @@ type repositoriesOptions struct {
 	// FilePath is the path to yaml file containing an array of git repository urls
 	FilePath string
 
-	// Period is the number of days, used for query filtering
+	// RangeVal is the number of days, used for query filtering
 	// Constrained to either 30 or 60
-	Period int32
+	RangeVal int
 
 	// Output is the formatting style for command output
 	Output string
+
+	telemetry *utils.PosthogCliClient
 }
 
 // NewRepositoriesCommand returns a new cobra command for 'pizza insights repositories'
@@ -53,19 +54,33 @@ func NewRepositoriesCommand() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			disableTelem, _ := cmd.Flags().GetBool(constants.FlagNameTelemetry)
+
+			opts.telemetry = utils.NewPosthogCliClient(!disableTelem)
+			defer opts.telemetry.Done()
+
 			endpointURL, _ := cmd.Flags().GetString(constants.FlagNameEndpoint)
-			opts.APIClient = api.NewGoClient(endpointURL)
+			opts.APIClient = api.NewClient(endpointURL)
 			output, _ := cmd.Flags().GetString(constants.FlagNameOutput)
 			opts.Output = output
-			return opts.run(context.TODO())
+
+			err := opts.run()
+
+			if err != nil {
+				opts.telemetry.CaptureInsights()
+			} else {
+				opts.telemetry.CaptureFailedInsights()
+			}
+
+			return err
 		},
 	}
 	cmd.Flags().StringVarP(&opts.FilePath, constants.FlagNameFile, "f", "", "Path to yaml file containing an array of git repository urls")
-	cmd.Flags().Int32VarP(&opts.Period, constants.FlagNamePeriod, "p", 30, "Number of days, used for query filtering")
+	cmd.Flags().IntVarP(&opts.RangeVal, constants.FlagNameRange, "p", 30, "Number of days to look-back")
 	return cmd
 }
 
-func (opts *repositoriesOptions) run(ctx context.Context) error {
+func (opts *repositoriesOptions) run() error {
 	repositories, err := utils.HandleRepositoryValues(opts.Repos, opts.FilePath)
 	if err != nil {
 		return err
@@ -84,7 +99,7 @@ func (opts *repositoriesOptions) run(ctx context.Context) error {
 			waitGroup.Add(1)
 			go func() {
 				defer waitGroup.Done()
-				allData, err := findAllRepositoryInsights(ctx, opts, repoURL)
+				allData, err := findAllRepositoryInsights(opts, repoURL)
 				if err != nil {
 					errorChan <- err
 					return
@@ -179,8 +194,8 @@ func (ris repositoryInsightsSlice) OutputTable() (string, error) {
 	return strings.Join(tables, separator), nil
 }
 
-func findAllRepositoryInsights(ctx context.Context, opts *repositoriesOptions, repoURL string) (*repositoryInsights, error) {
-	repo, err := findRepositoryByOwnerAndRepoName(ctx, opts.APIClient, repoURL)
+func findAllRepositoryInsights(opts *repositoriesOptions, repoURL string) (*repositoryInsights, error) {
+	repo, err := findRepositoryByOwnerAndRepoName(opts.APIClient, repoURL)
 	if err != nil {
 		return nil, fmt.Errorf("could not get repository insights for repository %s: %w", repoURL, err)
 	}
@@ -188,35 +203,41 @@ func findAllRepositoryInsights(ctx context.Context, opts *repositoriesOptions, r
 		return nil, nil
 	}
 	repoInsights := &repositoryInsights{
-		RepoID:  int(repo.Id),
-		RepoURL: repo.SvnUrl,
+		RepoID:  repo.ID,
+		RepoURL: repo.SvnURL,
 	}
+
 	var (
 		waitGroup = new(sync.WaitGroup)
 		errorChan = make(chan error, 4)
 	)
+
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := getPullRequestInsights(ctx, opts.APIClient, repo.FullName, opts.Period)
+		response, err := getPullRequestInsights(opts.APIClient, repo.FullName, opts.RangeVal)
 		if err != nil {
 			errorChan <- err
 			return
 		}
-		repoInsights.AllPullRequests = int(response.PrCount)
-		repoInsights.AcceptedPullRequests = int(response.AcceptedPrs)
-		repoInsights.SpamPullRequests = int(response.SpamPrs)
+
+		for _, bucket := range response {
+			repoInsights.AllPullRequests += bucket.PrCount
+			repoInsights.AcceptedPullRequests += bucket.AcceptedPrs
+			repoInsights.SpamPullRequests += bucket.SpamPrs
+		}
 	}()
+
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := searchAllPullRequestContributors(ctx, opts.APIClient, repo.Id, opts.Period)
+		response, err := searchAllPullRequestContributors(opts.APIClient, []string{repo.FullName}, opts.RangeVal)
 		if err != nil {
 			errorChan <- err
 			return
 		}
 		var contributors []string
-		for _, contributor := range response {
+		for _, contributor := range response.Data {
 			contributors = append(contributors, contributor.AuthorLogin)
 		}
 		repoInsights.Contributors = contributors
@@ -230,47 +251,28 @@ func findAllRepositoryInsights(ctx context.Context, opts *repositoriesOptions, r
 		}
 		return nil, allErrors
 	}
+
 	return repoInsights, nil
 }
 
-func getPullRequestInsights(ctx context.Context, apiClient *client.APIClient, repo string, period int32) (*client.DbPullRequestGitHubEventsHistogram, error) {
-	data, _, err := apiClient.HistogramGenerationServiceAPI.
-		PrsHistogram(ctx).
-		Repo(repo).
-		Execute()
+func getPullRequestInsights(apiClient *api.Client, repo string, rangeVal int) ([]histogram.PrHistogramData, error) {
+	data, _, err := apiClient.HistogramService.PrsHistogram(repo, rangeVal)
 	if err != nil {
 		return nil, fmt.Errorf("error while calling 'PullRequestsServiceAPI.GetPullRequestInsights' with repository %s': %w", repo, err)
 	}
-	index := slices.IndexFunc(data, func(prHisto client.DbPullRequestGitHubEventsHistogram) bool {
-		return int32(prHisto.Bucket.Unix()) == period
-	})
-	if index == -1 {
-		return nil, fmt.Errorf("could not find pull request insights for repository %s with interval %d", repo, period)
+
+	if len(data) == 0 {
+		return nil, fmt.Errorf("could not find pull request insights for repository %s with interval %d", repo, rangeVal)
 	}
-	return &data[index], nil
+
+	return data, nil
 }
 
-func searchAllPullRequestContributors(ctx context.Context, apiClient *client.APIClient, repoID, period int32) ([]client.DbPullRequestContributor, error) {
-	var (
-		allData []client.DbPullRequestContributor
-		page    int32 = 1
-	)
-	for {
-		data, _, err := apiClient.ContributorsServiceAPI.
-			SearchAllPullRequestContributors(ctx).
-			RepoIds(strconv.Itoa(int(repoID))).
-			Range_(period).
-			Limit(50).
-			Page(page).
-			Execute()
-		if err != nil {
-			return nil, fmt.Errorf("error while calling 'ContributorsServiceAPI.SearchAllPullRequestContributors' with repository %d': %w", repoID, err)
-		}
-		allData = append(allData, data.Data...)
-		if !data.Meta.HasNextPage {
-			break
-		}
-		page++
+func searchAllPullRequestContributors(apiClient *api.Client, repos []string, rangeVal int) (*contributors.ContribResponse, error) {
+	data, _, err := apiClient.ContributorService.SearchPullRequestContributors(repos, rangeVal)
+	if err != nil {
+		return nil, fmt.Errorf("error while calling 'ContributorService.SearchPullRequestContributors' with repository %v': %w", repos, err)
 	}
-	return allData, nil
+
+	return data, nil
 }

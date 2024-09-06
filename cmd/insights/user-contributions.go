@@ -2,7 +2,6 @@ package insights
 
 import (
 	"bytes"
-	"context"
 	"encoding/csv"
 	"errors"
 	"fmt"
@@ -11,17 +10,16 @@ import (
 	"sync"
 
 	bubblesTable "github.com/charmbracelet/bubbles/table"
-	"github.com/open-sauced/go-api/client"
 	"github.com/spf13/cobra"
 
-	"github.com/open-sauced/pizza-cli/pkg/api"
+	"github.com/open-sauced/pizza-cli/api"
 	"github.com/open-sauced/pizza-cli/pkg/constants"
 	"github.com/open-sauced/pizza-cli/pkg/utils"
 )
 
 type userContributionsOptions struct {
 	// APIClient is the http client for making calls to the open-sauced api
-	APIClient *client.APIClient
+	APIClient *api.Client
 
 	// Repos is the array of git repository urls
 	Repos []string
@@ -63,22 +61,22 @@ func NewUserContributionsCommand() *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			endpointURL, _ := cmd.Flags().GetString(constants.FlagNameEndpoint)
-			opts.APIClient = api.NewGoClient(endpointURL)
+			opts.APIClient = api.NewClient(endpointURL)
 			output, _ := cmd.Flags().GetString(constants.FlagNameOutput)
 			opts.Output = output
-			return opts.run(context.TODO())
+			return opts.run()
 		},
 	}
 
 	cmd.Flags().StringVarP(&opts.FilePath, constants.FlagNameFile, "f", "", "Path to yaml file containing an array of git repository urls")
-	cmd.Flags().Int32VarP(&opts.Period, constants.FlagNamePeriod, "p", 30, "Number of days, used for query filtering")
+	cmd.Flags().Int32VarP(&opts.Period, constants.FlagNameRange, "p", 30, "Number of days, used for query filtering")
 	cmd.Flags().StringSliceVarP(&opts.Users, "users", "u", []string{}, "Inclusive comma separated list of GitHub usernames to filter for")
 	cmd.Flags().StringVarP(&opts.Sort, "sort", "s", "none", "Sort user contributions by (total, commits, prs)")
 
 	return cmd
 }
 
-func (opts *userContributionsOptions) run(ctx context.Context) error {
+func (opts *userContributionsOptions) run() error {
 	repositories, err := utils.HandleRepositoryValues(opts.Repos, opts.FilePath)
 	if err != nil {
 		return err
@@ -107,7 +105,7 @@ func (opts *userContributionsOptions) run(ctx context.Context) error {
 			go func() {
 				defer waitGroup.Done()
 
-				data, err := findAllUserContributionsInsights(ctx, opts, repoURL)
+				data, err := findAllUserContributionsInsights(opts, repoURL)
 				if err != nil {
 					errorChan <- err
 					return
@@ -183,7 +181,7 @@ func (ucig userContributionsInsightGroup) BuildOutput(format string) (string, er
 
 func (ucig userContributionsInsightGroup) OutputCSV() (string, error) {
 	if len(ucig.Insights) == 0 {
-		return "", fmt.Errorf("repository is either non-existent or has not been indexed yet")
+		return "", errors.New("repository is either non-existent or has not been indexed yet")
 	}
 
 	b := new(bytes.Buffer)
@@ -258,7 +256,7 @@ func (ucig userContributionsInsightGroup) OutputTable() (string, error) {
 	return fmt.Sprintf("%s\n%s\n", ucig.RepoURL, utils.OutputTable(rows, columns)), nil
 }
 
-func findAllUserContributionsInsights(ctx context.Context, opts *userContributionsOptions, repoURL string) (*userContributionsInsightGroup, error) {
+func findAllUserContributionsInsights(opts *userContributionsOptions, repoURL string) (*userContributionsInsightGroup, error) {
 	owner, name, err := utils.GetOwnerAndRepoFromURL(repoURL)
 	if err != nil {
 		return nil, err
@@ -268,15 +266,10 @@ func findAllUserContributionsInsights(ctx context.Context, opts *userContributio
 		RepoURL: repoURL,
 	}
 
-	dataPoints, _, err := opts.
-		APIClient.
-		RepositoryServiceAPI.
-		FindContributorsByOwnerAndRepo(ctx, owner, name).
-		Range_(opts.Period).
-		Execute()
+	dataPoints, _, err := opts.APIClient.RepositoryService.FindContributorsByOwnerAndRepo(owner, name, 30)
 
 	if err != nil {
-		return nil, fmt.Errorf("error while calling 'RepositoryServiceAPI.FindAllContributorsByRepoId' with repository %s/%s': %w", owner, name, err)
+		return nil, fmt.Errorf("error while calling API RepositoryService.FindContributorsByOwnerAndRepo with repository %s/%s': %w", owner, name, err)
 	}
 
 	for _, data := range dataPoints.Data {
@@ -284,9 +277,9 @@ func findAllUserContributionsInsights(ctx context.Context, opts *userContributio
 		if len(opts.usersMap) == 0 || ok {
 			repoUserContributionsInsightGroup.Insights = append(repoUserContributionsInsightGroup.Insights, userContributionsInsights{
 				Login:              data.Login,
-				Commits:            int(data.Commits),
-				PrsCreated:         int(data.PrsCreated),
-				TotalContributions: int(data.Commits) + int(data.PrsCreated),
+				Commits:            data.Commits,
+				PrsCreated:         data.PRsCreated,
+				TotalContributions: data.Commits + data.PRsCreated,
 			})
 		}
 	}

@@ -2,7 +2,6 @@ package insights
 
 import (
 	"bytes"
-	"context"
 	"encoding/csv"
 	"errors"
 	"fmt"
@@ -11,17 +10,18 @@ import (
 	"sync"
 
 	bubblesTable "github.com/charmbracelet/bubbles/table"
-	"github.com/open-sauced/go-api/client"
 	"github.com/spf13/cobra"
 
-	"github.com/open-sauced/pizza-cli/pkg/api"
+	"github.com/open-sauced/pizza-cli/api"
+	"github.com/open-sauced/pizza-cli/api/services/contributors"
+	apiUtils "github.com/open-sauced/pizza-cli/api/utils"
 	"github.com/open-sauced/pizza-cli/pkg/constants"
 	"github.com/open-sauced/pizza-cli/pkg/utils"
 )
 
 type contributorsOptions struct {
 	// APIClient is the http client for making calls to the open-sauced api
-	APIClient *client.APIClient
+	APIClient *api.Client
 
 	// Repos is the array of git repository urls
 	Repos []string
@@ -29,11 +29,13 @@ type contributorsOptions struct {
 	// FilePath is the path to yaml file containing an array of git repository urls
 	FilePath string
 
-	// Period is the number of days, used for query filtering
-	Period int32
+	// RangeVal is the number of days, used for query filtering
+	RangeVal int
 
 	// Output is the formatting style for command output
 	Output string
+
+	telemetry *utils.PosthogCliClient
 }
 
 // NewContributorsCommand returns a new cobra command for 'pizza insights contributors'
@@ -52,21 +54,35 @@ func NewContributorsCommand() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			disableTelem, _ := cmd.Flags().GetBool(constants.FlagNameTelemetry)
+
+			opts.telemetry = utils.NewPosthogCliClient(!disableTelem)
+			defer opts.telemetry.Done()
+
 			endpointURL, _ := cmd.Flags().GetString(constants.FlagNameEndpoint)
-			opts.APIClient = api.NewGoClient(endpointURL)
+			opts.APIClient = api.NewClient(endpointURL)
 			output, _ := cmd.Flags().GetString(constants.FlagNameOutput)
 			opts.Output = output
-			return opts.run(context.TODO())
+
+			err := opts.run()
+
+			if err != nil {
+				opts.telemetry.CaptureInsights()
+			} else {
+				opts.telemetry.CaptureFailedInsights()
+			}
+
+			return err
 		},
 	}
 	cmd.Flags().StringVarP(&opts.FilePath, constants.FlagNameFile, "f", "", "Path to yaml file containing an array of git repository urls")
-	cmd.Flags().Int32VarP(&opts.Period, constants.FlagNamePeriod, "p", 30, "Number of days, used for query filtering (7,30,90)")
+	cmd.Flags().IntVarP(&opts.RangeVal, constants.FlagNameRange, "r", 30, "Number of days to look-back (7,30,90)")
 	return cmd
 }
 
-func (opts *contributorsOptions) run(ctx context.Context) error {
-	if !api.IsValidRange(opts.Period) {
-		return fmt.Errorf("invalid period: %d, accepts (7,30,90)", opts.Period)
+func (opts *contributorsOptions) run() error {
+	if !apiUtils.IsValidRange(opts.RangeVal) {
+		return fmt.Errorf("invalid period: %d, accepts (7,30,90)", opts.RangeVal)
 	}
 
 	repositories, err := utils.HandleRepositoryValues(opts.Repos, opts.FilePath)
@@ -87,7 +103,7 @@ func (opts *contributorsOptions) run(ctx context.Context) error {
 			waitGroup.Add(1)
 			go func() {
 				defer waitGroup.Done()
-				allData, err := findAllContributorsInsights(ctx, opts, repoURL)
+				allData, err := findAllContributorsInsights(opts, repoURL)
 				if err != nil {
 					errorChan <- err
 					return
@@ -149,7 +165,7 @@ func (cis contributorsInsightsSlice) BuildOutput(format string) (string, error) 
 
 func (cis contributorsInsightsSlice) OutputCSV() (string, error) {
 	if len(cis) == 0 {
-		return "", fmt.Errorf("repository is either non-existent or has not been indexed yet")
+		return "", errors.New("repository is either non-existent or has not been indexed yet")
 	}
 	b := new(bytes.Buffer)
 	writer := csv.NewWriter(b)
@@ -210,26 +226,29 @@ func (cis contributorsInsightsSlice) OutputTable() (string, error) {
 	return strings.Join(tables, separator), nil
 }
 
-func findAllContributorsInsights(ctx context.Context, opts *contributorsOptions, repoURL string) (*contributorsInsights, error) {
-	repo, err := findRepositoryByOwnerAndRepoName(ctx, opts.APIClient, repoURL)
+func findAllContributorsInsights(opts *contributorsOptions, repoURL string) (*contributorsInsights, error) {
+	var (
+		waitGroup = new(sync.WaitGroup)
+		errorChan = make(chan error, 4)
+	)
+
+	repo, err := findRepositoryByOwnerAndRepoName(opts.APIClient, repoURL)
 	if err != nil {
 		return nil, fmt.Errorf("could not get contributors insights for repository %s: %w", repoURL, err)
 	}
 	if repo == nil {
 		return nil, nil
 	}
+
 	repoContributorsInsights := &contributorsInsights{
-		RepoID:  int(repo.Id),
-		RepoURL: repo.SvnUrl,
+		RepoID:  repo.ID,
+		RepoURL: repo.SvnURL,
 	}
-	var (
-		waitGroup = new(sync.WaitGroup)
-		errorChan = make(chan error, 4)
-	)
+
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := findNewRepositoryContributors(ctx, opts.APIClient, repo.FullName, opts.Period)
+		response, err := findNewRepositoryContributors(opts.APIClient, repo.FullName, opts.RangeVal)
 		if err != nil {
 			errorChan <- err
 			return
@@ -238,10 +257,11 @@ func findAllContributorsInsights(ctx context.Context, opts *contributorsOptions,
 			repoContributorsInsights.New = append(repoContributorsInsights.New, data.AuthorLogin)
 		}
 	}()
+
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := findRecentRepositoryContributors(ctx, opts.APIClient, repo.FullName, opts.Period)
+		response, err := findRecentRepositoryContributors(opts.APIClient, repo.FullName, opts.RangeVal)
 		if err != nil {
 			errorChan <- err
 			return
@@ -250,10 +270,11 @@ func findAllContributorsInsights(ctx context.Context, opts *contributorsOptions,
 			repoContributorsInsights.Recent = append(repoContributorsInsights.Recent, data.AuthorLogin)
 		}
 	}()
+
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := findAlumniRepositoryContributors(ctx, opts.APIClient, repo.FullName, opts.Period)
+		response, err := findAlumniRepositoryContributors(opts.APIClient, repo.FullName, opts.RangeVal)
 		if err != nil {
 			errorChan <- err
 			return
@@ -262,10 +283,11 @@ func findAllContributorsInsights(ctx context.Context, opts *contributorsOptions,
 			repoContributorsInsights.Alumni = append(repoContributorsInsights.Alumni, data.AuthorLogin)
 		}
 	}()
+
 	waitGroup.Add(1)
 	go func() {
 		defer waitGroup.Done()
-		response, err := findRepeatRepositoryContributors(ctx, opts.APIClient, repo.FullName, opts.Period)
+		response, err := findRepeatRepositoryContributors(opts.APIClient, repo.FullName, opts.RangeVal)
 		if err != nil {
 			errorChan <- err
 			return
@@ -274,6 +296,7 @@ func findAllContributorsInsights(ctx context.Context, opts *contributorsOptions,
 			repoContributorsInsights.Repeat = append(repoContributorsInsights.Repeat, data.AuthorLogin)
 		}
 	}()
+
 	waitGroup.Wait()
 	close(errorChan)
 	if len(errorChan) > 0 {
@@ -286,50 +309,38 @@ func findAllContributorsInsights(ctx context.Context, opts *contributorsOptions,
 	return repoContributorsInsights, nil
 }
 
-func findNewRepositoryContributors(ctx context.Context, apiClient *client.APIClient, repo string, period int32) (*client.SearchAllPullRequestContributors200Response, error) {
-	data, _, err := apiClient.ContributorsServiceAPI.
-		NewPullRequestContributors(ctx).
-		Repos(repo).
-		Range_(period).
-		Execute()
+func findNewRepositoryContributors(apiClient *api.Client, repo string, period int) (*contributors.ContribResponse, error) {
+	response, _, err := apiClient.ContributorService.NewPullRequestContributors([]string{repo}, period)
 	if err != nil {
-		return nil, fmt.Errorf("error while calling 'ContributorsServiceAPI.NewPullRequestContributors' with repository %s': %w", repo, err)
+		return nil, fmt.Errorf("error while calling 'ContributorsService.NewPullRequestContributors' with repository %s': %w", repo, err)
 	}
-	return data, nil
+
+	return response, nil
 }
 
-func findRecentRepositoryContributors(ctx context.Context, apiClient *client.APIClient, repo string, period int32) (*client.SearchAllPullRequestContributors200Response, error) {
-	data, _, err := apiClient.ContributorsServiceAPI.
-		FindAllRecentPullRequestContributors(ctx).
-		Repos(repo).
-		Range_(period).
-		Execute()
+func findRecentRepositoryContributors(apiClient *api.Client, repo string, period int) (*contributors.ContribResponse, error) {
+	response, _, err := apiClient.ContributorService.RecentPullRequestContributors([]string{repo}, period)
 	if err != nil {
-		return nil, fmt.Errorf("error while calling 'ContributorsServiceAPI.FindAllRecentPullRequestContributors' with repository %s': %w", repo, err)
+		return nil, fmt.Errorf("error while calling 'ContributorsService.RecentPullRequestContributors' with repository %s': %w", repo, err)
 	}
-	return data, nil
+
+	return response, nil
 }
 
-func findAlumniRepositoryContributors(ctx context.Context, apiClient *client.APIClient, repo string, period int32) (*client.SearchAllPullRequestContributors200Response, error) {
-	data, _, err := apiClient.ContributorsServiceAPI.
-		FindAllChurnPullRequestContributors(ctx).
-		Repos(repo).
-		Range_(period).
-		Execute()
+func findAlumniRepositoryContributors(apiClient *api.Client, repo string, period int) (*contributors.ContribResponse, error) {
+	response, _, err := apiClient.ContributorService.AlumniPullRequestContributors([]string{repo}, period)
 	if err != nil {
-		return nil, fmt.Errorf("error while calling 'ContributorsServiceAPI.FindAllChurnPullRequestContributors' with repository %s': %w", repo, err)
+		return nil, fmt.Errorf("error while calling 'ContributorsService.AlumniPullRequestContributors' with repository %s': %w", repo, err)
 	}
-	return data, nil
+
+	return response, nil
 }
 
-func findRepeatRepositoryContributors(ctx context.Context, apiClient *client.APIClient, repo string, period int32) (*client.SearchAllPullRequestContributors200Response, error) {
-	data, _, err := apiClient.ContributorsServiceAPI.
-		FindAllRepeatPullRequestContributors(ctx).
-		Repos(repo).
-		Range_(period).
-		Execute()
+func findRepeatRepositoryContributors(apiClient *api.Client, repo string, period int) (*contributors.ContribResponse, error) {
+	response, _, err := apiClient.ContributorService.RepeatPullRequestContributors([]string{repo}, period)
 	if err != nil {
-		return nil, fmt.Errorf("error while calling 'ContributorsServiceAPI.FindAllRepeatPullRequestContributors' with repository %s: %w", repo, err)
+		return nil, fmt.Errorf("error while calling 'ContributorsService.RepeatPullRequestContributors' with repository %s': %w", repo, err)
 	}
-	return data, nil
+
+	return response, nil
 }

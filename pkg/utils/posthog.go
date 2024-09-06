@@ -12,12 +12,13 @@ var (
 // PosthogCliClient is a wrapper around the posthog-go client and is used as a
 // API entrypoint for sending OpenSauced telemetry data for CLI commands
 type PosthogCliClient struct {
-	client posthog.Client
+	client    posthog.Client
+	activated bool
 }
 
 // NewPosthogCliClient returns a PosthogCliClient which can be used to capture
 // telemetry events for CLI users
-func NewPosthogCliClient() *PosthogCliClient {
+func NewPosthogCliClient(activated bool) *PosthogCliClient {
 	client, err := posthog.NewWithConfig(
 		writeOnlyPublicPosthogKey,
 		posthog.Config{
@@ -32,7 +33,8 @@ func NewPosthogCliClient() *PosthogCliClient {
 	}
 
 	return &PosthogCliClient{
-		client: client,
+		client:    client,
+		activated: activated,
 	}
 }
 
@@ -44,44 +46,106 @@ func (p *PosthogCliClient) Done() {
 	p.client.Close()
 }
 
-// CaptureBake gathers telemetry on git repos that are being baked
-//
-//nolint:errcheck
-func (p *PosthogCliClient) CaptureBake(urls []string) {
-	p.client.Enqueue(posthog.Capture{
-		DistinctId: "pizza-bakers",
-		Event:      "cli_user baked repo",
-		Properties: posthog.NewProperties().Set("clone_url", urls),
-	})
-}
-
 // CaptureLogin gathers telemetry on users who log into OpenSauced via the CLI
 //
 //nolint:errcheck
 func (p *PosthogCliClient) CaptureLogin(username string) {
-	p.client.Enqueue(posthog.Capture{
-		DistinctId: username,
-		Event:      "cli_user logged in",
-	})
+	if p.activated {
+		p.client.Enqueue(posthog.Capture{
+			DistinctId: username,
+			Event:      "cli_user logged in",
+		})
+	}
 }
 
 // CaptureFailedLogin gathers telemetry on failed logins via the CLI
 //
 //nolint:errcheck
 func (p *PosthogCliClient) CaptureFailedLogin() {
-	p.client.Enqueue(posthog.Capture{
-		DistinctId: "login-failures",
-		Event:      "cli_user failed log in",
-	})
+	if p.activated {
+		p.client.Enqueue(posthog.Capture{
+			DistinctId: "login-failures",
+			Event:      "cli_user failed log in",
+		})
+	}
 }
 
-// CaptureRepoQuery gathers telemetry on users using the repo-query service
-//
 //nolint:errcheck
-func (p *PosthogCliClient) CaptureRepoQuery(url string) {
-	p.client.Enqueue(posthog.Capture{
-		DistinctId: "repo-queriers",
-		Event:      "cli_user used repo-query",
-		Properties: posthog.NewProperties().Set("github_url", url),
-	})
+func (p *PosthogCliClient) CaptureCodeownersGenerate() {
+	if p.activated {
+		p.client.Enqueue(posthog.Capture{
+			DistinctId: "codeowners-generated",
+			Event:      "cli generated codeowners",
+		})
+	}
+}
+
+//nolint:errcheck
+func (p *PosthogCliClient) CaptureFailedCodeownersGenerate() {
+	if p.activated {
+		p.client.Enqueue(posthog.Capture{
+			DistinctId: "failed-codeowners-generated",
+			Event:      "cli failed to generate codeowners",
+		})
+	}
+}
+
+//nolint:errcheck
+func (p *PosthogCliClient) CaptureCodeownersGenerateAuth(username string) {
+	if p.activated {
+		p.client.Enqueue(posthog.Capture{
+			DistinctId: username,
+			Event:      "user authenticated during generate codeowners flow",
+		})
+	}
+}
+
+//nolint:errcheck
+func (p *PosthogCliClient) CaptureFailedCodeownersGenerateAuth() {
+	if p.activated {
+		p.client.Enqueue(posthog.Capture{
+			DistinctId: "codeowners-generate-auth-failed",
+			Event:      "user failed to authenticate during generate codeowners flow",
+		})
+	}
+}
+
+//nolint:errcheck
+func (p *PosthogCliClient) CaptureCodeownersGenerateContributorInsight() {
+	if p.activated {
+		p.client.Enqueue(posthog.Capture{
+			DistinctId: "codeowners-generate-contributor-insight",
+			Event:      "cli created/updated contributor list for user",
+		})
+	}
+}
+
+//nolint:errcheck
+func (p *PosthogCliClient) CaptureFailedCodeownersGenerateContributorInsight() {
+	if p.activated {
+		p.client.Enqueue(posthog.Capture{
+			DistinctId: "failed-codeowners-generation-contributor-insight",
+			Event:      "cli failed to create/update contributor insight for user",
+		})
+	}
+}
+
+//nolint:errcheck
+func (p *PosthogCliClient) CaptureInsights() {
+	if p.activated {
+		p.client.Enqueue(posthog.Capture{
+			DistinctId: "insights",
+			Event:      "cli called insights command",
+		})
+	}
+}
+
+//nolint:errcheck
+func (p *PosthogCliClient) CaptureFailedInsights() {
+	if p.activated {
+		p.client.Enqueue(posthog.Capture{
+			DistinctId: "failed-insight",
+			Event:      "cli failed to call insights command",
+		})
+	}
 }

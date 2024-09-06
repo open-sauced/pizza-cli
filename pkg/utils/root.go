@@ -20,6 +20,8 @@ func SetupRootCommand(rootCmd *cobra.Command) {
 
 // Uses the users terminal size or width of 80 if cannot determine users width
 func wrappedFlagUsages(cmd *pflag.FlagSet) string {
+	// converts the uintptr to the system file descriptor integer
+	//nolint:gosec
 	fd := int(os.Stdout.Fd())
 	width := 80
 
