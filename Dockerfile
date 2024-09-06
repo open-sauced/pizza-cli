@@ -5,6 +5,7 @@ ARG BUILDPLATFORM
 ARG VERSION
 ARG SHA
 ARG DATETIME
+ARG POSTHOG_PUBLIC_API_KEY
 
 # Get the dependencies downloaded
 WORKDIR /app
@@ -17,7 +18,8 @@ COPY . ./
 RUN go build -ldflags="-s -w \
     -X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}' \
     -X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=${SHA}' \
-    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
     -o pizza .
 
 # Runner layer

@@ -32,19 +32,17 @@ func NewLoginCommand() *cobra.Command {
 		Long:  loginLongDesc,
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			username, err := run()
-
 			disableTelem, _ := cmd.Flags().GetBool(constants.FlagNameTelemetry)
 
-			if !disableTelem {
-				opts.telemetry = utils.NewPosthogCliClient()
-				defer opts.telemetry.Done()
+			opts.telemetry = utils.NewPosthogCliClient(!disableTelem)
+			defer opts.telemetry.Done()
 
-				if err != nil {
-					opts.telemetry.CaptureFailedLogin()
-				} else {
-					opts.telemetry.CaptureLogin(username)
-				}
+			username, err := run()
+
+			if err != nil {
+				opts.telemetry.CaptureFailedLogin()
+			} else {
+				opts.telemetry.CaptureLogin(username)
 			}
 
 			return err
