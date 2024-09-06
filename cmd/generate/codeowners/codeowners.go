@@ -87,7 +87,6 @@ func NewCodeownersCommand() *cobra.Command {
 			disableTelem, _ := cmd.Flags().GetBool(constants.FlagNameTelemetry)
 
 			opts.telemetry = utils.NewPosthogCliClient(!disableTelem)
-			defer opts.telemetry.Done()
 
 			configPath, _ := cmd.Flags().GetString("config")
 			opts.config, err = config.LoadConfig(configPath, filepath.Join(opts.path, ".sauced.yaml"))
@@ -112,7 +111,11 @@ func NewCodeownersCommand() *cobra.Command {
 				opts.loglevel = logging.LogDebug
 			}
 
-			return run(opts, cmd)
+			err = run(opts, cmd)
+
+			_ = opts.telemetry.Done()
+
+			return err
 		},
 	}
 
@@ -135,7 +138,7 @@ func run(opts *Options, cmd *cobra.Command) error {
 
 	repo, err := git.PlainOpen(opts.path)
 	if err != nil {
-		opts.telemetry.CaptureFailedCodeownersGenerate()
+		_ = opts.telemetry.CaptureFailedCodeownersGenerate()
 		return fmt.Errorf("error opening repo: %w", err)
 	}
 	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Opened repo at: %s\n", opts.path)
@@ -150,7 +153,7 @@ func run(opts *Options, cmd *cobra.Command) error {
 
 	codeowners, err := processOptions.process()
 	if err != nil {
-		opts.telemetry.CaptureFailedCodeownersGenerate()
+		_ = opts.telemetry.CaptureFailedCodeownersGenerate()
 		return fmt.Errorf("error traversing git log: %w", err)
 	}
 
@@ -165,11 +168,11 @@ func run(opts *Options, cmd *cobra.Command) error {
 	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Processing codeowners file at: %s\n", outputPath)
 	err = generateOutputFile(codeowners, outputPath, opts, cmd)
 	if err != nil {
-		opts.telemetry.CaptureFailedCodeownersGenerate()
+		_ = opts.telemetry.CaptureFailedCodeownersGenerate()
 		return fmt.Errorf("error generating github style codeowners file: %w", err)
 	}
 	opts.logger.V(logging.LogInfo).Style(0, colors.FgGreen).Infof("Finished generating file: %s\n", outputPath)
-	opts.telemetry.CaptureCodeownersGenerate()
+	_ = opts.telemetry.CaptureCodeownersGenerate()
 
 	// ignore the interactive prompts for CI/CD environments
 	if opts.tty {
@@ -209,11 +212,11 @@ func run(opts *Options, cmd *cobra.Command) error {
 		case "y", "Y", "yes":
 			user, err := authenticator.Login()
 			if err != nil {
-				opts.telemetry.CaptureFailedCodeownersGenerateAuth()
+				_ = opts.telemetry.CaptureFailedCodeownersGenerateAuth()
 				opts.logger.V(logging.LogInfo).Style(0, colors.FgRed).Infof("Error logging in\n")
 				return fmt.Errorf("could not log in: %w", err)
 			}
-			opts.telemetry.CaptureCodeownersGenerateAuth(user)
+			_ = opts.telemetry.CaptureCodeownersGenerateAuth(user)
 			opts.logger.V(logging.LogInfo).Style(0, colors.FgGreen).Infof("Logged in as: %s\n", user)
 
 		case "n", "N", "no":
@@ -226,7 +229,7 @@ func run(opts *Options, cmd *cobra.Command) error {
 
 	opts.token, err = authenticator.GetSessionToken()
 	if err != nil {
-		opts.telemetry.CaptureFailedCodeownersGenerateContributorInsight()
+		_ = opts.telemetry.CaptureFailedCodeownersGenerateContributorInsight()
 		opts.logger.V(logging.LogInfo).Style(0, colors.FgRed).Infof("Error getting session token\n")
 		return fmt.Errorf("could not get session token: %w", err)
 	}
@@ -236,7 +239,7 @@ func run(opts *Options, cmd *cobra.Command) error {
 	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Looking up OpenSauced workspace: Pizza CLI\n")
 	workspace, err := findCreatePizzaCliWorkspace(opts)
 	if err != nil {
-		opts.telemetry.CaptureFailedCodeownersGenerateContributorInsight()
+		_ = opts.telemetry.CaptureFailedCodeownersGenerateContributorInsight()
 		opts.logger.V(logging.LogInfo).Style(0, colors.FgRed).Infof("Error finding Workspace: Pizza CLI\n")
 		return fmt.Errorf("could not find Pizza CLI workspace: %w", err)
 	}
@@ -245,13 +248,13 @@ func run(opts *Options, cmd *cobra.Command) error {
 	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Looking up Contributor Insight for local repository: %s\n", listName)
 	userList, err := updateCreateLocalWorkspaceUserList(opts, listName, workspace, codeowners)
 	if err != nil {
-		opts.telemetry.CaptureFailedCodeownersGenerateContributorInsight()
+		_ = opts.telemetry.CaptureFailedCodeownersGenerateContributorInsight()
 		opts.logger.V(logging.LogInfo).Style(0, colors.FgRed).Infof("Error finding Workspace Contributor Insight: %s\n", listName)
 		return fmt.Errorf("could not find Workspace Contributor Insight: %s - %w", listName, err)
 	}
 	opts.logger.V(logging.LogDebug).Style(0, colors.FgGreen).Infof("Updated Contributor Insight for local repository: %s\n", listName)
 	opts.logger.V(logging.LogInfo).Style(0, colors.FgCyan).Infof("Access list on OpenSauced:\n%s\n", fmt.Sprintf("https://app.opensauced.pizza/workspaces/%s/contributor-insights/%s", workspace.ID, userList.ID))
-	opts.telemetry.CaptureCodeownersGenerateContributorInsight()
+	_ = opts.telemetry.CaptureCodeownersGenerateContributorInsight()
 
 	return nil
 }
