@@ -6,7 +6,7 @@ Generates a CODEOWNERS file for a given repository using a "~/.sauced.yaml" conf
 
 WARNING: Proof of concept feature.
 
-Generates a CODEOWNERS file for a given git repository. This uses a ~/.sauced.yaml
+Generates a CODEOWNERS file for a git repository. This uses a ~/.sauced.yaml
 configuration to attribute emails with given entities.
 
 The generated file specifies up to 3 owners for EVERY file in the git tree based on the
