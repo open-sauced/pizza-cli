@@ -1,3 +1,2 @@
 # Ignore stuff from the builds that get generated.
 build/
-docs/
