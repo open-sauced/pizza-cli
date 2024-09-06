@@ -30,7 +30,7 @@ attribution:
 
 		require.NoError(t, os.WriteFile(configFilePath, []byte(fileContents), 0600))
 
-		config, err := LoadConfig(configFilePath, "")
+		config, err := LoadConfig(configFilePath)
 		require.NoError(t, err)
 		assert.NotNil(t, config)
 
@@ -47,12 +47,12 @@ attribution:
 		tmpDir := t.TempDir()
 		nonExistentPath := filepath.Join(tmpDir, ".sauced.yaml")
 
-		config, err := LoadConfig(nonExistentPath, "")
+		config, err := LoadConfig(nonExistentPath)
 		require.Error(t, err)
 		assert.Nil(t, config)
 	})
 
-	t.Run("Non-existent file with fallback", func(t *testing.T) {
+	t.Run("Providing a custom .sauced.yaml location", func(t *testing.T) {
 		t.Parallel()
 		fileContents := `# Configuration for attributing commits with emails to GitHub user profiles
 # Used during codeowners generation.
@@ -78,9 +78,7 @@ attribution:
 		_, err := os.ReadFile(fallbackPath)
 		require.NoError(t, err)
 
-		nonExistentPath := filepath.Join(tmpDir, "non-existent.yaml")
-
-		config, err := LoadConfig(nonExistentPath, fallbackPath)
+		config, err := LoadConfig(fallbackPath)
 
 		require.NoError(t, err)
 		assert.NotNil(t, config)
