@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.3.1-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.3.0...v1.3.1-beta.1) (2024-09-06)
+
+
+### 🐛 Bug Fixes
+
+* skip interactive steps in generate codeowners with --tty-disable flag ([#159](https://github.com/open-sauced/pizza-cli/issues/159)) ([49f1fd3](https://github.com/open-sauced/pizza-cli/commit/49f1fd3fc4df24b95724feb1918dc80276cd017e))
+
 ## [1.3.0](https://github.com/open-sauced/pizza-cli/compare/v1.2.1...v1.3.0) (2024-09-06)
 
 
