@@ -187,6 +187,19 @@ lint:
 format:
   find . -type f -name "*.go" -exec goimports -local github.com/open-sauced/pizza-cli -w {} \;
 
+# Installs the dev tools for working with this project. Requires "go", "just", and "docker"
+install-dev-tools:
+  #!/usr/bin/env sh
+
+  go install golang.org/x/tools/cmd/goimports@latest
+
 # Runs Go code manually through the main.go
 run:
   go run main.go
+
+# Re-generates the docs from the cobra command tree
+gen-docs:
+  go run main.go docs ./docs/
+
+# Runs all the dev tasks (like formatting, linting, building, etc.)
+dev: format lint test build-all
