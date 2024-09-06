@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.3.0-beta.7](https://github.com/open-sauced/pizza-cli/compare/v1.3.0-beta.6...v1.3.0-beta.7) (2024-09-06)
+
+
+### 🐛 Bug Fixes
+
+* Exhume Posthog functionality ([#147](https://github.com/open-sauced/pizza-cli/issues/147)) ([de091ca](https://github.com/open-sauced/pizza-cli/commit/de091cac7df585eadcfae64d6f851cfc178c74a2))
+
 ## [1.3.0-beta.6](https://github.com/open-sauced/pizza-cli/compare/v1.3.0-beta.5...v1.3.0-beta.6) (2024-09-05)
 
 
