@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.3.1-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.3.1-beta.1...v1.3.1-beta.2) (2024-09-06)
+
+
+### 🐛 Bug Fixes
+
+* use the local directory and home directory as fallback for .sauced.yaml ([#158](https://github.com/open-sauced/pizza-cli/issues/158)) ([af2f361](https://github.com/open-sauced/pizza-cli/commit/af2f3612e26634455602d1840714c5bf15e1e40a))
+
 ## [1.3.1-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.3.0...v1.3.1-beta.1) (2024-09-06)
 
 
