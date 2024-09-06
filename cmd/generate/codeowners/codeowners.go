@@ -171,6 +171,11 @@ func run(opts *Options, cmd *cobra.Command) error {
 	opts.logger.V(logging.LogInfo).Style(0, colors.FgGreen).Infof("Finished generating file: %s\n", outputPath)
 	opts.telemetry.CaptureCodeownersGenerate()
 
+	// ignore the interactive prompts for CI/CD environments
+	if opts.tty {
+		return nil
+	}
+
 	// 1. Ask if they want to add users to a list
 	var input string
 	fmt.Print("Do you want to add these codeowners to an OpenSauced Contributor Insight? (y/n): ")
