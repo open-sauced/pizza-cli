@@ -16,7 +16,55 @@ jobs:
     name: Test, lint, & build
     uses: ./.github/workflows/test.yaml
 
+  prerelease:
+    name: Update documentation
+    runs-on: ubuntu-latest
+    outputs:
+      pr_number: ${{ steps.create_pr.outputs.pr_number }}
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.OS_GITHUB_APP_ID }}
+          private_key: ${{ secrets.OS_GITHUB_APP_PRIVATE_KEY }}
+
+      - name: "☁️ checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.generate_token.outputs.token }}
+
+      - name: "🤲 Setup Just"
+        uses: extractions/setup-just@v2
+
+      - name: "📗 generate documentation"
+        run: just gen-docs
+
+      - name: Create PR for documentation update
+        id: create_pr
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: |
+          timestamp=$(date +"%Y%m%d%H%M%S")
+          branch_name="chore-automated-doc-updates-$timestamp"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git checkout -b "$branch_name"
+          git add .
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            echo "pr_number=" >> $GITHUB_OUTPUT
+          else
+            git commit -m "chore: update documentation ($timestamp)"
+            git push -u origin "$branch_name"
+            pr_number=$(gh pr create --title "chore: update documentation ($timestamp)" --body "Automated documentation update for release" --base ${{ github.ref_name }} --head "$branch_name")
+            echo "pr_number=$pr_number" >> $GITHUB_OUTPUT
+            gh pr merge $pr_number --auto --delete-branch --squash
+          fi
+
   release:
+    needs: [test, prerelease]
     outputs:
         release-tag: ${{ steps.semantic-release.outputs.release-tag }}
     name: Semantic release
@@ -45,6 +93,25 @@ jobs:
 
       - name: "🔧 install npm@latest"
         run: npm i -g npm@latest
+
+      - name: "Wait for PR to be merged"
+        if: needs.prerelease.outputs.pr_number != ''
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: |
+          pr_number="${{ needs.prerelease.outputs.pr_number }}"
+          while true; do
+            pr_state=$(gh pr view $pr_number --json state -q .state)
+            if [ "$pr_state" = "MERGED" ]; then
+              echo "PR has been merged"
+              break
+            elif [ "$pr_state" = "CLOSED" ]; then
+              echo "PR was closed without merging"
+              exit 1
+            fi
+            echo "Waiting for PR to be merged..."
+            sleep 10
+          done
 
       - name: "🚀 release"
         id: semantic-release
