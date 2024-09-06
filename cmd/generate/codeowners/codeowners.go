@@ -116,8 +116,8 @@ func NewCodeownersCommand() *cobra.Command {
 		},
 	}
 
-	cmd.PersistentFlags().IntP("range", "r", 90, "The number of days to lookback")
-	cmd.PersistentFlags().Bool("owners-style-file", false, "Whether to generate an agnostic OWNERS style file.")
+	cmd.PersistentFlags().IntP("range", "r", 90, "The number of days to analyze commit history (default 90)")
+	cmd.PersistentFlags().Bool("owners-style-file", false, "Generate an agnostic OWNERS style file instead of CODEOWNERS.")
 
 	return cmd
 }
