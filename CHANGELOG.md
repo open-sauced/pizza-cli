@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.3.0-beta.8](https://github.com/open-sauced/pizza-cli/compare/v1.3.0-beta.7...v1.3.0-beta.8) (2024-09-06)
+
+
+### 🍕 Features
+
+* now the documentation for the pizza-cli can be generated via pizza docs ([#143](https://github.com/open-sauced/pizza-cli/issues/143)) ([3f5d27e](https://github.com/open-sauced/pizza-cli/commit/3f5d27e2c52c894a266828e70e7475069e74e8e9))
+
 ## [1.3.0-beta.7](https://github.com/open-sauced/pizza-cli/compare/v1.3.0-beta.6...v1.3.0-beta.7) (2024-09-06)
 
 
