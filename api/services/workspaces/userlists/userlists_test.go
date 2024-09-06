@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/open-sauced/pizza-cli/api/mock"
 	"github.com/open-sauced/pizza-cli/api/services"
@@ -55,7 +56,7 @@ func TestGetUserLists(t *testing.T) {
 
 	userlists, resp, err := service.GetUserLists("token", "abc123", 1, 30)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, userlists)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Len(t, userlists.Data, 2)
@@ -103,7 +104,7 @@ func TestGetUserListForUser(t *testing.T) {
 
 	userlists, resp, err := service.GetUserList("token", "abc123", "xyz")
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, userlists)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, "abc", userlists.ID)
@@ -136,7 +137,7 @@ func TestCreateUserListForUser(t *testing.T) {
 
 	userlists, resp, err := service.CreateUserListForUser("token", "abc123", "userlist1", []string{})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, userlists)
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 	assert.Equal(t, "abc", userlists.ID)
@@ -169,7 +170,7 @@ func TestPatchUserListForUser(t *testing.T) {
 
 	userlists, resp, err := service.PatchUserListForUser("token", "abc123", "abc", "userlist1", []string{})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, userlists)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, "abc", userlists.ID)

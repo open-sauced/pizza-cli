@@ -1,15 +1,23 @@
 linters:
   enable:
+    - asasalint
+    - asciicheck
+    - bidichk
+    - canonicalheader
     - errcheck
+    - gci
     - goimports
+    - gocritic
+    - gosec
+    - govet
     - ineffassign
     - misspell
     - revive
+    - perfsprint
     - staticcheck
     - unconvert
     - unused
-    - govet
-    - gci
+    - testifylint
 
 linters-settings:
   gci:
@@ -23,3 +31,6 @@ linters-settings:
 
 run:
   timeout: 5m
+
+# attempts to automatically fix linting errors that are fixable by supported linters
+fix: true

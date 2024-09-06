@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/open-sauced/pizza-cli/api/mock"
 	"github.com/open-sauced/pizza-cli/api/services"
@@ -55,7 +56,7 @@ func TestGetWorkspaces(t *testing.T) {
 
 	workspaces, resp, err := service.GetWorkspaces("token", 1, 30)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, workspaces)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Len(t, workspaces.Data, 2)
@@ -103,7 +104,7 @@ func TestCreateWorkspaceForUser(t *testing.T) {
 
 	workspace, resp, err := service.CreateWorkspaceForUser("token", "test workspace", "a workspace for testing", []string{})
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, workspace)
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 	assert.Equal(t, "abc123", workspace.ID)

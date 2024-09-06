@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -25,7 +26,7 @@ func NewContributorsService(httpClient *http.Client, endpoint string) *Service {
 
 // NewPullRequestContributors calls the "v2/contributors/insights/new" API endpoint
 func (s *Service) NewPullRequestContributors(repos []string, rangeVal int) (*ContribResponse, *http.Response, error) {
-	baseURL := fmt.Sprintf("%s/v2/contributors/insights/new", s.endpoint)
+	baseURL := s.endpoint + "/v2/contributors/insights/new"
 
 	// Create URL with query parameters
 	u, err := url.Parse(baseURL)
@@ -34,7 +35,7 @@ func (s *Service) NewPullRequestContributors(repos []string, rangeVal int) (*Con
 	}
 
 	q := u.Query()
-	q.Set("range", fmt.Sprintf("%d", rangeVal))
+	q.Set("range", strconv.Itoa(rangeVal))
 	q.Set("repos", strings.Join(repos, ","))
 	u.RawQuery = q.Encode()
 
@@ -58,7 +59,7 @@ func (s *Service) NewPullRequestContributors(repos []string, rangeVal int) (*Con
 
 // RecentPullRequestContributors calls the "v2/contributors/insights/recent" API endpoint
 func (s *Service) RecentPullRequestContributors(repos []string, rangeVal int) (*ContribResponse, *http.Response, error) {
-	baseURL := fmt.Sprintf("%s/v2/contributors/insights/recent", s.endpoint)
+	baseURL := s.endpoint + "/v2/contributors/insights/recent"
 
 	// Create URL with query parameters
 	u, err := url.Parse(baseURL)
@@ -67,7 +68,7 @@ func (s *Service) RecentPullRequestContributors(repos []string, rangeVal int) (*
 	}
 
 	q := u.Query()
-	q.Set("range", fmt.Sprintf("%d", rangeVal))
+	q.Set("range", strconv.Itoa(rangeVal))
 	q.Set("repos", strings.Join(repos, ","))
 	u.RawQuery = q.Encode()
 
@@ -91,7 +92,7 @@ func (s *Service) RecentPullRequestContributors(repos []string, rangeVal int) (*
 
 // AlumniPullRequestContributors calls the "v2/contributors/insights/alumni" API endpoint
 func (s *Service) AlumniPullRequestContributors(repos []string, rangeVal int) (*ContribResponse, *http.Response, error) {
-	baseURL := fmt.Sprintf("%s/v2/contributors/insights/alumni", s.endpoint)
+	baseURL := s.endpoint + "/v2/contributors/insights/alumni"
 
 	// Create URL with query parameters
 	u, err := url.Parse(baseURL)
@@ -100,7 +101,7 @@ func (s *Service) AlumniPullRequestContributors(repos []string, rangeVal int) (*
 	}
 
 	q := u.Query()
-	q.Set("range", fmt.Sprintf("%d", rangeVal))
+	q.Set("range", strconv.Itoa(rangeVal))
 	q.Set("repos", strings.Join(repos, ","))
 	u.RawQuery = q.Encode()
 
@@ -124,7 +125,7 @@ func (s *Service) AlumniPullRequestContributors(repos []string, rangeVal int) (*
 
 // RepeatPullRequestContributors calls the "v2/contributors/insights/repeat" API endpoint
 func (s *Service) RepeatPullRequestContributors(repos []string, rangeVal int) (*ContribResponse, *http.Response, error) {
-	baseURL := fmt.Sprintf("%s/v2/contributors/insights/repeat", s.endpoint)
+	baseURL := s.endpoint + "/v2/contributors/insights/repeat"
 
 	// Create URL with query parameters
 	u, err := url.Parse(baseURL)
@@ -133,7 +134,7 @@ func (s *Service) RepeatPullRequestContributors(repos []string, rangeVal int) (*
 	}
 
 	q := u.Query()
-	q.Set("range", fmt.Sprintf("%d", rangeVal))
+	q.Set("range", strconv.Itoa(rangeVal))
 	q.Set("repos", strings.Join(repos, ","))
 	u.RawQuery = q.Encode()
 
@@ -157,7 +158,7 @@ func (s *Service) RepeatPullRequestContributors(repos []string, rangeVal int) (*
 
 // SearchPullRequestContributors calls the "v2/contributors/search"
 func (s *Service) SearchPullRequestContributors(repos []string, rangeVal int) (*ContribResponse, *http.Response, error) {
-	baseURL := fmt.Sprintf("%s/v2/contributors/search", s.endpoint)
+	baseURL := s.endpoint + "/v2/contributors/search"
 
 	// Create URL with query parameters
 	u, err := url.Parse(baseURL)
@@ -166,7 +167,7 @@ func (s *Service) SearchPullRequestContributors(repos []string, rangeVal int) (*
 	}
 
 	q := u.Query()
-	q.Set("range", fmt.Sprintf("%d", rangeVal))
+	q.Set("range", strconv.Itoa(rangeVal))
 	q.Set("repos", strings.Join(repos, ","))
 	u.RawQuery = q.Encode()
 

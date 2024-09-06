@@ -155,7 +155,7 @@ func run(opts *Options, cmd *cobra.Command) error {
 	}
 
 	// Bootstrap codeowners
-	outputPath := ""
+	var outputPath string
 	if opts.ownersStyleFile {
 		outputPath = filepath.Join(opts.path, "OWNERS")
 	} else {
@@ -185,7 +185,7 @@ func run(opts *Options, cmd *cobra.Command) error {
 	case "n", "N", "no":
 		return nil
 	default:
-		return fmt.Errorf("invalid answer. Please enter y or n")
+		return errors.New("invalid answer. Please enter y or n")
 	}
 
 	// 2. Check if user is logged in. Log them in if not.
@@ -215,7 +215,7 @@ func run(opts *Options, cmd *cobra.Command) error {
 			return nil
 
 		default:
-			return fmt.Errorf("invalid answer. Please enter y or n")
+			return errors.New("invalid answer. Please enter y or n")
 		}
 	}
 
