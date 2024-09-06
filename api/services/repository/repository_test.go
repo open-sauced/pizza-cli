@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/open-sauced/pizza-cli/api/mock"
 	"github.com/open-sauced/pizza-cli/api/services"
@@ -39,7 +40,7 @@ func TestFindOneByOwnerAndRepo(t *testing.T) {
 
 	repo, resp, err := service.FindOneByOwnerAndRepo("testowner", "testrepo")
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, repo)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, 1, repo.ID)
@@ -87,7 +88,7 @@ func TestFindContributorsByOwnerAndRepo(t *testing.T) {
 
 	contributors, resp, err := service.FindContributorsByOwnerAndRepo("testowner", "testrepo", 30)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, contributors)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Len(t, contributors.Data, 2)

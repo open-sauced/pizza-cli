@@ -28,14 +28,14 @@ attribution:
   jpmcb:
     - john@opensauced.pizza`
 
-		require.NoError(t, os.WriteFile(configFilePath, []byte(fileContents), 0644))
+		require.NoError(t, os.WriteFile(configFilePath, []byte(fileContents), 0600))
 
 		config, err := LoadConfig(configFilePath, "")
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, config)
 
 		// Assert that config contains all the Attributions in fileContents
-		assert.Equal(t, 2, len(config.Attributions))
+		assert.Len(t, config.Attributions, 2)
 
 		// Check specific attributions
 		assert.Equal(t, []string{"robertsbt@gmail.com"}, config.Attributions["brandonroberts"])
@@ -48,7 +48,7 @@ attribution:
 		nonExistentPath := filepath.Join(tmpDir, ".sauced.yaml")
 
 		config, err := LoadConfig(nonExistentPath, "")
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, config)
 	})
 
@@ -72,7 +72,7 @@ attribution:
 
 		tmpDir := t.TempDir()
 		fallbackPath := filepath.Join(tmpDir, ".sauced.yaml")
-		require.NoError(t, os.WriteFile(fallbackPath, []byte(fileContents), 0644))
+		require.NoError(t, os.WriteFile(fallbackPath, []byte(fileContents), 0600))
 
 		// Print out the contents of the file we just wrote
 		_, err := os.ReadFile(fallbackPath)
@@ -82,11 +82,11 @@ attribution:
 
 		config, err := LoadConfig(nonExistentPath, fallbackPath)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, config)
 
 		// Assert that config contains all the Attributions in fileContents
-		assert.Equal(t, 4, len(config.Attributions))
+		assert.Len(t, config.Attributions, 4)
 
 		// Check specific attributions
 		assert.Equal(t, []string{"robertsbt@gmail.com"}, config.Attributions["brandonroberts"])

@@ -149,7 +149,7 @@ func (cis contributorsInsightsSlice) BuildOutput(format string) (string, error) 
 
 func (cis contributorsInsightsSlice) OutputCSV() (string, error) {
 	if len(cis) == 0 {
-		return "", fmt.Errorf("repository is either non-existent or has not been indexed yet")
+		return "", errors.New("repository is either non-existent or has not been indexed yet")
 	}
 	b := new(bytes.Buffer)
 	writer := csv.NewWriter(b)

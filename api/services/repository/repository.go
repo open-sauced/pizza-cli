@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 // Service is used to access the "v2/repos" endpoints and services
@@ -55,7 +56,7 @@ func (rs *Service) FindContributorsByOwnerAndRepo(owner string, repo string, ran
 	}
 
 	q := u.Query()
-	q.Set("range", fmt.Sprintf("%d", rangeVal))
+	q.Set("range", strconv.Itoa(rangeVal))
 	u.RawQuery = q.Encode()
 
 	resp, err := rs.httpClient.Get(u.String())

@@ -49,8 +49,8 @@ func TestGetTopContributorAttributions(testRunner *testing.T) {
 
 	results := getTopContributorAttributions(authorStats, 3, &configSpec)
 
-	assert.Equal(testRunner, len(results), 1, "Expected 1 result")
-	assert.Equal(testRunner, results[0].GitHubAlias, "brandonroberts", "Expected brandonroberts")
+	assert.Len(testRunner, results, 1, "Expected 1 result")
+	assert.Equal(testRunner, "brandonroberts", results[0].GitHubAlias, "Expected brandonroberts")
 }
 
 func TestGetFallbackAttributions(testRunner *testing.T) {
@@ -64,6 +64,6 @@ func TestGetFallbackAttributions(testRunner *testing.T) {
 
 	results := getTopContributorAttributions(AuthorStats{}, 3, &configSpec)
 
-	assert.Equal(testRunner, len(results), 1, "Expected 1 result")
-	assert.Equal(testRunner, results[0].GitHubAlias, "open-sauced/engineering", "Expected open-sauced/engineering")
+	assert.Len(testRunner, results, 1, "Expected 1 result")
+	assert.Equal(testRunner, "open-sauced/engineering", results[0].GitHubAlias, "Expected open-sauced/engineering")
 }

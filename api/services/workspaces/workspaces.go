@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"github.com/open-sauced/pizza-cli/api/services/workspaces/userlists"
 )
@@ -32,7 +33,7 @@ func NewWorkspacesService(httpClient *http.Client, endpoint string) *Service {
 
 // GetWorkspaces calls the "GET v2/workspaces" endpoint for the authenticated user
 func (s *Service) GetWorkspaces(token string, page, limit int) (*DbWorkspacesResponse, *http.Response, error) {
-	baseURL := fmt.Sprintf("%s/v2/workspaces", s.endpoint)
+	baseURL := s.endpoint + "/v2/workspaces"
 
 	// Create URL with query parameters
 	u, err := url.Parse(baseURL)
@@ -41,8 +42,8 @@ func (s *Service) GetWorkspaces(token string, page, limit int) (*DbWorkspacesRes
 	}
 
 	q := u.Query()
-	q.Set("page", fmt.Sprintf("%d", page))
-	q.Set("limit", fmt.Sprintf("%d", limit))
+	q.Set("page", strconv.Itoa(page))
+	q.Set("limit", strconv.Itoa(limit))
 	u.RawQuery = q.Encode()
 
 	req, err := http.NewRequest("GET", u.String(), nil)
@@ -50,7 +51,7 @@ func (s *Service) GetWorkspaces(token string, page, limit int) (*DbWorkspacesRes
 		return nil, nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+	req.Header.Set("Authorization", "Bearer "+token)
 
 	resp, err := s.httpClient.Do(req)
 	if err != nil {
@@ -72,7 +73,7 @@ func (s *Service) GetWorkspaces(token string, page, limit int) (*DbWorkspacesRes
 
 // CreateWorkspaceForUser calls the "POST v2/workspaces" endpoint for the authenticated user
 func (s *Service) CreateWorkspaceForUser(token string, name string, description string, repos []string) (*DbWorkspace, *http.Response, error) {
-	url := fmt.Sprintf("%s/v2/workspaces", s.endpoint)
+	url := s.endpoint + "/v2/workspaces"
 
 	repoReqs := []CreateWorkspaceRequestRepoInfo{}
 	for _, repo := range repos {
@@ -97,9 +98,9 @@ func (s *Service) CreateWorkspaceForUser(token string, name string, description 
 		return nil, nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	httpReq.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+	httpReq.Header.Set("Authorization", "Bearer "+token)
 	httpReq.Header.Set("Content-Type", "application/json")
-	httpReq.Header.Set("accept", "application/json")
+	httpReq.Header.Set("Accept", "application/json")
 
 	resp, err := s.httpClient.Do(httpReq)
 	if err != nil {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 // Service is used to access the API "v2/histogram" endpoints and services
@@ -23,7 +24,7 @@ func NewHistogramService(httpClient *http.Client, endpoint string) *Service {
 
 // PrsHistogram calls the "v2/histogram/pull-requests" endpoints
 func (s *Service) PrsHistogram(repo string, rangeVal int) ([]PrHistogramData, *http.Response, error) {
-	baseURL := fmt.Sprintf("%s/v2/histogram/pull-requests", s.endpoint)
+	baseURL := s.endpoint + "/v2/histogram/pull-requests"
 
 	// Create URL with query parameters
 	u, err := url.Parse(baseURL)
@@ -32,7 +33,7 @@ func (s *Service) PrsHistogram(repo string, rangeVal int) ([]PrHistogramData, *h
 	}
 
 	q := u.Query()
-	q.Set("range", fmt.Sprintf("%d", rangeVal))
+	q.Set("range", strconv.Itoa(rangeVal))
 	q.Set("repo", repo)
 	u.RawQuery = q.Encode()
 

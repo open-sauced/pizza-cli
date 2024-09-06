@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 // Service is used to access the "v2/workspaces/:workspaceId/userLists"
@@ -25,8 +26,8 @@ func NewService(httpClient *http.Client, endpoint string) *Service {
 
 // GetUserLists calls the "GET v2/workspaces/:workspaceId/userLists" endpoint
 // for the authenticated user
-func (uss *Service) GetUserLists(token string, workspaceID string, page, limit int) (*GetUserListsResponse, *http.Response, error) {
-	baseURL := fmt.Sprintf("%s/v2/workspaces/%s/userLists", uss.endpoint, workspaceID)
+func (s *Service) GetUserLists(token string, workspaceID string, page, limit int) (*GetUserListsResponse, *http.Response, error) {
+	baseURL := s.endpoint + "/v2/workspaces/" + workspaceID + "/userLists"
 
 	// Create URL with query parameters
 	u, err := url.Parse(baseURL)
@@ -35,8 +36,8 @@ func (uss *Service) GetUserLists(token string, workspaceID string, page, limit i
 	}
 
 	q := u.Query()
-	q.Set("page", fmt.Sprintf("%d", page))
-	q.Set("limit", fmt.Sprintf("%d", limit))
+	q.Set("page", strconv.Itoa(page))
+	q.Set("limit", strconv.Itoa(limit))
 	u.RawQuery = q.Encode()
 
 	req, err := http.NewRequest("GET", u.String(), nil)
@@ -44,9 +45,9 @@ func (uss *Service) GetUserLists(token string, workspaceID string, page, limit i
 		return nil, nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+	req.Header.Set("Authorization", "Bearer "+token)
 
-	resp, err := uss.httpClient.Do(req)
+	resp, err := s.httpClient.Do(req)
 	if err != nil {
 		return nil, nil, fmt.Errorf("error making request: %w", err)
 	}
@@ -66,17 +67,17 @@ func (uss *Service) GetUserLists(token string, workspaceID string, page, limit i
 
 // GetUserList calls the "GET v2/workspaces/:workspaceId/userLists" endpoint
 // for the authenticated user
-func (uss *Service) GetUserList(token string, workspaceID string, userlistID string) (*DbUserList, *http.Response, error) {
-	url := fmt.Sprintf("%s/v2/workspaces/%s/userLists/%s", uss.endpoint, workspaceID, userlistID)
+func (s *Service) GetUserList(token string, workspaceID string, userlistID string) (*DbUserList, *http.Response, error) {
+	url := s.endpoint + "/v2/workspaces/" + workspaceID + "/userLists/" + userlistID
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+	req.Header.Set("Authorization", "Bearer "+token)
 
-	resp, err := uss.httpClient.Do(req)
+	resp, err := s.httpClient.Do(req)
 	if err != nil {
 		return nil, nil, fmt.Errorf("error making request: %w", err)
 	}
@@ -96,8 +97,8 @@ func (uss *Service) GetUserList(token string, workspaceID string, userlistID str
 
 // CreateUserListForUser calls the "POST v2/workspaces/:workspaceId/userLists" endpoint
 // for the authenticated user
-func (uss *Service) CreateUserListForUser(token string, workspaceID string, name string, logins []string) (*CreateUserListResponse, *http.Response, error) {
-	url := fmt.Sprintf("%s/v2/workspaces/%s/userLists", uss.endpoint, workspaceID)
+func (s *Service) CreateUserListForUser(token string, workspaceID string, name string, logins []string) (*CreateUserListResponse, *http.Response, error) {
+	url := s.endpoint + "/v2/workspaces/" + workspaceID + "/userLists"
 
 	loginReqs := []CreateUserListRequestContributor{}
 	for _, login := range logins {
@@ -120,11 +121,11 @@ func (uss *Service) CreateUserListForUser(token string, workspaceID string, name
 		return nil, nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	httpReq.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+	httpReq.Header.Set("Authorization", "Bearer "+token)
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json")
 
-	resp, err := uss.httpClient.Do(httpReq)
+	resp, err := s.httpClient.Do(httpReq)
 	if err != nil {
 		return nil, resp, fmt.Errorf("error making request: %w", err)
 	}
@@ -144,8 +145,8 @@ func (uss *Service) CreateUserListForUser(token string, workspaceID string, name
 
 // CreateUserListForUser calls the "PATCH v2/lists/:listId" endpoint
 // for the authenticated user
-func (uss *Service) PatchUserListForUser(token string, workspaceID string, listID string, name string, logins []string) (*DbUserList, *http.Response, error) {
-	url := fmt.Sprintf("%s/v2/workspaces/%s/userLists/%s", uss.endpoint, workspaceID, listID)
+func (s *Service) PatchUserListForUser(token string, workspaceID string, userlistID string, name string, logins []string) (*DbUserList, *http.Response, error) {
+	url := s.endpoint + "/v2/workspaces/" + workspaceID + "/userLists/" + userlistID
 
 	loginReqs := []CreateUserListRequestContributor{}
 	for _, login := range logins {
@@ -168,11 +169,11 @@ func (uss *Service) PatchUserListForUser(token string, workspaceID string, listI
 		return nil, nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	httpReq.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+	httpReq.Header.Set("Authorization", "Bearer "+token)
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json")
 
-	resp, err := uss.httpClient.Do(httpReq)
+	resp, err := s.httpClient.Do(httpReq)
 	if err != nil {
 		return nil, resp, fmt.Errorf("error making request: %w", err)
 	}
