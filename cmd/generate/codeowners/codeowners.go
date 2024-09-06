@@ -48,7 +48,7 @@ type Options struct {
 
 const codeownersLongDesc string = `WARNING: Proof of concept feature.
 
-Generates a CODEOWNERS file for a given git repository. This uses a ~/.sauced.yaml
+Generates a CODEOWNERS file for a given git repository. This uses a .sauced.yaml
 configuration to attribute emails with given entities.
 
 The generated file specifies up to 3 owners for EVERY file in the git tree based on the
@@ -59,7 +59,7 @@ func NewCodeownersCommand() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "codeowners path/to/repo [flags]",
-		Short: "Generates a CODEOWNERS file for a given repository using a \"~/.sauced.yaml\" config",
+		Short: "Generates a CODEOWNERS file for a given repository using a \".sauced.yaml\" config",
 		Long:  codeownersLongDesc,
 		Args: func(_ *cobra.Command, args []string) error {
 			if len(args) != 1 {
@@ -90,7 +90,7 @@ func NewCodeownersCommand() *cobra.Command {
 			defer opts.telemetry.Done()
 
 			configPath, _ := cmd.Flags().GetString("config")
-			opts.config, err = config.LoadConfig(configPath, filepath.Join(opts.path, ".sauced.yaml"))
+			opts.config, err = config.LoadConfig(configPath)
 			if err != nil {
 				return err
 			}
