@@ -5,6 +5,25 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.3.0](https://github.com/open-sauced/pizza-cli/compare/v1.2.1...v1.3.0) (2024-09-06)
+
+
+### 🍕 Features
+
+* Create a contributor list after generating codeowners ([#141](https://github.com/open-sauced/pizza-cli/issues/141)) ([72c5d58](https://github.com/open-sauced/pizza-cli/commit/72c5d588fcd4fb04f6d39d756a6a26a47d25a4e4))
+* now the documentation for the pizza-cli can be generated via pizza docs ([#143](https://github.com/open-sauced/pizza-cli/issues/143)) ([3f5d27e](https://github.com/open-sauced/pizza-cli/commit/3f5d27e2c52c894a266828e70e7475069e74e8e9))
+* Refactors API client into hand rolled sdk in api/ directory ([#111](https://github.com/open-sauced/pizza-cli/issues/111)) ([e16e889](https://github.com/open-sauced/pizza-cli/commit/e16e8899a4ef69641dc614887d065dc8b70adb35))
+* support fallback attributions when generating codeowners file ([#145](https://github.com/open-sauced/pizza-cli/issues/145)) ([35af4da](https://github.com/open-sauced/pizza-cli/commit/35af4dafc4ed088ba1396ff28e1536723c914a2b))
+* update `CODEOWNERS` copy with command ([#130](https://github.com/open-sauced/pizza-cli/issues/130)) ([a477959](https://github.com/open-sauced/pizza-cli/commit/a477959020cfcbb3dc4707efb1700e17e05e3981))
+
+
+### 🐛 Bug Fixes
+
+* Corrects invalid gosec lint error ([#151](https://github.com/open-sauced/pizza-cli/issues/151)) ([f76527f](https://github.com/open-sauced/pizza-cli/commit/f76527f0c61c5720f684416f391fe1395774e1fb))
+* Exhume Posthog functionality ([#147](https://github.com/open-sauced/pizza-cli/issues/147)) ([de091ca](https://github.com/open-sauced/pizza-cli/commit/de091cac7df585eadcfae64d6f851cfc178c74a2))
+* now fallback .sauced.yaml contents get read ([#135](https://github.com/open-sauced/pizza-cli/issues/135)) ([fd658e5](https://github.com/open-sauced/pizza-cli/commit/fd658e5e09051cdf007c3605aa880d68db835afb))
+* NPM cache now looks at package-lock file ([#136](https://github.com/open-sauced/pizza-cli/issues/136)) ([cd4b8da](https://github.com/open-sauced/pizza-cli/commit/cd4b8da75e1a0c0aa3d7e6f76d6b560a4dea941f))
+
 ## [1.3.0-beta.9](https://github.com/open-sauced/pizza-cli/compare/v1.3.0-beta.8...v1.3.0-beta.9) (2024-09-06)
 
 
