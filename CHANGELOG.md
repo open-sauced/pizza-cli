@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.4.0-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.3.1-beta.2...v1.4.0-beta.1) (2024-09-09)
+
+
+### 🍕 Features
+
+* Posthog events bootstrapping ([#160](https://github.com/open-sauced/pizza-cli/issues/160)) ([847426b](https://github.com/open-sauced/pizza-cli/commit/847426bcb202e8846287461fb0e3735d04f4c82e))
+
 ## [1.3.1-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.3.1-beta.1...v1.3.1-beta.2) (2024-09-06)
 
 
