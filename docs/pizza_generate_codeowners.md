@@ -4,8 +4,6 @@ Generate a CODEOWNERS file for a GitHub repository using a "~/.sauced.yaml" conf
 
 ### Synopsis
 
-WARNING: Proof of concept feature.
-
 Generates a CODEOWNERS file for a given git repository. This uses a ~/.sauced.yaml configuration to attribute emails with given entities.
 
 The generated file specifies up to 3 owners for EVERY file in the git tree based on the number of lines touched in that specific file over the specified range of time.
@@ -18,21 +16,21 @@ pizza generate codeowners path/to/repo [flags]
 
 ```
 
-			# Generate CODEOWNERS file for the current directory
-			pizza generate codeowners .
+		# Generate CODEOWNERS file for the current directory
+		pizza generate codeowners .
 
-			# Generate CODEOWNERS file for a specific repository
-			pizza generate codeowners /path/to/your/repo
+		# Generate CODEOWNERS file for a specific repository
+		pizza generate codeowners /path/to/your/repo
 
-			# Generate CODEOWNERS file analyzing the last 180 days
-			pizza generate codeowners . --range 180
+		# Generate CODEOWNERS file analyzing the last 180 days
+		pizza generate codeowners . --range 180
 
-			# Generate an OWNERS style file instead of CODEOWNERS
-			pizza generate codeowners . --owners-style-file
+		# Generate an OWNERS style file instead of CODEOWNERS
+		pizza generate codeowners . --owners-style-file
 
-			# Specify a custom location for the .sauced.yaml file
-			pizza generate codeowners . --config /path/to/.sauced.yaml
-			
+		# Specify a custom location for the .sauced.yaml file
+		pizza generate codeowners . --config /path/to/.sauced.yaml
+		
 ```
 
 ### Options
