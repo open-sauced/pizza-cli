@@ -17,7 +17,7 @@ type PosthogCliClient struct {
 	// client is the Posthog Go client
 	client posthog.Client
 
-	// activated denotes if the user has turned off telemetry
+	// activated denotes if the user has enabled or disabled telemetry
 	activated bool
 
 	// uniqueID is the user's unique, anonymous identifier
