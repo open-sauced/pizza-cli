@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
@@ -72,8 +73,8 @@ func NewConfigCommand() *cobra.Command {
 		},
 	}
 
-	cmd.PersistentFlags().StringP("output-path", "o", "~/", "Directory to create the `.sauced.yaml` file.")
-	cmd.PersistentFlags().BoolP("interactive", "i", true, "Whether to be interactive")
+	cmd.PersistentFlags().StringP("output-path", "o", "./", "Directory to create the `.sauced.yaml` file.")
+	cmd.PersistentFlags().BoolP("interactive", "i", false, "Whether to be interactive")
 	return cmd
 }
 
@@ -111,18 +112,18 @@ func run(opts *Options) error {
 	})
 
 	// TODO: INTERACTIVE: per unique email, set a name (existing or new or ignore)
-	program := tea.NewProgram(initialModel(uniqueEmails))
-	if _, err := program.Run(); err != nil {
-		return fmt.Errorf(err.Error())
-	}
-
-	// generate an output file
-	// default: `~/.sauced.yaml`
-	if opts.outputPath == "~/" {
-		homeDir, _ := os.UserHomeDir()
-		generateOutputFile(filepath.Join(homeDir, ".sauced.yaml"), attributionMap)
+	if opts.isInteractive {
+		program := tea.NewProgram(initialModel(opts, uniqueEmails))
+		if _, err := program.Run(); err != nil {
+			return fmt.Errorf(err.Error())
+		}
 	} else {
-		generateOutputFile(filepath.Join(opts.outputPath, ".sauced.yaml"), attributionMap)
+		if opts.outputPath == "~/" {
+			homeDir, _ := os.UserHomeDir()
+			generateOutputFile(filepath.Join(homeDir, ".sauced.yaml"), attributionMap)
+		} else {
+			generateOutputFile(filepath.Join(opts.outputPath, ".sauced.yaml"), attributionMap)
+		}
 	}
 
 	return nil
@@ -135,6 +136,7 @@ type model struct {
 	help      help.Model
 	keymap    keymap
 
+	opts           *Options
 	attributionMap map[string][]string
 	uniqueEmails   []string
 	currentIndex   int
@@ -144,7 +146,6 @@ type keymap struct{}
 
 func (k keymap) ShortHelp() []key.Binding {
 	return []key.Binding{
-		key.NewBinding(key.WithKeys("tab"), key.WithHelp("tab", "complete")),
 		key.NewBinding(key.WithKeys("ctrl+n"), key.WithHelp("ctrl+n", "next")),
 		key.NewBinding(key.WithKeys("ctrl+p"), key.WithHelp("ctrl+p", "prev")),
 		key.NewBinding(key.WithKeys("ctrl+i"), key.WithHelp("ctrl+i", "ignore email")),
@@ -157,7 +158,7 @@ func (k keymap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{k.ShortHelp()}
 }
 
-func initialModel(uniqueEmails []string) model {
+func initialModel(opts *Options, uniqueEmails []string) model {
 	ti := textinput.New()
 	ti.Placeholder = "name"
 	ti.Focus()
@@ -168,6 +169,7 @@ func initialModel(uniqueEmails []string) model {
 		help:      help.New(),
 		keymap:    keymap{},
 
+		opts:           opts,
 		attributionMap: make(map[string][]string),
 		uniqueEmails:   uniqueEmails,
 		currentIndex:   0,
@@ -200,11 +202,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 
 		case tea.KeyEnter:
-			m.attributionMap[m.textInput.Value()] = append(m.attributionMap[currentEmail], currentEmail)
-			m.currentIndex++
-			if m.currentIndex > len(m.attributionMap) {
-				return m, tea.Quit
+			if len(strings.Trim(m.textInput.Value(), " ")) == 0 {
+				return m, nil
 			}
+			m.attributionMap[m.textInput.Value()] = append(m.attributionMap[m.textInput.Value()], currentEmail)
+			m.textInput.Reset()
+			if m.currentIndex+1 >= len(m.uniqueEmails) {
+				return m, runOutputGeneration(m.opts, m.attributionMap)
+			}
+
+			m.currentIndex++
 			return m, nil
 		}
 	}
@@ -215,10 +222,32 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
+	currentEmail := ""
+	if m.currentIndex < len(m.uniqueEmails) {
+		currentEmail = m.uniqueEmails[m.currentIndex]
+	}
+
 	return fmt.Sprintf(
-		"Found email %s - who to attribute to?: %s\n\n%s\n",
-		m.uniqueEmails[m.currentIndex],
+		"Found email %s - who to attribute to?: \n%s\n\n%s\n",
+		currentEmail,
 		m.textInput.View(),
 		m.help.View(m.keymap),
 	)
+}
+
+func runOutputGeneration(opts *Options, attributionMap map[string][]string) tea.Cmd {
+	// generate an output file
+	// default: `./.sauced.yaml`
+	// fallback for home directories
+	return func() tea.Msg {
+		if opts.outputPath == "~/" {
+			homeDir, _ := os.UserHomeDir()
+			generateOutputFile(filepath.Join(homeDir, ".sauced.yaml"), attributionMap)
+		} else {
+			generateOutputFile(filepath.Join(opts.outputPath, ".sauced.yaml"), attributionMap)
+		}
+
+		return tea.Quit()
+	}
+
 }
