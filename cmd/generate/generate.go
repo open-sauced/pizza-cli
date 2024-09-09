@@ -18,7 +18,7 @@ Available subcommands:
 func NewGenerateCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "generate [subcommand] [flags]",
-		Short: "Generates something",
+		Short: "Generates documentation and insights from your codebase",
 		Long:  generateLongDesc,
 		Args: func(_ *cobra.Command, args []string) error {
 			if len(args) != 1 {
