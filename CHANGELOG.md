@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.4.0-beta.3](https://github.com/open-sauced/pizza-cli/compare/v1.4.0-beta.2...v1.4.0-beta.3) (2024-09-09)
+
+
+### 🐛 Bug Fixes
+
+* now --tty-disable is set so the action can complete instead of hanging ([#164](https://github.com/open-sauced/pizza-cli/issues/164)) ([a970a73](https://github.com/open-sauced/pizza-cli/commit/a970a73f494f34464a4c8b6ba993d38ecb4e2ec4))
+
 ## [1.4.0-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.4.0-beta.1...v1.4.0-beta.2) (2024-09-09)
 
 
