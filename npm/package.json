@@ -1,6 +1,6 @@
 {
   "name": "pizza",
-  "version": "1.4.0-beta.1",
+  "version": "1.4.0-beta.2",
   "description": "A command line utility for insights, metrics, and all things OpenSauced",
   "repository": "https://github.com/open-sauced/pizza-cli",
   "license": "MIT",

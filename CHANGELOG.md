@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.4.0-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.4.0-beta.1...v1.4.0-beta.2) (2024-09-09)
+
+
+### 🐛 Bug Fixes
+
+* fixed docs generation in release workflow ([#162](https://github.com/open-sauced/pizza-cli/issues/162)) ([5341e16](https://github.com/open-sauced/pizza-cli/commit/5341e16daaeeecdc664895d165246a82623accbe))
+
 ## [1.4.0-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.3.1-beta.2...v1.4.0-beta.1) (2024-09-09)
 
 
