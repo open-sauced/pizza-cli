@@ -34,6 +34,8 @@ type contributorsOptions struct {
 
 	// Output is the formatting style for command output
 	Output string
+
+	telemetry *utils.PosthogCliClient
 }
 
 // NewContributorsCommand returns a new cobra command for 'pizza insights contributors'
@@ -52,11 +54,25 @@ func NewContributorsCommand() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			disableTelem, _ := cmd.Flags().GetBool(constants.FlagNameTelemetry)
+
+			opts.telemetry = utils.NewPosthogCliClient(!disableTelem)
+			defer opts.telemetry.Done()
+
 			endpointURL, _ := cmd.Flags().GetString(constants.FlagNameEndpoint)
 			opts.APIClient = api.NewClient(endpointURL)
 			output, _ := cmd.Flags().GetString(constants.FlagNameOutput)
 			opts.Output = output
-			return opts.run()
+
+			err := opts.run()
+
+			if err != nil {
+				opts.telemetry.CaptureInsights()
+			} else {
+				opts.telemetry.CaptureFailedInsights()
+			}
+
+			return err
 		},
 	}
 	cmd.Flags().StringVarP(&opts.FilePath, constants.FlagNameFile, "f", "", "Path to yaml file containing an array of git repository urls")
@@ -149,7 +165,7 @@ func (cis contributorsInsightsSlice) BuildOutput(format string) (string, error) 
 
 func (cis contributorsInsightsSlice) OutputCSV() (string, error) {
 	if len(cis) == 0 {
-		return "", fmt.Errorf("repository is either non-existent or has not been indexed yet")
+		return "", errors.New("repository is either non-existent or has not been indexed yet")
 	}
 	b := new(bytes.Buffer)
 	writer := csv.NewWriter(b)

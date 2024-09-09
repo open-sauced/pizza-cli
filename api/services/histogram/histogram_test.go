@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/open-sauced/pizza-cli/api/mock"
 )
@@ -42,10 +43,10 @@ func TestPrsHistogram(t *testing.T) {
 
 	prs, resp, err := service.PrsHistogram("testowner/testrepo", 30)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, prs)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	assert.Equal(t, len(prs), 2)
-	assert.Equal(t, prs[0].PrCount, 1)
-	assert.Equal(t, prs[1].PrCount, 2)
+	assert.Len(t, prs, 2)
+	assert.Equal(t, 1, prs[0].PrCount)
+	assert.Equal(t, 2, prs[1].PrCount)
 }

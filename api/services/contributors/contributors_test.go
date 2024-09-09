@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/open-sauced/pizza-cli/api/mock"
 	"github.com/open-sauced/pizza-cli/api/services"
@@ -53,12 +54,12 @@ func TestNewPullrequestContributors(t *testing.T) {
 
 	newContribs, resp, err := service.NewPullRequestContributors([]string{"testowner/testrepo"}, 30)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, newContribs)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	assert.Equal(t, newContribs.Data[0].AuthorLogin, "contributor1")
-	assert.Equal(t, newContribs.Data[1].AuthorLogin, "contributor2")
+	assert.Equal(t, "contributor1", newContribs.Data[0].AuthorLogin)
+	assert.Equal(t, "contributor2", newContribs.Data[1].AuthorLogin)
 
 	// Check the meta information
 	assert.Equal(t, 1, newContribs.Meta.Page)
@@ -109,12 +110,12 @@ func TestRecentPullRequestContributors(t *testing.T) {
 
 	recentContribs, resp, err := service.RecentPullRequestContributors([]string{"testowner/testrepo"}, 30)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, recentContribs)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	assert.Equal(t, recentContribs.Data[0].AuthorLogin, "contributor1")
-	assert.Equal(t, recentContribs.Data[1].AuthorLogin, "contributor2")
+	assert.Equal(t, "contributor1", recentContribs.Data[0].AuthorLogin)
+	assert.Equal(t, "contributor2", recentContribs.Data[1].AuthorLogin)
 
 	// Check the meta information
 	assert.Equal(t, 1, recentContribs.Meta.Page)
@@ -165,12 +166,12 @@ func TestAlumniPullRequestContributors(t *testing.T) {
 
 	alumniContribs, resp, err := service.AlumniPullRequestContributors([]string{"testowner/testrepo"}, 30)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, alumniContribs)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	assert.Equal(t, alumniContribs.Data[0].AuthorLogin, "contributor1")
-	assert.Equal(t, alumniContribs.Data[1].AuthorLogin, "contributor2")
+	assert.Equal(t, "contributor1", alumniContribs.Data[0].AuthorLogin)
+	assert.Equal(t, "contributor2", alumniContribs.Data[1].AuthorLogin)
 
 	// Check the meta information
 	assert.Equal(t, 1, alumniContribs.Meta.Page)
@@ -221,12 +222,12 @@ func TestRepeatPullRequestContributors(t *testing.T) {
 
 	repeatContribs, resp, err := service.RepeatPullRequestContributors([]string{"testowner/testrepo"}, 30)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, repeatContribs)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	assert.Equal(t, repeatContribs.Data[0].AuthorLogin, "contributor1")
-	assert.Equal(t, repeatContribs.Data[1].AuthorLogin, "contributor2")
+	assert.Equal(t, "contributor1", repeatContribs.Data[0].AuthorLogin)
+	assert.Equal(t, "contributor2", repeatContribs.Data[1].AuthorLogin)
 
 	// Check the meta information
 	assert.Equal(t, 1, repeatContribs.Meta.Page)
@@ -277,12 +278,12 @@ func TestSearchPullRequestContributors(t *testing.T) {
 
 	repeatContribs, resp, err := service.SearchPullRequestContributors([]string{"testowner/testrepo"}, 30)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, repeatContribs)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	assert.Equal(t, repeatContribs.Data[0].AuthorLogin, "contributor1")
-	assert.Equal(t, repeatContribs.Data[1].AuthorLogin, "contributor2")
+	assert.Equal(t, "contributor1", repeatContribs.Data[0].AuthorLogin)
+	assert.Equal(t, "contributor2", repeatContribs.Data[1].AuthorLogin)
 
 	// Check the meta information
 	assert.Equal(t, 1, repeatContribs.Meta.Page)

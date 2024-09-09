@@ -130,6 +130,14 @@ func getTopContributorAttributions(authorStats AuthorStats, n int, config *confi
 		}
 	}
 
+	if len(topContributors) == 0 {
+		for _, fallbackAttribution := range config.AttributionFallback {
+			topContributors = append(topContributors, &CodeownerStat{
+				GitHubAlias: fallbackAttribution,
+			})
+		}
+	}
+
 	return topContributors
 }
 

@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/open-sauced/pizza-cli/cmd/auth"
+	"github.com/open-sauced/pizza-cli/cmd/docs"
 	"github.com/open-sauced/pizza-cli/cmd/generate"
 	"github.com/open-sauced/pizza-cli/cmd/insights"
 	"github.com/open-sauced/pizza-cli/cmd/version"
@@ -35,7 +36,7 @@ func NewRootCommand() (*cobra.Command, error) {
 	cmd.PersistentFlags().StringP(constants.FlagNameEndpoint, "e", constants.EndpointProd, "The API endpoint to send requests to")
 	cmd.PersistentFlags().Bool(constants.FlagNameBeta, false, fmt.Sprintf("Shorthand for using the beta OpenSauced API endpoint (\"%s\"). Supersedes the '--%s' flag", constants.EndpointBeta, constants.FlagNameEndpoint))
 	cmd.PersistentFlags().Bool(constants.FlagNameTelemetry, false, "Disable sending telemetry data to OpenSauced")
-	cmd.PersistentFlags().StringP("config", "c", "~/.sauced.yaml", "The saucectl config")
+	cmd.PersistentFlags().StringP("config", "c", ".sauced.yaml", "The saucectl config")
 	cmd.PersistentFlags().StringP("log-level", "l", "info", "The logging level. Options: error, warn, info, debug")
 	cmd.PersistentFlags().Bool("tty-disable", false, "Disable log stylization. Suitable for CI/CD and automation")
 
@@ -43,6 +44,11 @@ func NewRootCommand() (*cobra.Command, error) {
 	cmd.AddCommand(generate.NewGenerateCommand())
 	cmd.AddCommand(insights.NewInsightsCommand())
 	cmd.AddCommand(version.NewVersionCommand())
+
+	// The docs command is hidden as it's only used by the pizza-cli maintainers
+	docsCmd := docs.NewDocsCommand()
+	docsCmd.Hidden = true
+	cmd.AddCommand(docsCmd)
 
 	err := cmd.PersistentFlags().MarkHidden(constants.FlagNameEndpoint)
 	if err != nil {

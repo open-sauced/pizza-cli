@@ -7,6 +7,7 @@ import (
 	"github.com/open-sauced/pizza-cli/api/services/contributors"
 	"github.com/open-sauced/pizza-cli/api/services/histogram"
 	"github.com/open-sauced/pizza-cli/api/services/repository"
+	"github.com/open-sauced/pizza-cli/api/services/workspaces"
 )
 
 // Client is the API client for OpenSauced API
@@ -15,6 +16,7 @@ type Client struct {
 	RepositoryService  *repository.Service
 	ContributorService *contributors.Service
 	HistogramService   *histogram.Service
+	WorkspacesService  *workspaces.Service
 
 	// The configured http client for making API requests
 	httpClient *http.Client
@@ -40,6 +42,7 @@ func NewClient(endpoint string) *Client {
 	client.ContributorService = contributors.NewContributorsService(client.httpClient, client.endpoint)
 	client.RepositoryService = repository.NewRepositoryService(client.httpClient, client.endpoint)
 	client.HistogramService = histogram.NewHistogramService(client.httpClient, client.endpoint)
+	client.WorkspacesService = workspaces.NewWorkspacesService(client.httpClient, client.endpoint)
 
 	return &client
 }

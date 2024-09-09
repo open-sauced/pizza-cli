@@ -181,7 +181,7 @@ func (ucig userContributionsInsightGroup) BuildOutput(format string) (string, er
 
 func (ucig userContributionsInsightGroup) OutputCSV() (string, error) {
 	if len(ucig.Insights) == 0 {
-		return "", fmt.Errorf("repository is either non-existent or has not been indexed yet")
+		return "", errors.New("repository is either non-existent or has not been indexed yet")
 	}
 
 	b := new(bytes.Buffer)

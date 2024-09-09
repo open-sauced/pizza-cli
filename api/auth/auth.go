@@ -8,6 +8,7 @@ import (
 	_ "embed" // global import of embed to enable the use of the "go embed" directive
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -33,8 +34,8 @@ const (
 	codeChallengeLength = 87
 	sessionFileName     = "session.json"
 
-	prodSupabaseURL       = "https://fcqqkxwlntnrtjfbcioz.supabase.co"
-	prodSupabasePublicKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjcXFreHdsbnRucnRqZmJjaW96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTg0MTkyNzQsImV4cCI6MjAxMzk5NTI3NH0.ymWWYdnJC2gsnrJx4lZX2cfSOp-1xVuWFGt1Wr6zwtg"
+	prodSupabaseURL       = "https://ibcwmlhcimymasokhgvn.supabase.co"
+	prodSupabasePublicKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImliY3dtbGhjaW15bWFzb2toZ3ZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTkyOTU1MzMsImV4cCI6MjAxNDg3MTUzM30.Mr-ucuNDBjy9BC7NJzOBBi0Qz8WYiKI4n0JtWr4_woY"
 
 	// TODO (jpmcb) - in the future, we'll want to encorporate the ability to
 	// authenticate to our beta auth service as well
@@ -64,7 +65,7 @@ func NewAuthenticator() *Authenticator {
 // local server for handling the login. Once the server has completed and received
 // the session, the server is shut down and control is returned back to the CLI.
 func (a *Authenticator) Login() (string, error) {
-	supabaseAuthURL := fmt.Sprintf("%s/auth/v1/authorize", prodSupabaseURL)
+	supabaseAuthURL := prodSupabaseURL + "/auth/v1/authorize"
 
 	// 1. Generate the PKCE
 	codeVerifier, codeChallenge, err := a.generatePkce(codeChallengeLength)
@@ -79,8 +80,9 @@ func (a *Authenticator) Login() (string, error) {
 	r.Get("/", a.handleLocalCallback)
 
 	server := &http.Server{
-		Addr:    authCallbackAddr,
-		Handler: r,
+		Addr:              authCallbackAddr,
+		Handler:           r,
+		ReadHeaderTimeout: time.Second * 5,
 	}
 
 	go func() {
@@ -112,7 +114,7 @@ func (a *Authenticator) Login() (string, error) {
 		a.shutdownServer(server)
 	case <-time.After(60 * time.Second):
 		a.shutdownServer(server)
-		return "", fmt.Errorf("authentication timeout")
+		return "", errors.New("authentication timeout")
 	}
 
 	return a.username, nil
@@ -124,7 +126,7 @@ func (a *Authenticator) handleLocalCallback(w http.ResponseWriter, r *http.Reque
 	code := r.URL.Query().Get("code")
 	if code == "" {
 		http.Error(w, "'code' query param not found", http.StatusBadRequest)
-		a.errChan <- fmt.Errorf("'code' query param not found")
+		a.errChan <- errors.New("'code' query param not found")
 		return
 	}
 
@@ -171,10 +173,20 @@ func (a *Authenticator) CheckSession() error {
 
 	// Check if session is expired or about to expire (within 5 minutes)
 	if time.Now().Add(5 * time.Minute).After(time.Unix(session.ExpiresAt, 0)) {
-		return fmt.Errorf("session expired")
+		return errors.New("session expired")
 	}
 
 	return nil
+}
+
+// GetSessionToken returns the access token for a given session
+func (a *Authenticator) GetSessionToken() (string, error) {
+	session, err := a.readSessionFile()
+	if err != nil {
+		return "", fmt.Errorf("failed to read session file: %w", err)
+	}
+
+	return session.AccessToken, nil
 }
 
 // readSessionFile reads a session file and returns the session struct.
@@ -223,7 +235,7 @@ func (a *Authenticator) generatePkce(length int) (string, string, error) {
 // getSession takes an authentication code and a verifier, using the Supabase
 // auth service, to get a session
 func (a *Authenticator) getSession(authCode, codeVerifier string) (*session, error) {
-	url := fmt.Sprintf("%s/auth/v1/token?grant_type=pkce", prodSupabaseURL)
+	url := prodSupabaseURL + "/auth/v1/token?grant_type=pkce"
 
 	payload := map[string]string{
 		"auth_code":     authCode,
@@ -234,7 +246,7 @@ func (a *Authenticator) getSession(authCode, codeVerifier string) (*session, err
 
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jsonPayload))
 	req.Header.Set("Content-Type", "application/json;charset=UTF-8")
-	req.Header.Set("ApiKey", prodSupabasePublicKey)
+	req.Header.Set("Apikey", prodSupabasePublicKey)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
