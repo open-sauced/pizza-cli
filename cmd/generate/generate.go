@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/open-sauced/pizza-cli/cmd/generate/codeowners"
-
 	"github.com/open-sauced/pizza-cli/cmd/generate/config"
 )
 
