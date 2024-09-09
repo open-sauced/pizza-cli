@@ -55,7 +55,6 @@ func NewCodeownersCommand() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "codeowners path/to/repo [flags]",
-		Short: "Generates a CODEOWNERS file for a given repository using a \".sauced.yaml\" config",
 		Short: "Generate a CODEOWNERS file for a GitHub repository using a \"~/.sauced.yaml\" config",
 		Long:  codeownersLongDesc,
 		Example: `
