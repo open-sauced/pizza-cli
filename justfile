@@ -203,3 +203,19 @@ gen-docs:
 
 # Runs all the dev tasks (like formatting, linting, building, etc.)
 dev: format lint test build-all
+
+# Calls the various Posthog capture events to add the Insights to the database
+bootstrap-telemetry:
+  #!/usr/bin/env sh
+  echo "Building telemetry-oneshot"
+
+  go build \
+    -tags telemetry \
+    -ldflags="-s -w" \
+    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
+    -o build/telemetry-oneshot \
+    telemetry.go
+
+  ./build/telemetry-oneshot
+
+  rm ./build/telemetry-oneshot

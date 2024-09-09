@@ -57,7 +57,6 @@ func NewRepositoriesCommand() *cobra.Command {
 			disableTelem, _ := cmd.Flags().GetBool(constants.FlagNameTelemetry)
 
 			opts.telemetry = utils.NewPosthogCliClient(!disableTelem)
-			defer opts.telemetry.Done()
 
 			endpointURL, _ := cmd.Flags().GetString(constants.FlagNameEndpoint)
 			opts.APIClient = api.NewClient(endpointURL)
@@ -67,10 +66,12 @@ func NewRepositoriesCommand() *cobra.Command {
 			err := opts.run()
 
 			if err != nil {
-				opts.telemetry.CaptureInsights()
+				_ = opts.telemetry.CaptureInsights()
 			} else {
-				opts.telemetry.CaptureFailedInsights()
+				_ = opts.telemetry.CaptureFailedInsights()
 			}
+
+			_ = opts.telemetry.Done()
 
 			return err
 		},
