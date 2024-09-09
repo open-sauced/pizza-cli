@@ -28,7 +28,7 @@ func NewLoginCommand() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "login",
-		Short: "Log into the CLI via GitHub",
+		Short: "Log into CLI via GitHub",
 		Long:  loginLongDesc,
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
