@@ -48,11 +48,9 @@ type Options struct {
 
 const codeownersLongDesc string = `WARNING: Proof of concept feature.
 
-Generates a CODEOWNERS file for a given git repository. This uses a ~/.sauced.yaml
-configuration to attribute emails with given entities.
+Generates a CODEOWNERS file for a given git repository. This uses a ~/.sauced.yaml configuration to attribute emails with given entities.
 
-The generated file specifies up to 3 owners for EVERY file in the git tree based on the
-number of lines touched in that specific file over the specified range of time.`
+The generated file specifies up to 3 owners for EVERY file in the git tree based on the number of lines touched in that specific file over the specified range of time.`
 
 func NewCodeownersCommand() *cobra.Command {
 	opts := &Options{}
