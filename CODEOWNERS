@@ -1,40 +1,103 @@
 # This file is generated automatically by OpenSauced pizza-cli. DO NOT EDIT. Stay saucy!
+#
+# Generated with command:
+# $ pizza generate codeowners pizza-cli/ --tty-disable true
 
+.env @jpmcb
 .github/ISSUE_TEMPLATE/bug_report.yaml @jpmcb
 .github/ISSUE_TEMPLATE/config.yaml @jpmcb
 .github/ISSUE_TEMPLATE/feature_request.yaml @jpmcb
 .github/workflows/auto-add-to-project.yml @jpmcb
-.github/workflows/release.yaml @jpmcb
+.github/workflows/pizza.yml @nickytonline @jpmcb
+.github/workflows/release.yaml @jpmcb @nickytonline
 .github/workflows/test.yaml @jpmcb
 .golangci.yaml @jpmcb
-CHANGELOG.md @jpmcb @brandonroberts @nickytonline
+.sauced.yaml @nickytonline @jpmcb
+CHANGELOG.md @jpmcb @nickytonline @brandonroberts
+CODEOWNERS @nickytonline @jpmcb
 Dockerfile @jpmcb @nickytonline
 Makefile @jpmcb
 README.md @jpmcb
+api/auth/auth.go @jpmcb
+api/auth/success.html @nickytonline @jpmcb
+api/client.go @jpmcb
+api/mock/mock.go @jpmcb
+api/services/contributors/contributors.go @jpmcb
+api/services/contributors/contributors_test.go @jpmcb
+api/services/contributors/spec.go @jpmcb
+api/services/histogram/histogram.go @jpmcb
+api/services/histogram/histogram_test.go @jpmcb
+api/services/histogram/spec.go @jpmcb
+api/services/repository/repository.go @jpmcb
+api/services/repository/repository_test.go @jpmcb
+api/services/repository/spec.go @jpmcb
+api/services/spec.go @jpmcb
+api/services/workspaces/spec.go @jpmcb
+api/services/workspaces/userlists/spec.go @jpmcb
+api/services/workspaces/userlists/userlists.go @jpmcb
+api/services/workspaces/userlists/userlists_test.go @jpmcb
+api/services/workspaces/workspaces.go @jpmcb
+api/services/workspaces/workspaces_test.go @jpmcb
+api/utils/validators.go @jpmcb
 cmd/auth/auth.go @jpmcb
+cmd/auth/constants.go @jpmcb
+cmd/auth/schema.go @jpmcb
+cmd/auth/success.html @jpmcb
+cmd/auth/success.html @jpmcb
 cmd/bake/bake.go @jpmcb
 cmd/bake/bake_test.go @jpmcb
-cmd/generate/codeowners/codeowners.go @jpmcb
-cmd/generate/codeowners/output.go @jpmcb @brandonroberts
-cmd/generate/codeowners/output_test.go @brandonroberts
+cmd/docs/docs.go @nickytonline @jpmcb
+cmd/docs/docs_test.go @nickytonline @jpmcb
+cmd/generate/codeowners/codeowners.go @jpmcb @nickytonline @zeucapua
+cmd/generate/codeowners/output.go @jpmcb @zeucapua @brandonroberts
+cmd/generate/codeowners/output_test.go @jpmcb @brandonroberts
 cmd/generate/codeowners/spec.go @jpmcb
 cmd/generate/codeowners/traversal.go @jpmcb
 cmd/generate/generate.go @jpmcb
 cmd/insights/contributors.go @jpmcb
-cmd/insights/insights.go @jpmcb
+cmd/insights/insights.go @jpmcb @brandonroberts
 cmd/insights/repositories.go @jpmcb
 cmd/insights/user-contributions.go @jpmcb
 cmd/insights/utils.go @jpmcb
 cmd/repo-query/repo-query.go @jpmcb
-cmd/root/root.go @jpmcb
+cmd/root/root.go @jpmcb @brandonroberts @nickytonline
+cmd/show/constants.go @jpmcb
+cmd/show/contributors.go @jpmcb
+cmd/show/dashboard.go @jpmcb
 cmd/show/show.go @jpmcb
+cmd/show/tui.go @jpmcb
 cmd/version/version.go @jpmcb @nickytonline
-go.mod @jpmcb
-go.sum @jpmcb
+docs/pizza.md @nickytonline @jpmcb
+docs/pizza_completion.md @nickytonline @jpmcb
+docs/pizza_completion_bash.md @nickytonline @jpmcb
+docs/pizza_completion_fish.md @nickytonline @jpmcb
+docs/pizza_completion_powershell.md @nickytonline @jpmcb
+docs/pizza_completion_zsh.md @nickytonline @jpmcb
+docs/pizza_generate.md @nickytonline @jpmcb
+docs/pizza_generate_codeowners.md @nickytonline @jpmcb
+docs/pizza_insights.md @nickytonline @jpmcb
+docs/pizza_insights_contributors.md @nickytonline @jpmcb
+docs/pizza_insights_repositories.md @nickytonline @jpmcb
+docs/pizza_insights_user-contributions.md @nickytonline @jpmcb
+docs/pizza_login.md @nickytonline @jpmcb
+docs/pizza_version.md @nickytonline @jpmcb
+go.mod @jpmcb @nickytonline
+go.sum @jpmcb @nickytonline
 justfile @jpmcb @nickytonline
-npm/package.json @jpmcb @brandonroberts @nickytonline
-pkg/config/config.go @jpmcb
-pkg/config/spec.go @jpmcb
+npm/.gitignore @jpmcb
+npm/package-lock.json @jpmcb @nickytonline @brandonroberts
+npm/package.json @jpmcb @nickytonline @brandonroberts
+pkg/api/client.go @jpmcb
+pkg/api/validation.go @jpmcb
+pkg/config/config.go @jpmcb @nickytonline @brandonroberts
+pkg/config/config_test.go @nickytonline @jpmcb @brandonroberts
+pkg/config/file.go @jpmcb
+pkg/config/spec.go @jpmcb @brandonroberts
+pkg/constants/flags.go @jpmcb
 pkg/logging/constants.go @jpmcb
+pkg/utils/posthog.go @jpmcb
 pkg/utils/root.go @jpmcb
-pkg/utils/version.go @nickytonline
+pkg/utils/telemetry.go @jpmcb
+pkg/utils/version.go @nickytonline @jpmcb
+scripts/generate-docs.sh @nickytonline
+telemetry.go @jpmcb
