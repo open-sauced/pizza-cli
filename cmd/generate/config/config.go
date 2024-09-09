@@ -84,18 +84,19 @@ func run(opts *Options) error {
 	// Open repo
 	repo, err := git.PlainOpen(opts.path)
 	if err != nil {
-		return fmt.Errorf("error opening repo: %w", err)
+		return fmt.Errorf("Error opening repo: %w", err)
 	}
 
 	commitIter, err := repo.CommitObjects()
 
+	if err != nil {
+		return fmt.Errorf("Error opening repo commits: %w", err)
+	}
+
 	var uniqueEmails []string
-	commitIter.ForEach(func(c *object.Commit) error {
+	err = commitIter.ForEach(func(c *object.Commit) error {
 		name := c.Author.Name
 		email := c.Author.Email
-
-		// TODO: edge case- same email multiple names
-		// eg: 'coding@zeu.dev' = 'zeudev' & 'Zeu Capua'
 
 		if !opts.isInteractive {
 			doesEmailExist := slices.Contains(attributionMap[name], email)
@@ -111,18 +112,31 @@ func run(opts *Options) error {
 		return nil
 	})
 
-	// TODO: INTERACTIVE: per unique email, set a name (existing or new or ignore)
+	if err != nil {
+		return fmt.Errorf("Error iterating over repo commits: %w", err)
+	}
+
+	// INTERACTIVE: per unique email, set a name (existing or new or ignore)
 	if opts.isInteractive {
 		program := tea.NewProgram(initialModel(opts, uniqueEmails))
 		if _, err := program.Run(); err != nil {
-			return fmt.Errorf(err.Error())
+			return fmt.Errorf("Error running interactive mode: %w", err)
 		}
 	} else {
+		// generate an output file
+		// default: `./.sauced.yaml`
+		// fallback for home directories
 		if opts.outputPath == "~/" {
 			homeDir, _ := os.UserHomeDir()
-			generateOutputFile(filepath.Join(homeDir, ".sauced.yaml"), attributionMap)
+			err := generateOutputFile(filepath.Join(homeDir, ".sauced.yaml"), attributionMap)
+			if err != nil {
+				return fmt.Errorf("Error generating output file: %w", err)
+			}
 		} else {
-			generateOutputFile(filepath.Join(opts.outputPath, ".sauced.yaml"), attributionMap)
+			err := generateOutputFile(filepath.Join(opts.outputPath, ".sauced.yaml"), attributionMap)
+			if err != nil {
+				return fmt.Errorf("Error generating output file: %w", err)
+			}
 		}
 	}
 
@@ -242,9 +256,15 @@ func runOutputGeneration(opts *Options, attributionMap map[string][]string) tea.
 	return func() tea.Msg {
 		if opts.outputPath == "~/" {
 			homeDir, _ := os.UserHomeDir()
-			generateOutputFile(filepath.Join(homeDir, ".sauced.yaml"), attributionMap)
+			err := generateOutputFile(filepath.Join(homeDir, ".sauced.yaml"), attributionMap)
+			if err != nil {
+				return fmt.Errorf("Error generating output file: %w", err)
+			}
 		} else {
-			generateOutputFile(filepath.Join(opts.outputPath, ".sauced.yaml"), attributionMap)
+			err := generateOutputFile(filepath.Join(opts.outputPath, ".sauced.yaml"), attributionMap)
+			if err != nil {
+				return fmt.Errorf("Error generating output file: %w", err)
+			}
 		}
 
 		return tea.Quit()
