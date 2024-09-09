@@ -104,10 +104,8 @@ func run(opts *Options) error {
 				// AUTOMATIC: set every name and associated emails
 				attributionMap[name] = append(attributionMap[name], email)
 			}
-		} else {
-			if !slices.Contains(uniqueEmails, email) {
-				uniqueEmails = append(uniqueEmails, email)
-			}
+		} else if !slices.Contains(uniqueEmails, email) {
+			uniqueEmails = append(uniqueEmails, email)
 		}
 		return nil
 	})
@@ -205,9 +203,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	m.textInput.SetSuggestions(existingUsers)
 
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.Type {
+	keyMsg, ok := msg.(tea.KeyMsg)
+
+	if ok {
+		switch keyMsg.Type {
 		case tea.KeyCtrlC, tea.KeyEsc:
 			return m, tea.Quit
 
