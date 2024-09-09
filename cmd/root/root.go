@@ -19,7 +19,7 @@ func NewRootCommand() (*cobra.Command, error) {
 	cmd := &cobra.Command{
 		Use:   "pizza <command> <subcommand> [flags]",
 		Short: "OpenSauced CLI",
-		Long:  "A command line utility for insights, metrics, and all things OpenSauced",
+		Long:  "A command line utility for insights, metrics, and generating CODEOWNERS documentation for your open source projects",
 		RunE:  run,
 		Args: func(cmd *cobra.Command, _ []string) error {
 			betaFlag := cmd.Flags().Lookup(constants.FlagNameBeta)
