@@ -92,7 +92,7 @@ jobs:
         run: ./scripts/generate-docs.sh
         env:
           GITHUB_REF: ${{ github.ref }}
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
 
   build:
     name: Build and publish artifacts
