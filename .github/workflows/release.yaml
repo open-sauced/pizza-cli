@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Generate token
+      - name: "Generate token"
         id: generate_token
         uses: tibdex/github-app-token@v2
         with:
