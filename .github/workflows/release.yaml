@@ -85,6 +85,11 @@ jobs:
     - name: "🤲 Setup Just"
       uses: extractions/setup-just@v2
 
+    - name: "📗 Generate Documentation"
+      run: ./scripts/generate-docs.sh
+      env:
+        GITHUB_REF: ${{ github.ref }}
+
     - name: "🔧 Build all and upload artifacts to release"
       env:
         GH_TOKEN: ${{ github.token }}
