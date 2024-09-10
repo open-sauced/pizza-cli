@@ -66,20 +66,20 @@ func NewCodeownersCommand() *cobra.Command {
 		Short: "Generate a CODEOWNERS file for a GitHub repository using a \"~/.sauced.yaml\" config",
 		Long:  codeownersLongDesc,
 		Example: `
-		# Generate CODEOWNERS file for the current directory
-		pizza generate codeowners .
+# Generate CODEOWNERS file for the current directory
+pizza generate codeowners .
 
-		# Generate CODEOWNERS file for a specific repository
-		pizza generate codeowners /path/to/your/repo
+# Generate CODEOWNERS file for a specific repository
+pizza generate codeowners /path/to/your/repo
 
-		# Generate CODEOWNERS file analyzing the last 180 days
-		pizza generate codeowners . --range 180
+# Generate CODEOWNERS file analyzing the last 180 days
+pizza generate codeowners . --range 180
 
-		# Generate an OWNERS style file instead of CODEOWNERS
-		pizza generate codeowners . --owners-style-file
+# Generate an OWNERS style file instead of CODEOWNERS
+pizza generate codeowners . --owners-style-file
 
-		# Specify a custom location for the .sauced.yaml file
-		pizza generate codeowners . --config /path/to/.sauced.yaml
+# Specify a custom location for the .sauced.yaml file
+pizza generate codeowners . --config /path/to/.sauced.yaml
 		`,
 		Args: func(_ *cobra.Command, args []string) error {
 			if len(args) != 1 {
