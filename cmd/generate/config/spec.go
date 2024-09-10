@@ -29,8 +29,8 @@ type keymap struct{}
 
 func (k keymap) ShortHelp() []key.Binding {
 	return []key.Binding{
-		key.NewBinding(key.WithKeys("ctrl+n"), key.WithHelp("ctrl+n", "next")),
-		key.NewBinding(key.WithKeys("ctrl+p"), key.WithHelp("ctrl+p", "prev")),
+		key.NewBinding(key.WithKeys("ctrl+n"), key.WithHelp("ctrl+n", "next suggestion")),
+		key.NewBinding(key.WithKeys("ctrl+p"), key.WithHelp("ctrl+p", "prev suggestion")),
 		key.NewBinding(key.WithKeys("ctrl+i"), key.WithHelp("ctrl+i", "ignore email")),
 		key.NewBinding(key.WithKeys("esc"), key.WithHelp("esc", "quit")),
 		key.NewBinding(key.WithKeys("enter"), key.WithHelp("enter", "submit")),
@@ -43,7 +43,7 @@ func (k keymap) FullHelp() [][]key.Binding {
 
 func initialModel(opts *Options, uniqueEmails []string) model {
 	ti := textinput.New()
-	ti.Placeholder = "name"
+	ti.Placeholder = "username"
 	ti.Focus()
 	ti.ShowSuggestions = true
 

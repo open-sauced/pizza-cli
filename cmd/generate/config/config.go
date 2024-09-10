@@ -28,7 +28,7 @@ type Options struct {
 	ttyDisabled bool
 }
 
-const configLongDesc string = `Generates a ~/.sauced.yaml configuration file. The attribution of emails to given entities
+const configLongDesc string = `Generates a ".sauced.yaml" configuration file. The attribution of emails to given entities
 is based on the repository this command is ran in.`
 
 func NewConfigCommand() *cobra.Command {
@@ -36,7 +36,7 @@ func NewConfigCommand() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "config path/to/repo [flags]",
-		Short: "Generates a \"~/.sauced.yaml\" config based on the current repository",
+		Short: "Generates a \".sauced.yaml\" config based on the current repository",
 		Long:  configLongDesc,
 		Args: func(_ *cobra.Command, args []string) error {
 			if len(args) != 1 {
