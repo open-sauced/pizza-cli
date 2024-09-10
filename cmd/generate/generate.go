@@ -10,10 +10,6 @@ import (
 
 const generateLongDesc string = `The 'generate' command provides tools to automate the creation of important project documentation and derive insights from your codebase.
 
-Currently, it supports generating CODEOWNERS files.
-
-Available subcommands:
-  - codeowners: Generate a more granular GitHub-style CODEOWNERS file based on git history.`
 
 func NewGenerateCommand() *cobra.Command {
 	cmd := &cobra.Command{
