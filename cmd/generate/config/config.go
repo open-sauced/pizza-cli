@@ -24,6 +24,7 @@ type Options struct {
 	// whether to use interactive mode
 	isInteractive bool
 
+	// from global config
 	ttyDisabled bool
 }
 
@@ -92,7 +93,7 @@ func run(opts *Options) error {
 		name := c.Author.Name
 		email := c.Author.Email
 
-		if !opts.isInteractive {
+		if opts.ttyDisabled || !opts.isInteractive {
 			doesEmailExist := slices.Contains(attributionMap[name], email)
 			if !doesEmailExist {
 				// AUTOMATIC: set every name and associated emails
@@ -109,7 +110,7 @@ func run(opts *Options) error {
 	}
 
 	// INTERACTIVE: per unique email, set a name (existing or new or ignore)
-	if opts.isInteractive {
+	if opts.isInteractive && !opts.ttyDisabled {
 		program := tea.NewProgram(initialModel(opts, uniqueEmails))
 		if _, err := program.Run(); err != nil {
 			return fmt.Errorf("error running interactive mode: %w", err)
