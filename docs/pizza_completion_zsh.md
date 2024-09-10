@@ -42,7 +42,7 @@ pizza completion zsh [flags]
 ### Options inherited from parent commands
 
 ```
-  -c, --config string       The saucectl config (default ".sauced.yaml")
+  -c, --config string       The codeowners config (default ".sauced.yaml")
       --disable-telemetry   Disable sending telemetry data to OpenSauced
   -l, --log-level string    The logging level. Options: error, warn, info, debug (default "info")
       --tty-disable         Disable log stylization. Suitable for CI/CD and automation

@@ -46,21 +46,41 @@ type Options struct {
 	config *config.Spec
 }
 
-const codeownersLongDesc string = `WARNING: Proof of concept feature.
+const codeownersLongDesc string = `Generates a CODEOWNERS file for a given git repository. The generated file specifies up to 3 owners for EVERY file in the git tree based on the number of lines touched in that specific file over the specified range of time.
 
-Generates a CODEOWNERS file for a given git repository. This uses a .sauced.yaml
-configuration to attribute emails with given entities.
+Configuration:
+The command requires a .sauced.yaml file for accurate attribution. This file maps 
+commit email addresses to GitHub usernames. The command looks for this file in two locations:
 
-The generated file specifies up to 3 owners for EVERY file in the git tree based on the
-number of lines touched in that specific file over the specified range of time.`
+1. In the root of the specified repository path
+2. In the user's home directory (~/.sauced.yaml) if not found in the repository
+
+If you run the command on a specific path, it will first look for .sauced.yaml in that 
+path. If not found, it will fall back to ~/.sauced.yaml.`
 
 func NewCodeownersCommand() *cobra.Command {
 	opts := &Options{}
 
 	cmd := &cobra.Command{
 		Use:   "codeowners path/to/repo [flags]",
-		Short: "Generates a CODEOWNERS file for a given repository using a \".sauced.yaml\" config",
+		Short: "Generate a CODEOWNERS file for a GitHub repository using a \"~/.sauced.yaml\" config",
 		Long:  codeownersLongDesc,
+		Example: `
+# Generate CODEOWNERS file for the current directory
+pizza generate codeowners .
+
+# Generate CODEOWNERS file for a specific repository
+pizza generate codeowners /path/to/your/repo
+
+# Generate CODEOWNERS file analyzing the last 180 days
+pizza generate codeowners . --range 180
+
+# Generate an OWNERS style file instead of CODEOWNERS
+pizza generate codeowners . --owners-style-file
+
+# Specify a custom location for the .sauced.yaml file
+pizza generate codeowners . --config /path/to/.sauced.yaml
+		`,
 		Args: func(_ *cobra.Command, args []string) error {
 			if len(args) != 1 {
 				return errors.New("you must provide exactly one argument: the path to the repository")
@@ -119,8 +139,8 @@ func NewCodeownersCommand() *cobra.Command {
 		},
 	}
 
-	cmd.PersistentFlags().IntP("range", "r", 90, "The number of days to lookback")
-	cmd.PersistentFlags().Bool("owners-style-file", false, "Whether to generate an agnostic OWNERS style file.")
+	cmd.PersistentFlags().IntP("range", "r", 90, "The number of days to analyze commit history (default 90)")
+	cmd.PersistentFlags().Bool("owners-style-file", false, "Generate an agnostic OWNERS style file instead of CODEOWNERS.")
 
 	return cmd
 }

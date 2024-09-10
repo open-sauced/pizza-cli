@@ -132,7 +132,7 @@ Flags:
 Global Flags:
       --beta                Shorthand for using the beta OpenSauced API endpoint ("https://beta.api.opensauced.pizza").
                             Supersedes the '--endpoint' flag
-  -c, --config string       The saucectl config (default "~/.sauced.yaml")
+  -c, --config string       The codeowners config (default ".sauced.yaml")
       --disable-telemetry   Disable sending telemetry data to OpenSauced
   -e, --endpoint string     The API endpoint to send requests to (default "https://api.opensauced.pizza")
   -l, --log-level string    The logging level. Options: error, warn, info, debug (default "info")
