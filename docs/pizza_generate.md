@@ -29,4 +29,5 @@ pizza generate [subcommand] [flags]
 
 * [pizza](pizza.md)	 - OpenSauced CLI
 * [pizza generate codeowners](pizza_generate_codeowners.md)	 - Generate a CODEOWNERS file for a GitHub repository using a "~/.sauced.yaml" config
+* [pizza generate config](pizza_generate_config.md)	 - Generates a ".sauced.yaml" config based on the current repository
 
