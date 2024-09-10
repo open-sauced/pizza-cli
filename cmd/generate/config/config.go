@@ -63,8 +63,6 @@ func NewConfigCommand() *cobra.Command {
 		},
 
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			// TODO: error checking based on given command
-
 			opts.outputPath, _ = cmd.Flags().GetString("output-path")
 			opts.isInteractive, _ = cmd.Flags().GetBool("interactive")
 
@@ -267,5 +265,4 @@ func runOutputGeneration(opts *Options, attributionMap map[string][]string) tea.
 
 		return tea.Quit()
 	}
-
 }
