@@ -83,6 +83,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case tea.KeyCtrlI:
 			m.currentIndex++
+			if m.currentIndex+1 >= len(m.uniqueEmails) {
+				return m, runOutputGeneration(m.opts, m.attributionMap)
+			}
 			return m, nil
 
 		case tea.KeyEnter:
