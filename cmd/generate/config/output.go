@@ -11,7 +11,7 @@ import (
 func generateOutputFile(outputPath string, attributionMap map[string][]string) error {
 	file, err := os.Create(outputPath)
 	if err != nil {
-		return fmt.Errorf("Error creating %s file: %w", outputPath, err)
+		return fmt.Errorf("error creating %s file: %w", outputPath, err)
 	}
 	defer file.Close()
 
@@ -22,13 +22,13 @@ func generateOutputFile(outputPath string, attributionMap map[string][]string) e
 	yaml, err := utils.OutputYAML(config)
 
 	if err != nil {
-		return fmt.Errorf("Failed to turn into YAML: %w", err)
+		return fmt.Errorf("failed to turn into YAML: %w", err)
 	}
 
 	_, err = file.WriteString(yaml)
 
 	if err != nil {
-		return fmt.Errorf("Failed to turn into YAML: %w", err)
+		return fmt.Errorf("failed to turn into YAML: %w", err)
 	}
 
 	return nil
