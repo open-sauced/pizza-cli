@@ -4,6 +4,7 @@ go 1.22
 
 require (
 	github.com/charmbracelet/bubbles v0.19.0
+	github.com/charmbracelet/bubbletea v0.27.1
 	github.com/charmbracelet/lipgloss v0.13.0
 	github.com/cli/browser v1.3.0
 	github.com/go-git/go-git/v5 v5.12.0
@@ -17,7 +18,7 @@ require (
 )
 
 require (
-	github.com/charmbracelet/bubbletea v0.27.1 // indirect
+	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 )

@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/open-sauced/pizza-cli/cmd/generate/codeowners"
+	"github.com/open-sauced/pizza-cli/cmd/generate/config"
 )
 
 const generateLongDesc string = `The 'generate' command provides tools to automate the creation of important project documentation and derive insights from your codebase.`
@@ -26,6 +27,7 @@ func NewGenerateCommand() *cobra.Command {
 	}
 
 	cmd.AddCommand(codeowners.NewCodeownersCommand())
+	cmd.AddCommand(config.NewConfigCommand())
 
 	return cmd
 }
