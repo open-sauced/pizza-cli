@@ -46,21 +46,41 @@ type Options struct {
 	config *config.Spec
 }
 
-const codeownersLongDesc string = `WARNING: Proof of concept feature.
+const codeownersLongDesc string = `Generates a CODEOWNERS file for a given git repository. The generated file specifies up to 3 owners for EVERY file in the git tree based on the number of lines touched in that specific file over the specified range of time.
 
-Generates a CODEOWNERS file for a given git repository. This uses a ~/.sauced.yaml
-configuration to attribute emails with given entities.
+Configuration:
+The command requires a .sauced.yaml file for accurate attribution. This file maps 
+commit email addresses to GitHub usernames. The command looks for this file in two locations:
 
-The generated file specifies up to 3 owners for EVERY file in the git tree based on the
-number of lines touched in that specific file over the specified range of time.`
+1. In the root of the specified repository path
+2. In the user's home directory (~/.sauced.yaml) if not found in the repository
+
+If you run the command on a specific path, it will first look for .sauced.yaml in that 
+path. If not found, it will fall back to ~/.sauced.yaml.`
 
 func NewCodeownersCommand() *cobra.Command {
 	opts := &Options{}
 
 	cmd := &cobra.Command{
 		Use:   "codeowners path/to/repo [flags]",
-		Short: "Generates a CODEOWNERS file for a given repository using a \"~/.sauced.yaml\" config",
+		Short: "Generate a CODEOWNERS file for a GitHub repository using a \"~/.sauced.yaml\" config",
 		Long:  codeownersLongDesc,
+		Example: `
+# Generate CODEOWNERS file for the current directory
+pizza generate codeowners .
+
+# Generate CODEOWNERS file for a specific repository
+pizza generate codeowners /path/to/your/repo
+
+# Generate CODEOWNERS file analyzing the last 180 days
+pizza generate codeowners . --range 180
+
+# Generate an OWNERS style file instead of CODEOWNERS
+pizza generate codeowners . --owners-style-file
+
+# Specify a custom location for the .sauced.yaml file
+pizza generate codeowners . --config /path/to/.sauced.yaml
+		`,
 		Args: func(_ *cobra.Command, args []string) error {
 			if len(args) != 1 {
 				return errors.New("you must provide exactly one argument: the path to the repository")
@@ -87,10 +107,9 @@ func NewCodeownersCommand() *cobra.Command {
 			disableTelem, _ := cmd.Flags().GetBool(constants.FlagNameTelemetry)
 
 			opts.telemetry = utils.NewPosthogCliClient(!disableTelem)
-			defer opts.telemetry.Done()
 
 			configPath, _ := cmd.Flags().GetString("config")
-			opts.config, err = config.LoadConfig(configPath, filepath.Join(opts.path, ".sauced.yaml"))
+			opts.config, err = config.LoadConfig(configPath)
 			if err != nil {
 				return err
 			}
@@ -112,12 +131,16 @@ func NewCodeownersCommand() *cobra.Command {
 				opts.loglevel = logging.LogDebug
 			}
 
-			return run(opts, cmd)
+			err = run(opts, cmd)
+
+			_ = opts.telemetry.Done()
+
+			return err
 		},
 	}
 
-	cmd.PersistentFlags().IntP("range", "r", 90, "The number of days to lookback")
-	cmd.PersistentFlags().Bool("owners-style-file", false, "Whether to generate an agnostic OWNERS style file.")
+	cmd.PersistentFlags().IntP("range", "r", 90, "The number of days to analyze commit history (default 90)")
+	cmd.PersistentFlags().Bool("owners-style-file", false, "Generate an agnostic OWNERS style file instead of CODEOWNERS.")
 
 	return cmd
 }
@@ -135,7 +158,7 @@ func run(opts *Options, cmd *cobra.Command) error {
 
 	repo, err := git.PlainOpen(opts.path)
 	if err != nil {
-		opts.telemetry.CaptureFailedCodeownersGenerate()
+		_ = opts.telemetry.CaptureFailedCodeownersGenerate()
 		return fmt.Errorf("error opening repo: %w", err)
 	}
 	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Opened repo at: %s\n", opts.path)
@@ -150,7 +173,7 @@ func run(opts *Options, cmd *cobra.Command) error {
 
 	codeowners, err := processOptions.process()
 	if err != nil {
-		opts.telemetry.CaptureFailedCodeownersGenerate()
+		_ = opts.telemetry.CaptureFailedCodeownersGenerate()
 		return fmt.Errorf("error traversing git log: %w", err)
 	}
 
@@ -165,11 +188,16 @@ func run(opts *Options, cmd *cobra.Command) error {
 	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Processing codeowners file at: %s\n", outputPath)
 	err = generateOutputFile(codeowners, outputPath, opts, cmd)
 	if err != nil {
-		opts.telemetry.CaptureFailedCodeownersGenerate()
+		_ = opts.telemetry.CaptureFailedCodeownersGenerate()
 		return fmt.Errorf("error generating github style codeowners file: %w", err)
 	}
 	opts.logger.V(logging.LogInfo).Style(0, colors.FgGreen).Infof("Finished generating file: %s\n", outputPath)
-	opts.telemetry.CaptureCodeownersGenerate()
+	_ = opts.telemetry.CaptureCodeownersGenerate()
+
+	// ignore the interactive prompts for CI/CD environments
+	if opts.tty {
+		return nil
+	}
 
 	// 1. Ask if they want to add users to a list
 	var input string
@@ -204,11 +232,11 @@ func run(opts *Options, cmd *cobra.Command) error {
 		case "y", "Y", "yes":
 			user, err := authenticator.Login()
 			if err != nil {
-				opts.telemetry.CaptureFailedCodeownersGenerateAuth()
+				_ = opts.telemetry.CaptureFailedCodeownersGenerateAuth()
 				opts.logger.V(logging.LogInfo).Style(0, colors.FgRed).Infof("Error logging in\n")
 				return fmt.Errorf("could not log in: %w", err)
 			}
-			opts.telemetry.CaptureCodeownersGenerateAuth(user)
+			_ = opts.telemetry.CaptureCodeownersGenerateAuth(user)
 			opts.logger.V(logging.LogInfo).Style(0, colors.FgGreen).Infof("Logged in as: %s\n", user)
 
 		case "n", "N", "no":
@@ -221,7 +249,7 @@ func run(opts *Options, cmd *cobra.Command) error {
 
 	opts.token, err = authenticator.GetSessionToken()
 	if err != nil {
-		opts.telemetry.CaptureFailedCodeownersGenerateContributorInsight()
+		_ = opts.telemetry.CaptureFailedCodeownersGenerateContributorInsight()
 		opts.logger.V(logging.LogInfo).Style(0, colors.FgRed).Infof("Error getting session token\n")
 		return fmt.Errorf("could not get session token: %w", err)
 	}
@@ -231,7 +259,7 @@ func run(opts *Options, cmd *cobra.Command) error {
 	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Looking up OpenSauced workspace: Pizza CLI\n")
 	workspace, err := findCreatePizzaCliWorkspace(opts)
 	if err != nil {
-		opts.telemetry.CaptureFailedCodeownersGenerateContributorInsight()
+		_ = opts.telemetry.CaptureFailedCodeownersGenerateContributorInsight()
 		opts.logger.V(logging.LogInfo).Style(0, colors.FgRed).Infof("Error finding Workspace: Pizza CLI\n")
 		return fmt.Errorf("could not find Pizza CLI workspace: %w", err)
 	}
@@ -240,13 +268,13 @@ func run(opts *Options, cmd *cobra.Command) error {
 	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Looking up Contributor Insight for local repository: %s\n", listName)
 	userList, err := updateCreateLocalWorkspaceUserList(opts, listName, workspace, codeowners)
 	if err != nil {
-		opts.telemetry.CaptureFailedCodeownersGenerateContributorInsight()
+		_ = opts.telemetry.CaptureFailedCodeownersGenerateContributorInsight()
 		opts.logger.V(logging.LogInfo).Style(0, colors.FgRed).Infof("Error finding Workspace Contributor Insight: %s\n", listName)
 		return fmt.Errorf("could not find Workspace Contributor Insight: %s - %w", listName, err)
 	}
 	opts.logger.V(logging.LogDebug).Style(0, colors.FgGreen).Infof("Updated Contributor Insight for local repository: %s\n", listName)
 	opts.logger.V(logging.LogInfo).Style(0, colors.FgCyan).Infof("Access list on OpenSauced:\n%s\n", fmt.Sprintf("https://app.opensauced.pizza/workspaces/%s/contributor-insights/%s", workspace.ID, userList.ID))
-	opts.telemetry.CaptureCodeownersGenerateContributorInsight()
+	_ = opts.telemetry.CaptureCodeownersGenerateContributorInsight()
 
 	return nil
 }

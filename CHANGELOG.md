@@ -5,6 +5,48 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.4.0-beta.4](https://github.com/open-sauced/pizza-cli/compare/v1.4.0-beta.3...v1.4.0-beta.4) (2024-09-09)
+
+
+### 🐛 Bug Fixes
+
+* docs generation runs outside of build matrix now ([#165](https://github.com/open-sauced/pizza-cli/issues/165)) ([1e42988](https://github.com/open-sauced/pizza-cli/commit/1e42988c06fcab6694d4fca9670c59796352e7a5))
+
+## [1.4.0-beta.3](https://github.com/open-sauced/pizza-cli/compare/v1.4.0-beta.2...v1.4.0-beta.3) (2024-09-09)
+
+
+### 🐛 Bug Fixes
+
+* now --tty-disable is set so the action can complete instead of hanging ([#164](https://github.com/open-sauced/pizza-cli/issues/164)) ([a970a73](https://github.com/open-sauced/pizza-cli/commit/a970a73f494f34464a4c8b6ba993d38ecb4e2ec4))
+
+## [1.4.0-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.4.0-beta.1...v1.4.0-beta.2) (2024-09-09)
+
+
+### 🐛 Bug Fixes
+
+* fixed docs generation in release workflow ([#162](https://github.com/open-sauced/pizza-cli/issues/162)) ([5341e16](https://github.com/open-sauced/pizza-cli/commit/5341e16daaeeecdc664895d165246a82623accbe))
+
+## [1.4.0-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.3.1-beta.2...v1.4.0-beta.1) (2024-09-09)
+
+
+### 🍕 Features
+
+* Posthog events bootstrapping ([#160](https://github.com/open-sauced/pizza-cli/issues/160)) ([847426b](https://github.com/open-sauced/pizza-cli/commit/847426bcb202e8846287461fb0e3735d04f4c82e))
+
+## [1.3.1-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.3.1-beta.1...v1.3.1-beta.2) (2024-09-06)
+
+
+### 🐛 Bug Fixes
+
+* use the local directory and home directory as fallback for .sauced.yaml ([#158](https://github.com/open-sauced/pizza-cli/issues/158)) ([af2f361](https://github.com/open-sauced/pizza-cli/commit/af2f3612e26634455602d1840714c5bf15e1e40a))
+
+## [1.3.1-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.3.0...v1.3.1-beta.1) (2024-09-06)
+
+
+### 🐛 Bug Fixes
+
+* skip interactive steps in generate codeowners with --tty-disable flag ([#159](https://github.com/open-sauced/pizza-cli/issues/159)) ([49f1fd3](https://github.com/open-sauced/pizza-cli/commit/49f1fd3fc4df24b95724feb1918dc80276cd017e))
+
 ## [1.3.0](https://github.com/open-sauced/pizza-cli/compare/v1.2.1...v1.3.0) (2024-09-06)
 
 

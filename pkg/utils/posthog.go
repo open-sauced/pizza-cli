@@ -1,19 +1,27 @@
 package utils
 
 import (
+	"fmt"
+
 	"github.com/posthog/posthog-go"
 )
 
 var (
 	writeOnlyPublicPosthogKey = "dev"
-	posthogEndpoint           = "https://app.posthog.com"
+	posthogEndpoint           = "https://us.i.posthog.com"
 )
 
 // PosthogCliClient is a wrapper around the posthog-go client and is used as a
 // API entrypoint for sending OpenSauced telemetry data for CLI commands
 type PosthogCliClient struct {
-	client    posthog.Client
+	// client is the Posthog Go client
+	client posthog.Client
+
+	// activated denotes if the user has enabled or disabled telemetry
 	activated bool
+
+	// uniqueID is the user's unique, anonymous identifier
+	uniqueID string
 }
 
 // NewPosthogCliClient returns a PosthogCliClient which can be used to capture
@@ -32,120 +40,142 @@ func NewPosthogCliClient(activated bool) *PosthogCliClient {
 		panic(err)
 	}
 
+	uniqueID, err := getOrCreateUniqueID()
+	if err != nil {
+		fmt.Printf("could not build anonymous telemetry client: %s\n", err)
+	}
+
 	return &PosthogCliClient{
 		client:    client,
 		activated: activated,
+		uniqueID:  uniqueID,
 	}
 }
 
 // Done should always be called in order to flush the Posthog buffers before
 // the CLI exits to ensure all events are accurately captured.
-//
-//nolint:errcheck
-func (p *PosthogCliClient) Done() {
-	p.client.Close()
+func (p *PosthogCliClient) Done() error {
+	return p.client.Close()
 }
 
 // CaptureLogin gathers telemetry on users who log into OpenSauced via the CLI
-//
-//nolint:errcheck
-func (p *PosthogCliClient) CaptureLogin(username string) {
+func (p *PosthogCliClient) CaptureLogin(username string) error {
 	if p.activated {
-		p.client.Enqueue(posthog.Capture{
+		return p.client.Enqueue(posthog.Capture{
 			DistinctId: username,
-			Event:      "cli_user logged in",
+			Event:      "pizza_cli_user_logged_in",
 		})
 	}
+
+	return nil
 }
 
 // CaptureFailedLogin gathers telemetry on failed logins via the CLI
-//
-//nolint:errcheck
-func (p *PosthogCliClient) CaptureFailedLogin() {
+func (p *PosthogCliClient) CaptureFailedLogin() error {
 	if p.activated {
-		p.client.Enqueue(posthog.Capture{
-			DistinctId: "login-failures",
-			Event:      "cli_user failed log in",
+		return p.client.Enqueue(posthog.Capture{
+			DistinctId: p.uniqueID,
+			Event:      "pizza_cli_user_failed_log_in",
 		})
 	}
+
+	return nil
 }
 
-//nolint:errcheck
-func (p *PosthogCliClient) CaptureCodeownersGenerate() {
+// CaptureCodeownersGenerate gathers telemetry on successful codeowners generation
+func (p *PosthogCliClient) CaptureCodeownersGenerate() error {
 	if p.activated {
-		p.client.Enqueue(posthog.Capture{
-			DistinctId: "codeowners-generated",
-			Event:      "cli generated codeowners",
+		return p.client.Enqueue(posthog.Capture{
+			DistinctId: p.uniqueID,
+			Event:      "pizza_cli_generated_codeowners",
 		})
 	}
+
+	return nil
 }
 
-//nolint:errcheck
-func (p *PosthogCliClient) CaptureFailedCodeownersGenerate() {
+// CaptureFailedCodeownersGenerate gathers telemetry on failed codeowners generation
+func (p *PosthogCliClient) CaptureFailedCodeownersGenerate() error {
 	if p.activated {
-		p.client.Enqueue(posthog.Capture{
-			DistinctId: "failed-codeowners-generated",
-			Event:      "cli failed to generate codeowners",
+		return p.client.Enqueue(posthog.Capture{
+			DistinctId: p.uniqueID,
+			Event:      "pizza_cli_failed_to_generate_codeowners",
 		})
 	}
+
+	return nil
 }
 
-//nolint:errcheck
-func (p *PosthogCliClient) CaptureCodeownersGenerateAuth(username string) {
+// CaptureCodeownersGenerateAuth gathers telemetry on successful auth flows during codeowners generation
+func (p *PosthogCliClient) CaptureCodeownersGenerateAuth(username string) error {
 	if p.activated {
-		p.client.Enqueue(posthog.Capture{
+		return p.client.Enqueue(posthog.Capture{
 			DistinctId: username,
-			Event:      "user authenticated during generate codeowners flow",
+			Event:      "pizza_cli_user_authenticated_during_generate_codeowners_flow",
 		})
 	}
+
+	return nil
 }
 
-//nolint:errcheck
-func (p *PosthogCliClient) CaptureFailedCodeownersGenerateAuth() {
+// CaptureFailedCodeownersGenerateAuth gathers telemetry on failed auth flows during codeowners generations
+func (p *PosthogCliClient) CaptureFailedCodeownersGenerateAuth() error {
 	if p.activated {
-		p.client.Enqueue(posthog.Capture{
-			DistinctId: "codeowners-generate-auth-failed",
-			Event:      "user failed to authenticate during generate codeowners flow",
+		return p.client.Enqueue(posthog.Capture{
+			DistinctId: p.uniqueID,
+			Event:      "pizza_cli_user_failed_to_authenticate_during_generate_codeowners_flow",
 		})
 	}
+
+	return nil
 }
 
-//nolint:errcheck
-func (p *PosthogCliClient) CaptureCodeownersGenerateContributorInsight() {
+// CaptureCodeownersGenerateContributorInsight gathers telemetry on successful
+// Contributor Insights creation/update during codeowners generation
+func (p *PosthogCliClient) CaptureCodeownersGenerateContributorInsight() error {
 	if p.activated {
-		p.client.Enqueue(posthog.Capture{
-			DistinctId: "codeowners-generate-contributor-insight",
-			Event:      "cli created/updated contributor list for user",
+		return p.client.Enqueue(posthog.Capture{
+			DistinctId: p.uniqueID,
+			Event:      "pizza_cli_created_updated_contributor_list",
 		})
 	}
+
+	return nil
 }
 
-//nolint:errcheck
-func (p *PosthogCliClient) CaptureFailedCodeownersGenerateContributorInsight() {
+// CaptureFailedCodeownersGenerateContributorInsight gathers telemetry on failed
+// Contributor Insights during codeowners generation
+func (p *PosthogCliClient) CaptureFailedCodeownersGenerateContributorInsight() error {
 	if p.activated {
-		p.client.Enqueue(posthog.Capture{
-			DistinctId: "failed-codeowners-generation-contributor-insight",
-			Event:      "cli failed to create/update contributor insight for user",
+		return p.client.Enqueue(posthog.Capture{
+			DistinctId: p.uniqueID,
+			Event:      "pizza_cli_failed_to_create_update_contributor_insight_for_user",
 		})
 	}
+
+	return nil
 }
 
-//nolint:errcheck
-func (p *PosthogCliClient) CaptureInsights() {
+// CaptureInsights gathers telemetry on successful Insights command runs
+func (p *PosthogCliClient) CaptureInsights() error {
 	if p.activated {
-		p.client.Enqueue(posthog.Capture{
-			DistinctId: "insights",
-			Event:      "cli called insights command",
+		return p.client.Enqueue(posthog.Capture{
+			DistinctId: p.uniqueID,
+			Event:      "pizza_cli_called_insights_command",
 		})
 	}
+
+	return nil
 }
 
-//nolint:errcheck
-func (p *PosthogCliClient) CaptureFailedInsights() {
+// CaptureFailedInsights gathers telemetry on failed Insights command runs
+func (p *PosthogCliClient) CaptureFailedInsights() error {
 	if p.activated {
-		p.client.Enqueue(posthog.Capture{
-			DistinctId: "failed-insight",
-			Event:      "cli failed to call insights command",
+		return p.client.Enqueue(posthog.Capture{
+			DistinctId: p.uniqueID,
+			Event:      "pizza_cli_failed_to_call_insights_command",
 		})
 	}
+
+	return nil
 }

@@ -1,33 +1,58 @@
 ## pizza generate codeowners
 
-Generates a CODEOWNERS file for a given repository using a "~/.sauced.yaml" config
+Generate a CODEOWNERS file for a GitHub repository using a "~/.sauced.yaml" config
 
 ### Synopsis
 
-WARNING: Proof of concept feature.
+Generates a CODEOWNERS file for a given git repository. The generated file specifies up to 3 owners for EVERY file in the git tree based on the number of lines touched in that specific file over the specified range of time.
 
-Generates a CODEOWNERS file for a given git repository. This uses a ~/.sauced.yaml
-configuration to attribute emails with given entities.
+Configuration:
+The command requires a .sauced.yaml file for accurate attribution. This file maps 
+commit email addresses to GitHub usernames. The command looks for this file in two locations:
 
-The generated file specifies up to 3 owners for EVERY file in the git tree based on the
-number of lines touched in that specific file over the specified range of time.
+1. In the root of the specified repository path
+2. In the user's home directory (~/.sauced.yaml) if not found in the repository
+
+If you run the command on a specific path, it will first look for .sauced.yaml in that 
+path. If not found, it will fall back to ~/.sauced.yaml.
 
 ```
 pizza generate codeowners path/to/repo [flags]
+```
+
+### Examples
+
+```
+
+# Generate CODEOWNERS file for the current directory
+pizza generate codeowners .
+
+# Generate CODEOWNERS file for a specific repository
+pizza generate codeowners /path/to/your/repo
+
+# Generate CODEOWNERS file analyzing the last 180 days
+pizza generate codeowners . --range 180
+
+# Generate an OWNERS style file instead of CODEOWNERS
+pizza generate codeowners . --owners-style-file
+
+# Specify a custom location for the .sauced.yaml file
+pizza generate codeowners . --config /path/to/.sauced.yaml
+		
 ```
 
 ### Options
 
 ```
   -h, --help                help for codeowners
-      --owners-style-file   Whether to generate an agnostic OWNERS style file.
-  -r, --range int           The number of days to lookback (default 90)
+      --owners-style-file   Generate an agnostic OWNERS style file instead of CODEOWNERS.
+  -r, --range int           The number of days to analyze commit history (default 90) (default 90)
 ```
 
 ### Options inherited from parent commands
 
 ```
-  -c, --config string       The saucectl config (default "~/.sauced.yaml")
+  -c, --config string       The codeowners config (default "~/.sauced.yaml")
       --disable-telemetry   Disable sending telemetry data to OpenSauced
   -l, --log-level string    The logging level. Options: error, warn, info, debug (default "info")
       --tty-disable         Disable log stylization. Suitable for CI/CD and automation
@@ -35,5 +60,5 @@ pizza generate codeowners path/to/repo [flags]
 
 ### SEE ALSO
 
-* [pizza generate](pizza_generate.md)	 - Generates something
+* [pizza generate](pizza_generate.md)	 - Generates documentation and insights from your codebase
 
