@@ -31,6 +31,7 @@ Usage:
   pizza <command> <subcommand> [flags]
 
 Available Commands:
+  generate    Generate configurations and codeowner files
   bake        Use a pizza-oven to source git commits into OpenSauced
   completion  Generate the autocompletion script for the specified shell
   help        Help about any command
