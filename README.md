@@ -113,8 +113,6 @@ most context and knowledge on certain parts of a codebase.
 ```
 ❯ pizza generate codeowners -h
 
-WARNING: Proof of concept feature.
-
 Generates a CODEOWNERS file for a given git repository. This uses a ~/.sauced.yaml
 configuration to attribute emails with given entities.
 
