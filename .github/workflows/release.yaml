@@ -155,6 +155,6 @@ jobs:
         with:
           tags: ghcr.io/${{ github.repository }}:latest,ghcr.io/${{ github.repository }}:${{ needs.release.outputs.release-tag }}
           push: true
-          build-args:
-            - VERSION=${{ needs.release.outputs.release-tag }}
-            - POSTHOG_PUBLIC_API_KEY=${{ vars.POSTHOG_WRITE_PUBLIC_KEY }}
+          build-args: |
+            VERSION=${{ needs.release.outputs.release-tag }}
+            POSTHOG_PUBLIC_API_KEY=${{ vars.POSTHOG_WRITE_PUBLIC_KEY }}
