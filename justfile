@@ -11,14 +11,15 @@ build:
   echo "Building for local arch"
 
   export VERSION="${RELEASE_TAG_VERSION:-dev}"
-  export DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S")
+  export DATETIME=$(date -u +"%Y-%m-%d-%H:%M:%S")
+  export SHA=$(git rev-parse HEAD)
 
   go build \
-    -ldflags="-s -w" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
+    -ldflags="-s -w \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=${SHA}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
     -o build/pizza
 
 # Builds and installs the go binary for the local architecture. WARNING: requires sudo access
@@ -40,17 +41,18 @@ build-darwin-amd64:
   echo "Building darwin amd64"
 
   export VERSION="${RELEASE_TAG_VERSION:-dev}"
-  export DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S")
+  export DATETIME=$(date -u +"%Y-%m-%d-%H:%M:%S")
+  export SHA=$(git rev-parse HEAD)
   export CGO_ENABLED=0
   export GOOS="darwin"
   export GOARCH="amd64"
 
   go build \
-    -ldflags="-s -w" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
+    -ldflags="-s -w \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=${SHA}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
     -o build/pizza-${GOOS}-${GOARCH}
 
 # Builds for Darwin linux (i.e., MacOS) on arm64 architecture (i.e. Apple silicon)
@@ -60,17 +62,18 @@ build-darwin-arm64:
   echo "Building darwin arm64"
 
   export VERSION="${RELEASE_TAG_VERSION:-dev}"
-  export DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S")
+  export DATETIME=$(date -u +"%Y-%m-%d-%H:%M:%S")
+  export SHA=$(git rev-parse HEAD)
   export CGO_ENABLED=0
   export GOOS="darwin"
   export GOARCH="arm64"
 
   go build \
-    -ldflags="-s -w" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
+    -ldflags="-s -w \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=${SHA}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
     -o build/pizza-${GOOS}-${GOARCH}
 
 # Builds for agnostic Linux on amd64 architecture
@@ -80,17 +83,18 @@ build-linux-amd64:
   echo "Building linux amd64"
 
   export VERSION="${RELEASE_TAG_VERSION:-dev}"
-  export DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S")
+  export DATETIME=$(date -u +"%Y-%m-%d-%H:%M:%S")
+  export SHA=$(git rev-parse HEAD)
   export CGO_ENABLED=0
   export GOOS="linux"
   export GOARCH="amd64"
 
   go build \
-    -ldflags="-s -w" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
+    -ldflags="-s -w \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=${SHA}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
     -o build/pizza-${GOOS}-${GOARCH}
 
 # Builds for agnostic Linux on arm64 architecture
@@ -100,17 +104,18 @@ build-linux-arm64:
   echo "Building linux arm64"
 
   export VERSION="${RELEASE_TAG_VERSION:-dev}"
-  export DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S")
+  export DATETIME=$(date -u +"%Y-%m-%d-%H:%M:%S")
+  export SHA=$(git rev-parse HEAD)
   export CGO_ENABLED=0
   export GOOS="linux"
   export GOARCH="arm64"
 
   go build \
-    -ldflags="-s -w" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
+    -ldflags="-s -w \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=${SHA}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
     -o build/pizza-${GOOS}-${GOARCH}
 
 # Builds for Windows on amd64 architecture
@@ -120,17 +125,18 @@ build-windows-amd64:
   echo "Building windows amd64"
 
   export VERSION="${RELEASE_TAG_VERSION:-dev}"
-  export DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S")
+  export DATETIME=$(date -u +"%Y-%m-%d-%H:%M:%S")
+  export SHA=$(git rev-parse HEAD)
   export CGO_ENABLED=0
   export GOOS="windows"
   export GOARCH="amd64"
 
   go build \
-    -ldflags="-s -w" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
+    -ldflags="-s -w \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=${SHA}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
     -o build/pizza-${GOOS}-${GOARCH}
 
 # Builds for Windows on arm64 architecture
@@ -140,25 +146,34 @@ build-windows-arm64:
   echo "Building windows arm64"
 
   export VERSION="${RELEASE_TAG_VERSION:-dev}"
-  export DATETIME=$(date -u +"%Y-%m-%d %H:%M:%S")
+  export DATETIME=$(date -u +"%Y-%m-%d-%H:%M:%S")
+  export SHA=$(git rev-parse HEAD)
   export CGO_ENABLED=0
   export GOOS="windows"
   export GOARCH="arm64"
 
   go build \
-    -ldflags="-s -w" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=$(git rev-parse HEAD)'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}'" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
+    -ldflags="-s -w \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Version=${VERSION}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Sha=${SHA}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.Datetime=${DATETIME}' \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
     -o build/pizza-${GOOS}-${GOARCH}
 
 # Builds the Docker container and tags it as "dev"
 build-container:
+  #!/usr/bin/env sh
+
+  echo "Building container"
+
+  export VERSION="${RELEASE_TAG_VERSION:-dev}"
+  export DATETIME=$(date -u +"%Y-%m-%d-%H:%M:%S")
+  export SHA=$(git rev-parse HEAD)
+
   docker build \
-    --build-arg VERSION="$(git describe --tags --always)" \
-    --build-arg SHA="$(git rev-parse HEAD)" \
-    --build-arg DATETIME="$(date -u +'%Y-%m-%d %H:%M:%S')" \
+    --build-arg VERSION="${VERSION}" \
+    --build-arg SHA="${SHA}" \
+    --build-arg DATETIME="${DATETIME}" \
     --build-arg POSTHOG_PUBLIC_API_KEY="${POSTHOG_PUBLIC_API_KEY}" \
     -t pizza:dev .
 
@@ -211,8 +226,8 @@ bootstrap-telemetry:
 
   go build \
     -tags telemetry \
-    -ldflags="-s -w" \
-    -ldflags="-X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
+    -ldflags="-s -w \
+    -X 'github.com/open-sauced/pizza-cli/pkg/utils.writeOnlyPublicPosthogKey=${POSTHOG_PUBLIC_API_KEY}'" \
     -o build/telemetry-oneshot \
     telemetry.go
 
