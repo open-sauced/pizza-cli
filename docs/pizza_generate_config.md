@@ -4,8 +4,10 @@ Generates a ".sauced.yaml" config based on the current repository
 
 ### Synopsis
 
-Generates a ".sauced.yaml" configuration file. The attribution of emails to given entities
-is based on the repository this command is ran in.
+Generates a ".sauced.yaml" configuration file for use with the Pizza CLI's codeowners command. 
+
+This command analyzes the git history of the current repository to create a mapping 
+of email addresses to GitHub usernames. 
 
 ```
 pizza generate config path/to/repo [flags]
