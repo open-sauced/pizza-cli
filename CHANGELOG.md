@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.4.1-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.4.0...v1.4.1-beta.1) (2024-09-12)
+
+
+### 🐛 Bug Fixes
+
+* Don't overwrite ldflags in justfile builds ([#171](https://github.com/open-sauced/pizza-cli/issues/171)) ([e024687](https://github.com/open-sauced/pizza-cli/commit/e0246879d7d72095f30305cf805ad86e2df1f623))
+
 ## [1.4.0](https://github.com/open-sauced/pizza-cli/compare/v1.3.0...v1.4.0) (2024-09-11)
 
 
