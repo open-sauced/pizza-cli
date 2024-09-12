@@ -3,7 +3,12 @@
   <img alt="Open Sauced" src="https://github.com/open-sauced/assets/blob/main/logos/logo-on-dark.png">
   <h1>🍕 Pizza CLI 🍕</h1>
   <strong>A Go command line interface for managing code ownership and project insights with OpenSauced!</strong>
-  <br>
+  <br/>
+   <a href="https://youtu.be/yINL-uIvhn0" target="_blank">
+    <img alt="CODEOWNERS demo" src="https://img.youtube.com/vi/yINL-uIvhn0/0.jpg" style="max-width:100%; cursor:pointer;margin-top: 20px;">
+  </a>
+
+  
 </div>
 <br>
 
