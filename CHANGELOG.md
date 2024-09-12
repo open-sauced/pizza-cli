@@ -5,6 +5,18 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.5.0-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.4.1-beta.1...v1.5.0-beta.1) (2024-09-12)
+
+
+### 🍕 Features
+
+* pizza generate insight command ([#179](https://github.com/open-sauced/pizza-cli/issues/179)) ([7315a1d](https://github.com/open-sauced/pizza-cli/commit/7315a1d2ae2764dcbdfd1ce0af1272fde36b1a0c))
+
+
+### 🐛 Bug Fixes
+
+* Config path prefers local dir vs. home dir ([#184](https://github.com/open-sauced/pizza-cli/issues/184)) ([859446a](https://github.com/open-sauced/pizza-cli/commit/859446ac865e7a4c7d7779a2620c7391b4aabf33))
+
 ## [1.4.1-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.4.0...v1.4.1-beta.1) (2024-09-12)
 
 
