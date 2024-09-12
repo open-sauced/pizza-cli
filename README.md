@@ -2,7 +2,7 @@
   <br>
   <img alt="Open Sauced" src="https://github.com/open-sauced/assets/blob/main/logos/logo-on-dark.png">
   <h1>🍕 Pizza CLI 🍕</h1>
-  <strong>A command line interface and tool for all things OpenSauced!</strong>
+  <strong>A Go command line interface for managing code ownership and project insights with OpenSauced!</strong>
   <br>
 </div>
 <br>
