@@ -30,7 +30,7 @@ attribution:
 
 		require.NoError(t, os.WriteFile(configFilePath, []byte(fileContents), 0600))
 
-		config, err := LoadConfig(configFilePath)
+		config, _, err := LoadConfig(configFilePath)
 		require.NoError(t, err)
 		assert.NotNil(t, config)
 
@@ -47,7 +47,7 @@ attribution:
 		tmpDir := t.TempDir()
 		nonExistentPath := filepath.Join(tmpDir, ".sauced.yaml")
 
-		config, err := LoadConfig(nonExistentPath)
+		config, _, err := LoadConfig(nonExistentPath)
 		require.Error(t, err)
 		assert.Nil(t, config)
 	})
@@ -78,7 +78,7 @@ attribution:
 		_, err := os.ReadFile(fallbackPath)
 		require.NoError(t, err)
 
-		config, err := LoadConfig(fallbackPath)
+		config, _, err := LoadConfig(fallbackPath)
 
 		require.NoError(t, err)
 		assert.NotNil(t, config)

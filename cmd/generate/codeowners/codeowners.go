@@ -43,7 +43,8 @@ type Options struct {
 	// telemetry for capturing CLI events via PostHog
 	telemetry *utils.PosthogCliClient
 
-	config *config.Spec
+	config           *config.Spec
+	configLoadedPath string
 }
 
 const codeownersLongDesc string = `Generates a CODEOWNERS file for a given git repository. The generated file specifies up to 3 owners for EVERY file in the git tree based on the number of lines touched in that specific file over the specified range of time.
@@ -109,7 +110,11 @@ pizza generate codeowners . --config /path/to/.sauced.yaml
 			opts.telemetry = utils.NewPosthogCliClient(!disableTelem)
 
 			configPath, _ := cmd.Flags().GetString("config")
-			opts.config, err = config.LoadConfig(configPath)
+			if configPath == "" {
+				configPath = filepath.Join(opts.path, ".sauced.yaml")
+			}
+
+			opts.config, opts.configLoadedPath, err = config.LoadConfig(configPath)
 			if err != nil {
 				return err
 			}
@@ -155,6 +160,7 @@ func run(opts *Options, cmd *cobra.Command) error {
 		return fmt.Errorf("could not build logger: %w", err)
 	}
 	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Built logger with log level: %d\n", opts.loglevel)
+	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Loaded config from: %s\n", opts.configLoadedPath)
 
 	repo, err := git.PlainOpen(opts.path)
 	if err != nil {
