@@ -74,3 +74,34 @@ piped into `sh` for conveniently downloading the latest GitHub release of the
 
 Once download is completed, you can move the binary to a convenient location in
 your system's `$PATH`.
+
+### 🚀 New in v1.4.0: Generate Config
+
+The `pizza generate config` command has been added to help you create configuration files for your projects. This command allows you to generate configuration files with various options:
+
+```sh
+pizza generate config [flags]
+```
+
+#### Flags:
+
+- `-i, --interactive`: Enter interactive mode to attribute each email manually
+- `-o, --output-path string`: Set the directory for the output file
+- `-h, --help`: Display help for the command
+
+#### Examples:
+
+1. Generate a config file in the current directory:
+   ```sh
+   pizza generate config
+   ```
+
+2. Generate a config file interactively:
+   ```sh
+   pizza generate config -i
+   ```
+
+3. Generate a config file in a specific directory:
+   ```sh
+   pizza generate config -o /path/to/directory
+   ```
