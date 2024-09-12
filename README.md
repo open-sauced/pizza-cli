@@ -1,9 +1,13 @@
 <div align="center">
   <br>
-  <img alt="Open Sauced" src="https://i.ibb.co/7jPXt0Z/logo1-92f1a87f.png" width="300px">
   <h1>🍕 Pizza CLI 🍕</h1>
-  <strong>A command line interface and tool for all things OpenSauced!</strong>
-  <br>
+  <strong>A Go command line interface for managing code ownership and project insights with OpenSauced!</strong>
+  <br/>
+   <a href="https://youtu.be/yINL-uIvhn0" target="_blank">
+    <img alt="CODEOWNERS demo" src="https://img.youtube.com/vi/yINL-uIvhn0/0.jpg" style="max-width:100%; cursor:pointer;margin-top: 20px;">
+  </a>
+
+  
 </div>
 <br>
 
@@ -104,7 +108,7 @@ patches on the tip of the repository. Go and build with caution!
 
 # ✨ Usage
 
-### Codeowners generation
+## Codeowners generation
 
 Use the `codeowners` command to generate an `OWNERS` file or GitHub style `CODEOWNERS` file.
 This can be used to granularly define what experts and entities have the
@@ -112,8 +116,6 @@ most context and knowledge on certain parts of a codebase.
 
 ```
 ❯ pizza generate codeowners -h
-
-WARNING: Proof of concept feature.
 
 Generates a CODEOWNERS file for a given git repository. This uses a ~/.sauced.yaml
 configuration to attribute emails with given entities.
@@ -140,7 +142,7 @@ Global Flags:
       --tty-disable         Disable log stylization. Suitable for CI/CD and automation
 ```
 
-### Configuration
+## Configuration
 
 ```yaml
 # Configuration for attributing commits with emails to individual entities.
@@ -167,6 +169,37 @@ attribution:
   John McBride
     - john@opensauced.pizza
 ```
+
+### 🚀 New in v1.4.0: Generate Config
+
+The `pizza generate config` command has been added to help you create configuration files for your projects. This command allows you to generate configuration files with various options:
+
+```sh
+pizza generate config [flags]
+```
+
+#### Flags:
+
+- `-i, --interactive`: Enter interactive mode to attribute each email manually
+- `-o, --output-path string`: Set the directory for the output file
+- `-h, --help`: Display help for the command
+
+#### Examples:
+
+1. Generate a config file in the current directory:
+   ```sh
+   pizza generate config
+   ```
+
+2. Generate a config file interactively:
+   ```sh
+   pizza generate config -i
+   ```
+
+3. Generate a config file in a specific directory:
+   ```sh
+   pizza generate config -o /path/to/directory
+   ```
 
 # 🚜 Development
 
