@@ -186,8 +186,7 @@ func (p *PosthogCliClient) CaptureConfigGenerateMode(mode string) error {
 	return nil
 }
 
-
-// CaptureFailedConfigGenerate gathers telemetry on failed 
+// CaptureFailedConfigGenerate gathers telemetry on failed
 func (p *PosthogCliClient) CaptureFailedConfigGenerate() error {
 	if p.activated {
 		return p.client.Enqueue(posthog.Capture{

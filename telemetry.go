@@ -36,6 +36,21 @@ func main() {
 		panic(err)
 	}
 
+	err = client.CaptureConfigGenerate()
+	if err != nil {
+		panic(err)
+	}
+
+	err = client.CaptureFailedConfigGenerate()
+	if err != nil {
+		panic(err)
+	}
+
+	err = client.CaptureConfigGenerateMode("interactive")
+	if err != nil {
+		panic(err)
+	}
+
 	err = client.CaptureCodeownersGenerateAuth("test-user")
 	if err != nil {
 		panic(err)

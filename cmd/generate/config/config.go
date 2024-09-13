@@ -10,9 +10,10 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/spf13/cobra"
+
 	"github.com/open-sauced/pizza-cli/pkg/constants"
 	"github.com/open-sauced/pizza-cli/pkg/utils"
-	"github.com/spf13/cobra"
 )
 
 // Options for the config generation command
@@ -68,7 +69,6 @@ func NewConfigCommand() *cobra.Command {
 
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			disableTelem, _ := cmd.Flags().GetBool(constants.FlagNameTelemetry)
-			fmt.Print(disableTelem)
 
 			opts.telemetry = utils.NewPosthogCliClient(!disableTelem)
 			opts.outputPath, _ = cmd.Flags().GetString("output-path")
