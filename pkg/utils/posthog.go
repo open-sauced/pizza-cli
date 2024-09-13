@@ -156,6 +156,49 @@ func (p *PosthogCliClient) CaptureFailedCodeownersGenerateContributorInsight() e
 	return nil
 }
 
+// CaptureConfigGenerate gathers telemetry on success
+func (p *PosthogCliClient) CaptureConfigGenerate() error {
+	if p.activated {
+		return p.client.Enqueue(posthog.Capture{
+			DistinctId: p.uniqueID,
+			Event:      "pizza_cli_generated_config",
+		})
+	}
+
+	return nil
+}
+
+// CaptureConfigGenerateMode gathers what mode a user is in when generating
+// either 'Automatic' (default) or 'Interactive'
+func (p *PosthogCliClient) CaptureConfigGenerateMode(mode string) error {
+	properties := make(map[string]interface{})
+
+	properties["mode"] = mode
+
+	if p.activated {
+		return p.client.Enqueue(posthog.Capture{
+			DistinctId: p.uniqueID,
+			Event:      "pizza_cli_generated_config_mode",
+			Properties: properties,
+		})
+	}
+
+	return nil
+}
+
+
+// CaptureFailedConfigGenerate gathers telemetry on failed 
+func (p *PosthogCliClient) CaptureFailedConfigGenerate() error {
+	if p.activated {
+		return p.client.Enqueue(posthog.Capture{
+			DistinctId: p.uniqueID,
+			Event:      "pizza_cli_failed_to_generate_config",
+		})
+	}
+
+	return nil
+}
+
 // CaptureInsights gathers telemetry on successful Insights command runs
 func (p *PosthogCliClient) CaptureInsights() error {
 	if p.activated {
