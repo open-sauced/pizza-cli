@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [1.5.0-beta.2](https://github.com/open-sauced/pizza-cli/compare/v1.5.0-beta.1...v1.5.0-beta.2) (2024-09-13)
+
+
+### 🍕 Features
+
+* Update README docs ([#186](https://github.com/open-sauced/pizza-cli/issues/186)) ([99328aa](https://github.com/open-sauced/pizza-cli/commit/99328aaa322b6dc4abe3f1933b6e77ffedecb355))
+
 ## [1.5.0-beta.1](https://github.com/open-sauced/pizza-cli/compare/v1.4.1-beta.1...v1.5.0-beta.1) (2024-09-12)
 
 
