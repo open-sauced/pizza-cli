@@ -170,7 +170,7 @@ The first owner is the entity with the most lines changed. This command uses a `
 to attribute emails in commits with the given entities in the config (like GitHub usernames or teams).
 See [the section on the configuration schema for more details](#-configuration-schema)
 
-### 🚀 New in v1.4.0: Generate Config
+### 🚀 New in v2.0.0: Generate Config
 
 The `pizza generate config` command has been added to help you create `.sauced.yaml` configuration files for your projects.
 This command allows you to generate configuration files with various options:
@@ -306,4 +306,3 @@ There are a number of useful `just` commands that should be used during developm
 - ... and many more!
 
 Check `just help` to get a full list of utility dev commands!
-
