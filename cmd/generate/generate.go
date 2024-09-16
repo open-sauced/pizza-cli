@@ -7,6 +7,7 @@ import (
 
 	"github.com/open-sauced/pizza-cli/cmd/generate/codeowners"
 	"github.com/open-sauced/pizza-cli/cmd/generate/config"
+	"github.com/open-sauced/pizza-cli/cmd/generate/insight"
 )
 
 const generateLongDesc string = `The 'generate' command provides tools to automate the creation of important project documentation and derive insights from your codebase.`
@@ -28,6 +29,7 @@ func NewGenerateCommand() *cobra.Command {
 
 	cmd.AddCommand(codeowners.NewCodeownersCommand())
 	cmd.AddCommand(config.NewConfigCommand())
+	cmd.AddCommand(insight.NewGenerateInsightCommand())
 
 	return cmd
 }

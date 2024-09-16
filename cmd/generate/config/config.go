@@ -11,6 +11,9 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/spf13/cobra"
+
+	"github.com/open-sauced/pizza-cli/pkg/constants"
+	"github.com/open-sauced/pizza-cli/pkg/utils"
 )
 
 // Options for the config generation command
@@ -26,10 +29,15 @@ type Options struct {
 
 	// from global config
 	ttyDisabled bool
+
+	// telemetry for capturing CLI events via PostHog
+	telemetry *utils.PosthogCliClient
 }
 
-const configLongDesc string = `Generates a ".sauced.yaml" configuration file. The attribution of emails to given entities
-is based on the repository this command is ran in.`
+const configLongDesc string = `Generates a ".sauced.yaml" configuration file for use with the Pizza CLI's codeowners command. 
+
+This command analyzes the git history of the current repository to create a mapping 
+of email addresses to GitHub usernames. `
 
 func NewConfigCommand() *cobra.Command {
 	opts := &Options{}
@@ -60,11 +68,17 @@ func NewConfigCommand() *cobra.Command {
 		},
 
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			disableTelem, _ := cmd.Flags().GetBool(constants.FlagNameTelemetry)
+
+			opts.telemetry = utils.NewPosthogCliClient(!disableTelem)
 			opts.outputPath, _ = cmd.Flags().GetString("output-path")
 			opts.isInteractive, _ = cmd.Flags().GetBool("interactive")
 			opts.ttyDisabled, _ = cmd.Flags().GetBool("tty-disable")
 
-			return run(opts)
+			err := run(opts)
+			_ = opts.telemetry.Done()
+
+			return err
 		},
 	}
 
@@ -79,12 +93,14 @@ func run(opts *Options) error {
 	// Open repo
 	repo, err := git.PlainOpen(opts.path)
 	if err != nil {
+		_ = opts.telemetry.CaptureFailedConfigGenerate()
 		return fmt.Errorf("error opening repo: %w", err)
 	}
 
 	commitIter, err := repo.CommitObjects()
 
 	if err != nil {
+		_ = opts.telemetry.CaptureFailedConfigGenerate()
 		return fmt.Errorf("error opening repo commits: %w", err)
 	}
 
@@ -111,11 +127,14 @@ func run(opts *Options) error {
 
 	// INTERACTIVE: per unique email, set a name (existing or new or ignore)
 	if opts.isInteractive && !opts.ttyDisabled {
+		_ = opts.telemetry.CaptureConfigGenerateMode("interactive")
 		program := tea.NewProgram(initialModel(opts, uniqueEmails))
 		if _, err := program.Run(); err != nil {
+			_ = opts.telemetry.CaptureFailedConfigGenerate()
 			return fmt.Errorf("error running interactive mode: %w", err)
 		}
 	} else {
+		_ = opts.telemetry.CaptureConfigGenerateMode("automatic")
 		// generate an output file
 		// default: `./.sauced.yaml`
 		// fallback for home directories
@@ -123,15 +142,18 @@ func run(opts *Options) error {
 			homeDir, _ := os.UserHomeDir()
 			err := generateOutputFile(filepath.Join(homeDir, ".sauced.yaml"), attributionMap)
 			if err != nil {
+				_ = opts.telemetry.CaptureFailedConfigGenerate()
 				return fmt.Errorf("error generating output file: %w", err)
 			}
 		} else {
 			err := generateOutputFile(filepath.Join(opts.outputPath, ".sauced.yaml"), attributionMap)
 			if err != nil {
+				_ = opts.telemetry.CaptureFailedConfigGenerate()
 				return fmt.Errorf("error generating output file: %w", err)
 			}
 		}
 	}
 
+	_ = opts.telemetry.CaptureConfigGenerate()
 	return nil
 }

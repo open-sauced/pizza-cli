@@ -3,101 +3,108 @@
 # Generated with command:
 # $ pizza generate codeowners pizza-cli/ --tty-disable true
 
-.env @jpmcb
+.env @jpmcb @zeucapua
 .github/ISSUE_TEMPLATE/bug_report.yaml @jpmcb
 .github/ISSUE_TEMPLATE/config.yaml @jpmcb
 .github/ISSUE_TEMPLATE/feature_request.yaml @jpmcb
 .github/workflows/auto-add-to-project.yml @jpmcb
-.github/workflows/pizza.yml @nickytonline @jpmcb
-.github/workflows/release.yaml @jpmcb @nickytonline
-.github/workflows/test.yaml @jpmcb
-.golangci.yaml @jpmcb
-.sauced.yaml @nickytonline @jpmcb
-CHANGELOG.md @jpmcb @nickytonline @brandonroberts
-CODEOWNERS @nickytonline @jpmcb
-Dockerfile @jpmcb @nickytonline
+.github/workflows/pizza.yml @nickytonline @jpmcb @zeucapua
+.github/workflows/release.yaml @jpmcb @nickytonline @zeucapua
+.github/workflows/test.yaml @jpmcb @zeucapua
+.golangci.yaml @jpmcb @zeucapua
+.sauced.yaml @jpmcb @nickytonline @zeucapua
+CHANGELOG.md @jpmcb @nickytonline @zeucapua
+CODEOWNERS @jpmcb @nickytonline
+Dockerfile @jpmcb @nickytonline @zeucapua
 Makefile @jpmcb
 README.md @jpmcb
-api/auth/auth.go @jpmcb
+api/auth/auth.go @jpmcb @zeucapua
 api/auth/success.html @nickytonline @jpmcb
-api/client.go @jpmcb
+api/client.go @jpmcb @zeucapua
 api/mock/mock.go @jpmcb
-api/services/contributors/contributors.go @jpmcb
-api/services/contributors/contributors_test.go @jpmcb
+api/services/contributors/contributors.go @jpmcb @zeucapua
+api/services/contributors/contributors_test.go @jpmcb @zeucapua
 api/services/contributors/spec.go @jpmcb
-api/services/histogram/histogram.go @jpmcb
-api/services/histogram/histogram_test.go @jpmcb
+api/services/histogram/histogram.go @jpmcb @zeucapua
+api/services/histogram/histogram_test.go @jpmcb @zeucapua
 api/services/histogram/spec.go @jpmcb
-api/services/repository/repository.go @jpmcb
-api/services/repository/repository_test.go @jpmcb
+api/services/repository/repository.go @jpmcb @zeucapua
+api/services/repository/repository_test.go @jpmcb @zeucapua
 api/services/repository/spec.go @jpmcb
 api/services/spec.go @jpmcb
-api/services/workspaces/spec.go @jpmcb
-api/services/workspaces/userlists/spec.go @jpmcb
-api/services/workspaces/userlists/userlists.go @jpmcb
-api/services/workspaces/userlists/userlists_test.go @jpmcb
-api/services/workspaces/workspaces.go @jpmcb
-api/services/workspaces/workspaces_test.go @jpmcb
+api/services/workspaces/spec.go @jpmcb @zeucapua
+api/services/workspaces/userlists/spec.go @jpmcb @zeucapua
+api/services/workspaces/userlists/userlists.go @jpmcb @zeucapua
+api/services/workspaces/userlists/userlists_test.go @jpmcb @zeucapua
+api/services/workspaces/workspaces.go @jpmcb @zeucapua
+api/services/workspaces/workspaces_test.go @jpmcb @zeucapua
 api/utils/validators.go @jpmcb
-cmd/auth/auth.go @jpmcb
+cmd/auth/auth.go @jpmcb @zeucapua
 cmd/auth/constants.go @jpmcb
 cmd/auth/schema.go @jpmcb
 cmd/auth/success.html @jpmcb
 cmd/auth/success.html @jpmcb
 cmd/bake/bake.go @jpmcb
 cmd/bake/bake_test.go @jpmcb
-cmd/docs/docs.go @nickytonline @jpmcb
-cmd/docs/docs_test.go @nickytonline @jpmcb
-cmd/generate/codeowners/codeowners.go @jpmcb @nickytonline @zeucapua
+cmd/docs/docs.go @nickytonline @jpmcb @zeucapua
+cmd/docs/docs_test.go @nickytonline @jpmcb @zeucapua
+cmd/generate/codeowners/codeowners.go @jpmcb @zeucapua
 cmd/generate/codeowners/output.go @jpmcb @zeucapua @brandonroberts
-cmd/generate/codeowners/output_test.go @jpmcb @brandonroberts
+cmd/generate/codeowners/output_test.go @jpmcb @brandonroberts @zeucapua
 cmd/generate/codeowners/spec.go @jpmcb
 cmd/generate/codeowners/traversal.go @jpmcb
-cmd/generate/generate.go @jpmcb
-cmd/insights/contributors.go @jpmcb
+cmd/generate/config/config.go @zeucapua @zeucapua @jpmcb
+cmd/generate/config/output.go @zeucapua @jpmcb @zeucapua
+cmd/generate/config/spec.go @zeucapua @zeucapua @jpmcb
+cmd/generate/generate.go @jpmcb @zeucapua
+cmd/generate/insight/insight.go @jpmcb
+cmd/insights/contributors.go @jpmcb @zeucapua
 cmd/insights/insights.go @jpmcb @brandonroberts
-cmd/insights/repositories.go @jpmcb
-cmd/insights/user-contributions.go @jpmcb
+cmd/insights/repositories.go @jpmcb @zeucapua
+cmd/insights/user-contributions.go @jpmcb @zeucapua
 cmd/insights/utils.go @jpmcb
 cmd/repo-query/repo-query.go @jpmcb
-cmd/root/root.go @jpmcb @brandonroberts @nickytonline
+cmd/root/root.go @jpmcb @brandonroberts @zeucapua
 cmd/show/constants.go @jpmcb
 cmd/show/contributors.go @jpmcb
 cmd/show/dashboard.go @jpmcb
 cmd/show/show.go @jpmcb
 cmd/show/tui.go @jpmcb
 cmd/version/version.go @jpmcb @nickytonline
-docs/pizza.md @nickytonline @jpmcb
-docs/pizza_completion.md @nickytonline @jpmcb
-docs/pizza_completion_bash.md @nickytonline @jpmcb
-docs/pizza_completion_fish.md @nickytonline @jpmcb
-docs/pizza_completion_powershell.md @nickytonline @jpmcb
-docs/pizza_completion_zsh.md @nickytonline @jpmcb
-docs/pizza_generate.md @nickytonline @jpmcb
-docs/pizza_generate_codeowners.md @nickytonline @jpmcb
-docs/pizza_insights.md @nickytonline @jpmcb
-docs/pizza_insights_contributors.md @nickytonline @jpmcb
-docs/pizza_insights_repositories.md @nickytonline @jpmcb
-docs/pizza_insights_user-contributions.md @nickytonline @jpmcb
-docs/pizza_login.md @nickytonline @jpmcb
-docs/pizza_version.md @nickytonline @jpmcb
-go.mod @jpmcb @nickytonline
-go.sum @jpmcb @nickytonline
-justfile @jpmcb @nickytonline
-npm/.gitignore @jpmcb
-npm/package-lock.json @jpmcb @nickytonline @brandonroberts
+docs/pizza.md @jpmcb @zeucapua @nickytonline
+docs/pizza_completion.md @jpmcb @nickytonline @zeucapua
+docs/pizza_completion_bash.md @jpmcb @zeucapua @nickytonline
+docs/pizza_completion_fish.md @jpmcb @nickytonline @zeucapua
+docs/pizza_completion_powershell.md @jpmcb @nickytonline @zeucapua
+docs/pizza_completion_zsh.md @jpmcb @nickytonline @zeucapua
+docs/pizza_generate.md @jpmcb @nickytonline @zeucapua
+docs/pizza_generate_codeowners.md @jpmcb
+docs/pizza_generate_config.md @jpmcb
+docs/pizza_generate_insight.md
+docs/pizza_insights.md @jpmcb @zeucapua @nickytonline
+docs/pizza_insights_contributors.md @jpmcb @zeucapua @nickytonline
+docs/pizza_insights_repositories.md @jpmcb @zeucapua @nickytonline
+docs/pizza_insights_user-contributions.md @jpmcb @nickytonline @zeucapua
+docs/pizza_login.md @jpmcb @nickytonline @zeucapua
+docs/pizza_version.md @jpmcb @nickytonline @zeucapua
+go.mod @jpmcb @nickytonline @zeucapua
+go.sum @jpmcb @zeucapua @zeucapua
+justfile @jpmcb @zeucapua @nickytonline
+npm/.gitignore @jpmcb @zeucapua
+npm/README.md @jpmcb
+npm/package-lock.json @jpmcb @nickytonline @zeucapua
 npm/package.json @jpmcb @nickytonline @brandonroberts
 pkg/api/client.go @jpmcb
 pkg/api/validation.go @jpmcb
-pkg/config/config.go @jpmcb @nickytonline @brandonroberts
-pkg/config/config_test.go @nickytonline @jpmcb @brandonroberts
+pkg/config/config.go @jpmcb @nickytonline @zeucapua
+pkg/config/config_test.go @nickytonline @jpmcb @zeucapua
 pkg/config/file.go @jpmcb
-pkg/config/spec.go @jpmcb @brandonroberts
+pkg/config/spec.go @jpmcb @brandonroberts @zeucapua
 pkg/constants/flags.go @jpmcb
 pkg/logging/constants.go @jpmcb
-pkg/utils/posthog.go @jpmcb
-pkg/utils/root.go @jpmcb
+pkg/utils/posthog.go @jpmcb @zeucapua @zeucapua
+pkg/utils/root.go @jpmcb @zeucapua
 pkg/utils/telemetry.go @jpmcb
 pkg/utils/version.go @nickytonline @jpmcb
-scripts/generate-docs.sh @nickytonline
-telemetry.go @jpmcb
+scripts/generate-docs.sh @jpmcb @nickytonline
+telemetry.go @jpmcb @zeucapua @zeucapua
