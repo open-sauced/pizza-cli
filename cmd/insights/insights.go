@@ -3,7 +3,7 @@ package insights
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/open-sauced/pizza-cli/pkg/constants"
+	"github.com/open-sauced/pizza-cli/v2/pkg/constants"
 )
 
 // NewInsightsCommand returns a new cobra command for 'pizza insights'

@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/open-sauced/pizza-cli/pkg/utils"
+	"github.com/open-sauced/pizza-cli/v2/pkg/utils"
 )
 
 func NewVersionCommand() *cobra.Command {

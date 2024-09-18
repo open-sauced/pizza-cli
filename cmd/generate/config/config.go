@@ -6,14 +6,15 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/spf13/cobra"
 
-	"github.com/open-sauced/pizza-cli/pkg/constants"
-	"github.com/open-sauced/pizza-cli/pkg/utils"
+	"github.com/open-sauced/pizza-cli/v2/pkg/constants"
+	"github.com/open-sauced/pizza-cli/v2/pkg/utils"
 )
 
 // Options for the config generation command
@@ -108,6 +109,10 @@ func run(opts *Options) error {
 	err = commitIter.ForEach(func(c *object.Commit) error {
 		name := c.Author.Name
 		email := c.Author.Email
+
+		if strings.Contains(name, "[bot]") {
+			return nil
+		}
 
 		if opts.ttyDisabled || !opts.isInteractive {
 			doesEmailExist := slices.Contains(attributionMap[name], email)

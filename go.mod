@@ -1,4 +1,4 @@
-module github.com/open-sauced/pizza-cli
+module github.com/open-sauced/pizza-cli/v2
 
 go 1.22
 

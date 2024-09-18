@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/open-sauced/pizza-cli/pkg/config"
+	"github.com/open-sauced/pizza-cli/v2/pkg/config"
 )
 
 func TestCleanFilename(testRunner *testing.T) {

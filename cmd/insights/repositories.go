@@ -10,11 +10,11 @@ import (
 	bubblesTable "github.com/charmbracelet/bubbles/table"
 	"github.com/spf13/cobra"
 
-	"github.com/open-sauced/pizza-cli/api"
-	"github.com/open-sauced/pizza-cli/api/services/contributors"
-	"github.com/open-sauced/pizza-cli/api/services/histogram"
-	"github.com/open-sauced/pizza-cli/pkg/constants"
-	"github.com/open-sauced/pizza-cli/pkg/utils"
+	"github.com/open-sauced/pizza-cli/v2/api"
+	"github.com/open-sauced/pizza-cli/v2/api/services/contributors"
+	"github.com/open-sauced/pizza-cli/v2/api/services/histogram"
+	"github.com/open-sauced/pizza-cli/v2/pkg/constants"
+	"github.com/open-sauced/pizza-cli/v2/pkg/utils"
 )
 
 type repositoriesOptions struct {

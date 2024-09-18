@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/open-sauced/pizza-cli/api/mock"
+	"github.com/open-sauced/pizza-cli/v2/api/mock"
 )
 
 func TestPrsHistogram(t *testing.T) {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/open-sauced/pizza-cli/pkg/config"
-	"github.com/open-sauced/pizza-cli/pkg/utils"
+	"github.com/open-sauced/pizza-cli/v2/pkg/config"
+	"github.com/open-sauced/pizza-cli/v2/pkg/utils"
 )
 
 func generateOutputFile(outputPath string, attributionMap map[string][]string) error {

@@ -3,7 +3,7 @@ package userlists
 import (
 	"time"
 
-	"github.com/open-sauced/pizza-cli/api/services"
+	"github.com/open-sauced/pizza-cli/v2/api/services"
 )
 
 type DbUserListContributor struct {

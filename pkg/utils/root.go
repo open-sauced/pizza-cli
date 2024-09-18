@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/pflag"
 	"golang.org/x/term"
 
-	"github.com/open-sauced/pizza-cli/pkg/constants"
+	"github.com/open-sauced/pizza-cli/v2/pkg/constants"
 )
 
 // SetupRootCommand is a convenience utility for applying templates and nice

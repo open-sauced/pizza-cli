@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	"github.com/open-sauced/pizza-cli/pkg/config"
+	"github.com/open-sauced/pizza-cli/v2/pkg/config"
 )
 
 func generateOutputFile(fileStats FileStats, outputPath string, opts *Options, cmd *cobra.Command) error {
