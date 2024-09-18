@@ -6,12 +6,12 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/open-sauced/pizza-cli/cmd/auth"
-	"github.com/open-sauced/pizza-cli/cmd/docs"
-	"github.com/open-sauced/pizza-cli/cmd/generate"
-	"github.com/open-sauced/pizza-cli/cmd/insights"
-	"github.com/open-sauced/pizza-cli/cmd/version"
-	"github.com/open-sauced/pizza-cli/pkg/constants"
+	"github.com/open-sauced/pizza-cli/v2/cmd/auth"
+	"github.com/open-sauced/pizza-cli/v2/cmd/docs"
+	"github.com/open-sauced/pizza-cli/v2/cmd/generate"
+	"github.com/open-sauced/pizza-cli/v2/cmd/insights"
+	"github.com/open-sauced/pizza-cli/v2/cmd/version"
+	"github.com/open-sauced/pizza-cli/v2/pkg/constants"
 )
 
 // NewRootCommand bootstraps a new root cobra command for the pizza CLI

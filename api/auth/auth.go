@@ -19,7 +19,7 @@ import (
 	"github.com/cli/browser"
 	"github.com/go-chi/chi/v5"
 
-	"github.com/open-sauced/pizza-cli/pkg/config"
+	"github.com/open-sauced/pizza-cli/v2/pkg/config"
 )
 
 // The success HTML file is embedded directly as a var.

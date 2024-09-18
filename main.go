@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/open-sauced/pizza-cli/cmd/root"
-	"github.com/open-sauced/pizza-cli/pkg/utils"
+	"github.com/open-sauced/pizza-cli/v2/cmd/root"
+	"github.com/open-sauced/pizza-cli/v2/pkg/utils"
 )
 
 func main() {

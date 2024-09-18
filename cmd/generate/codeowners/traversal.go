@@ -13,7 +13,7 @@ import (
 	"github.com/jpmcb/gopherlogs"
 	"github.com/jpmcb/gopherlogs/pkg/colors"
 
-	"github.com/open-sauced/pizza-cli/pkg/logging"
+	"github.com/open-sauced/pizza-cli/v2/pkg/logging"
 )
 
 // ProcessOptions are the options for iterating a git reflog and deriving the codeowners

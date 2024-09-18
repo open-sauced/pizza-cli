@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/open-sauced/pizza-cli/api/services/contributors"
-	"github.com/open-sauced/pizza-cli/api/services/histogram"
-	"github.com/open-sauced/pizza-cli/api/services/repository"
-	"github.com/open-sauced/pizza-cli/api/services/workspaces"
+	"github.com/open-sauced/pizza-cli/v2/api/services/contributors"
+	"github.com/open-sauced/pizza-cli/v2/api/services/histogram"
+	"github.com/open-sauced/pizza-cli/v2/api/services/repository"
+	"github.com/open-sauced/pizza-cli/v2/api/services/workspaces"
 )
 
 // Client is the API client for OpenSauced API

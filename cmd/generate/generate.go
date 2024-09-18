@@ -5,9 +5,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/open-sauced/pizza-cli/cmd/generate/codeowners"
-	"github.com/open-sauced/pizza-cli/cmd/generate/config"
-	"github.com/open-sauced/pizza-cli/cmd/generate/insight"
+	"github.com/open-sauced/pizza-cli/v2/cmd/generate/codeowners"
+	"github.com/open-sauced/pizza-cli/v2/cmd/generate/config"
+	"github.com/open-sauced/pizza-cli/v2/cmd/generate/insight"
 )
 
 const generateLongDesc string = `The 'generate' command provides tools to automate the creation of important project documentation and derive insights from your codebase.`
