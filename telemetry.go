@@ -3,7 +3,7 @@
 
 package main
 
-import "github.com/open-sauced/pizza-cli/pkg/utils"
+import "github.com/open-sauced/pizza-cli/v2/pkg/utils"
 
 // This alternate main is used as a one-shot for bootstrapping Posthog events:
 // the various events called herein do not exist in Posthog's datalake until the

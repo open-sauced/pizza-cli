@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/open-sauced/pizza-cli/api/services/workspaces/userlists"
+	"github.com/open-sauced/pizza-cli/v2/api/services/workspaces/userlists"
 )
 
 // Service is used to access the "v2/workspaces" endpoints and services.

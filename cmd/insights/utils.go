@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/open-sauced/pizza-cli/api"
-	"github.com/open-sauced/pizza-cli/api/services/repository"
-	"github.com/open-sauced/pizza-cli/pkg/utils"
+	"github.com/open-sauced/pizza-cli/v2/api"
+	"github.com/open-sauced/pizza-cli/v2/api/services/repository"
+	"github.com/open-sauced/pizza-cli/v2/pkg/utils"
 )
 
 // findRepositoryByOwnerAndRepoName returns an API client Db Repo

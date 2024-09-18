@@ -12,13 +12,13 @@ import (
 	"github.com/jpmcb/gopherlogs/pkg/colors"
 	"github.com/spf13/cobra"
 
-	"github.com/open-sauced/pizza-cli/api"
-	"github.com/open-sauced/pizza-cli/api/auth"
-	"github.com/open-sauced/pizza-cli/api/services/workspaces"
-	"github.com/open-sauced/pizza-cli/api/services/workspaces/userlists"
-	"github.com/open-sauced/pizza-cli/pkg/constants"
-	"github.com/open-sauced/pizza-cli/pkg/logging"
-	"github.com/open-sauced/pizza-cli/pkg/utils"
+	"github.com/open-sauced/pizza-cli/v2/api"
+	"github.com/open-sauced/pizza-cli/v2/api/auth"
+	"github.com/open-sauced/pizza-cli/v2/api/services/workspaces"
+	"github.com/open-sauced/pizza-cli/v2/api/services/workspaces/userlists"
+	"github.com/open-sauced/pizza-cli/v2/pkg/constants"
+	"github.com/open-sauced/pizza-cli/v2/pkg/logging"
+	"github.com/open-sauced/pizza-cli/v2/pkg/utils"
 )
 
 // Options for the codeowners generation command

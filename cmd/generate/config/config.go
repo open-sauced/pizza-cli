@@ -12,8 +12,8 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/spf13/cobra"
 
-	"github.com/open-sauced/pizza-cli/pkg/constants"
-	"github.com/open-sauced/pizza-cli/pkg/utils"
+	"github.com/open-sauced/pizza-cli/v2/pkg/constants"
+	"github.com/open-sauced/pizza-cli/v2/pkg/utils"
 )
 
 // Options for the config generation command
