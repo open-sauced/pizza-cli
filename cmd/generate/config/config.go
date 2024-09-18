@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/go-git/go-git/v5"
@@ -108,6 +109,10 @@ func run(opts *Options) error {
 	err = commitIter.ForEach(func(c *object.Commit) error {
 		name := c.Author.Name
 		email := c.Author.Email
+
+		if strings.Contains(name, "[bot]") {
+			return nil
+		}
 
 		if opts.ttyDisabled || !opts.isInteractive {
 			doesEmailExist := slices.Contains(attributionMap[name], email)
