@@ -5,6 +5,14 @@
 
 > All notable changes to this project will be documented in this file
 
+## [2.2.0](https://github.com/open-sauced/pizza-cli/compare/v2.1.0...v2.2.0) (2024-09-18)
+
+
+### 🍕 Features
+
+* shortcut to skip rest of emails for `pizza generate config` ([#197](https://github.com/open-sauced/pizza-cli/issues/197)) ([6e96fff](https://github.com/open-sauced/pizza-cli/commit/6e96fffb3d8bec5384118f3dedc499d164384ca5))
+* Upgrades to v2 packages to track with v2 git tag ([#198](https://github.com/open-sauced/pizza-cli/issues/198)) ([5a0995d](https://github.com/open-sauced/pizza-cli/commit/5a0995d8fb1405ab1d405aef0fd0f20327e2fd53))
+
 ## [2.2.0-beta.2](https://github.com/open-sauced/pizza-cli/compare/v2.2.0-beta.1...v2.2.0-beta.2) (2024-09-18)
 
 
