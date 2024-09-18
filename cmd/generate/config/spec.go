@@ -32,7 +32,7 @@ func (k keymap) ShortHelp() []key.Binding {
 		key.NewBinding(key.WithKeys("ctrl+n"), key.WithHelp("ctrl+n", "next suggestion")),
 		key.NewBinding(key.WithKeys("ctrl+p"), key.WithHelp("ctrl+p", "prev suggestion")),
 		key.NewBinding(key.WithKeys("ctrl+i"), key.WithHelp("ctrl+i", "ignore email")),
-		key.NewBinding(key.WithKeys("ctrl+s"), key.WithHelp("ctrl+i", "skip the rest")),
+		key.NewBinding(key.WithKeys("ctrl+s"), key.WithHelp("ctrl+s", "skip the rest")),
 		key.NewBinding(key.WithKeys("esc"), key.WithHelp("esc", "quit")),
 		key.NewBinding(key.WithKeys("enter"), key.WithHelp("enter", "submit")),
 	}
