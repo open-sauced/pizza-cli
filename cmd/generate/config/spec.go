@@ -32,6 +32,7 @@ func (k keymap) ShortHelp() []key.Binding {
 		key.NewBinding(key.WithKeys("ctrl+n"), key.WithHelp("ctrl+n", "next suggestion")),
 		key.NewBinding(key.WithKeys("ctrl+p"), key.WithHelp("ctrl+p", "prev suggestion")),
 		key.NewBinding(key.WithKeys("ctrl+i"), key.WithHelp("ctrl+i", "ignore email")),
+		key.NewBinding(key.WithKeys("ctrl+s"), key.WithHelp("ctrl+s", "skip the rest")),
 		key.NewBinding(key.WithKeys("esc"), key.WithHelp("esc", "quit")),
 		key.NewBinding(key.WithKeys("enter"), key.WithHelp("enter", "submit")),
 	}
@@ -87,6 +88,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, runOutputGeneration(m.opts, m.attributionMap)
 			}
 			return m, nil
+
+		case tea.KeyCtrlS:
+			return m, runOutputGeneration(m.opts, m.attributionMap)
 
 		case tea.KeyEnter:
 			if len(strings.Trim(m.textInput.Value(), " ")) == 0 {
