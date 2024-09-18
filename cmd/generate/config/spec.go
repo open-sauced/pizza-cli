@@ -89,7 +89,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, nil
 
-		case tea.KeyCtrlS: 
+		case tea.KeyCtrlS:
 			return m, runOutputGeneration(m.opts, m.attributionMap)
 
 		case tea.KeyEnter:
