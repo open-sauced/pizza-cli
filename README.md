@@ -186,7 +186,7 @@ Get up and running with the Pizza CLI in minutes using `npx`:
 5. **Explore repository insights**
    Get metrics and insights for your repository:
    ```sh
-   npx pizza@latest insights repo your-username/your-repo
+   npx pizza@latest insights repositories your-username/your-repo
    ```
 
 6. **Set up automated CODEOWNERS updates (Optional)**
