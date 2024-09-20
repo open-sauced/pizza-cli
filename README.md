@@ -30,7 +30,7 @@
   </a>
 </div>
 
-# 📦 Install
+# 📦 [Install](#-install)
 
 #### Homebrew
 
@@ -148,6 +148,78 @@ jobs:
 - [OpenSauced.pizza/docs](https://opensauced.pizza/docs/tools/pizza-cli/): Learn
   how to use the Pizza command line tool and how it works with the rest of the OpenSauced
   ecosystem.
+
+# 🚀 Quickstart
+
+Get up and running with the Pizza CLI in minutes using `npx`:
+
+1. **Ensure you have Node.js installed**
+
+   Pizza CLI can be run using `npx`, which comes with Node.js. If you don't have Node.js installed, download it from [nodejs.org](https://nodejs.org/).
+
+   > NOTE
+   > For other installation methods, see the [Install](#-Install) section.
+
+2. **Generate a configuration file**
+
+   Navigate to your project directory and run:
+   ```sh
+   npx pizza@latest generate config ./ -i
+   ```
+   This will create a `.sauced.yaml` file, interactively prompting you to attribute commit emails to GitHub handles.
+
+3. **Generate CODEOWNERS file**
+
+   In your project directory, run:
+   ```sh
+   npx pizza@latest generate codeowners ./
+   ```
+   This will create a `CODEOWNERS` file based on your project's git history and the `.sauced.yaml` configuration.
+
+4. **Create OpenSauced [Contributor Insight](https://opensauced.pizza/docs/features/contributor-insights/)**
+
+   After generating the CODEOWNERS file, you can create an OpenSauced Contributor Insight:
+   ```sh
+   npx pizza@latest generate insight .
+   ```
+
+5. **Explore repository insights**
+   Get metrics and insights for your repository:
+   ```sh
+   npx pizza@latest insights repositories your-username/your-repo
+   ```
+
+6. **Set up automated CODEOWNERS updates (Optional)**
+   Add the [Pizza GitHub Action](https://github.com/open-sauced/pizza-action) to your repository to automate CODEOWNERS updates:
+   ```yaml
+   # In .github/workflows/pizza-action.yml
+   name: OpenSauced Pizza Action
+    on:
+      schedule:
+        # Run once a week on Sunday at 00:00 UTC
+        - cron: "0 0 * * 0"
+      workflow_dispatch: # Allow manual triggering
+
+    jobs:
+      pizza-action:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Pizza Action
+            uses: open-sauced/pizza-action@v2.2.0
+            with:
+              # optional and default is "latest". Add this parameter if you want to use a specific version, e.g. v2.0.0
+              cli-version: "v2.2.0"
+              # optional and false by default. Set this to true if you want to have a pull request for the changes created automatically.
+              commit-and-pr: "true"
+              # optional
+              pr-title: "chore: update repository codeowners"
+
+   ```
+
+Now you're ready to leverage the Pizza CLI for managing code ownership and getting project insights with OpenSauced!
+
+> Note
+> Using `npx pizza@latest` ensures you're always running the most recent version of Pizza CLI. If you prefer to use a specific version, you can replace `@latest` with a version number, e.g., `npx pizza@2.0.0`.
 
 # ✨ Usage
 
