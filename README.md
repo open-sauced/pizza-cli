@@ -172,7 +172,7 @@ Get up and running with the Pizza CLI in minutes using `npx`:
 
    In your project directory, run:
    ```sh
-   npx pizza@latest generate codeowners .
+   npx pizza@latest generate codeowners ./
    ```
    This will create a `CODEOWNERS` file based on your project's git history and the `.sauced.yaml` configuration.
 
