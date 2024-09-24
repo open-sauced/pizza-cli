@@ -10,6 +10,7 @@ import (
 	"github.com/open-sauced/pizza-cli/v2/cmd/docs"
 	"github.com/open-sauced/pizza-cli/v2/cmd/generate"
 	"github.com/open-sauced/pizza-cli/v2/cmd/insights"
+	"github.com/open-sauced/pizza-cli/v2/cmd/offboard"
 	"github.com/open-sauced/pizza-cli/v2/cmd/version"
 	"github.com/open-sauced/pizza-cli/v2/pkg/constants"
 )
@@ -44,6 +45,7 @@ func NewRootCommand() (*cobra.Command, error) {
 	cmd.AddCommand(generate.NewGenerateCommand())
 	cmd.AddCommand(insights.NewInsightsCommand())
 	cmd.AddCommand(version.NewVersionCommand())
+	cmd.AddCommand(offboard.NewConfigCommand())
 
 	// The docs command is hidden as it's only used by the pizza-cli maintainers
 	docsCmd := docs.NewDocsCommand()
