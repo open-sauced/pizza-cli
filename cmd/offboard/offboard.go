@@ -3,6 +3,7 @@ package offboard
 import (
 	"errors"
 	"fmt"
+	"slices"
 
 	"github.com/open-sauced/pizza-cli/v2/pkg/config"
 
@@ -69,6 +70,13 @@ func run(opts *Options) error {
 	for _, user := range opts.offboardingUsers {
 		// deletes if the user is a name (key)
 		delete(attributions, user)
+
+		// delete if the user is an email (value)
+		for k, v := range attributions {
+			if slices.Contains(v, user) {
+				delete(attributions, k)
+			}
+		}
 	}
 
 	fmt.Print(attributions)
