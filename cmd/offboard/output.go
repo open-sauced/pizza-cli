@@ -63,11 +63,14 @@ func generateOwnersFile(path string, offboardingUsers []string) error {
 	lines := strings.Split(string(owners), "\n")
 	var newLines []string
 	for _, line := range lines {
-		var result string
+		newLine := line
 		for _, name := range offboardingUsers {
-			result, _, _ = strings.Cut(line, "@"+name)
+			result, _, found := strings.Cut(newLine, "@"+name)
+			if found {
+				newLine = result
+			}
 		}
-		newLines = append(newLines, result)
+		newLines = append(newLines, newLine)
 	}
 
 	output := strings.Join(newLines, "\n")

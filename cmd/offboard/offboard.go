@@ -34,7 +34,7 @@ func NewConfigCommand() *cobra.Command {
 		Long:  offboardLongDesc,
 		Args: func(_ *cobra.Command, args []string) error {
 			if !(len(args) > 0) {
-				errors.New("you must provide at least one argument: the offboarding user's email/username")
+				return errors.New("you must provide at least one argument: the offboarding user's email/username")
 			}
 
 			opts.offboardingUsers = args
