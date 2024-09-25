@@ -41,7 +41,7 @@ func NewConfigCommand() *cobra.Command {
 
 			return nil
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			opts.ttyDisabled, _ = cmd.Flags().GetBool("tty-disable")
 			opts.configPath, _ = cmd.Flags().GetString("config")
 
