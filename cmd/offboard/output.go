@@ -45,12 +45,10 @@ func generateOwnersFile(path string, offboardingUsers []string) error {
 	var ownersPath string
 
 	if _, err = os.Stat(filepath.Join(path, "/CODEOWNERS")); !errors.Is(err, os.ErrNotExist) {
-		fmt.Print("CODEOWNERS EXISTS")
 		outputType = "CODEOWNERS"
 		ownersPath = filepath.Join(path, "/CODEOWNERS")
 		owners, err = os.ReadFile(ownersPath)
 	} else if _, err = os.Stat(filepath.Join(path, "OWNERS")); !errors.Is(err, os.ErrNotExist) {
-		fmt.Print("OWNERS EXISTS")
 		outputType = "OWNERS"
 		ownersPath = filepath.Join(path, "/OWNERS")
 		owners, err = os.ReadFile(ownersPath)
