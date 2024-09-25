@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/open-sauced/pizza-cli/v2/pkg/config"
@@ -37,37 +38,40 @@ func generateConfigFile(outputPath string, attributionMap map[string][]string) e
 }
 
 func generateOwnersFile(path string, offboardingUsers []string) error {
-	outputType := "CODEOWNERS"
+	outputType := "/CODEOWNERS"
 	var owners []byte
 	var err error
 
-	if _, err = os.Stat(path + "/CODEOWNERS"); !errors.Is(err, os.ErrNotExist) {
+	var ownersPath string
+
+	if _, err = os.Stat(filepath.Join(path, "/CODEOWNERS")); !errors.Is(err, os.ErrNotExist) {
 		fmt.Print("CODEOWNERS EXISTS")
 		outputType = "CODEOWNERS"
-		owners, err = os.ReadFile(path + "/CODEOWNERS")
-	} else if _, err = os.Stat(path + "/OWNERS"); !errors.Is(err, os.ErrNotExist) {
+		ownersPath = filepath.Join(path, "/CODEOWNERS")
+		owners, err = os.ReadFile(ownersPath)
+	} else if _, err = os.Stat(filepath.Join(path, "OWNERS")); !errors.Is(err, os.ErrNotExist) {
 		fmt.Print("OWNERS EXISTS")
 		outputType = "OWNERS"
-		owners, err = os.ReadFile(path + "/OWNERS")
+		ownersPath = filepath.Join(path, "/OWNERS")
+		owners, err = os.ReadFile(ownersPath)
 	}
 
 	if err != nil {
-		// fmt.Errorf("failed to find existing owners: %w", err)
-		fmt.Printf("WTF %v", err)
 		fmt.Printf("will create a new %s file in the path %s", outputType, path)
 	}
 
 	lines := strings.Split(string(owners), "\n")
+	var newLines []string
 	for _, line := range lines {
+		var result string
 		for _, name := range offboardingUsers {
-			fmt.Println(name)
-			strings.Cut(line, name)
+			result, _, _ = strings.Cut(line, "@"+name)
 		}
+		newLines = append(newLines, result)
 	}
 
-	output := strings.Join(lines, "\n")
-	file, err := os.Create(path+"/"+outputType)
-
+	output := strings.Join(newLines, "\n")
+	file, err := os.Create(ownersPath)
 	if err != nil {
 		return fmt.Errorf("error creating %s file: %w", outputType, err)
 	}
