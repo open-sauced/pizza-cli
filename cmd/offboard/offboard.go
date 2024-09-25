@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/open-sauced/pizza-cli/v2/pkg/config"
-
 	"github.com/spf13/cobra"
+
+	"github.com/open-sauced/pizza-cli/v2/pkg/config"
 )
 
 type Options struct {
