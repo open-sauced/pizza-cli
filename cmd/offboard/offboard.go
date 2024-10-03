@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -61,12 +62,28 @@ func NewConfigCommand() *cobra.Command {
 		},
 	}
 
-	cmd.PersistentFlags().StringP("path", "p", "./", "the path to the repository")
+	cmd.Flags().StringP("path", "p", "", "the path to the repository")
+	cmd.MarkFlagRequired("path")
 	return cmd
 }
 
 func run(opts *Options) error {
-	spec, _, err := config.LoadConfig(opts.configPath)
+	var spec *config.Spec
+	var err error
+	if len(opts.configPath) != 0 {
+		fmt.Printf("IF != 0 %s", opts.configPath)
+		spec, _, err = config.LoadConfig(opts.configPath)
+	} else {
+		var dir string
+		if (strings.Compare(string(opts.path[len(opts.path)-1]), "/") == 0) {
+			dir = fmt.Sprintf("%s.sauced.yaml", opts.path)
+		} else {
+			dir = fmt.Sprintf("%s/.sauced.yaml", opts.path)
+		}
+		fmt.Printf("ELSE %s", dir)
+		spec, _, err = config.LoadConfig(dir)
+	}
+
 
 	if err != nil {
 		_ = opts.telemetry.CaptureFailedOffboard()
@@ -95,7 +112,13 @@ func run(opts *Options) error {
 		}
 	}
 
-	err = generateConfigFile(opts.configPath, attributions)
+
+	if len(opts.configPath) != 0 {
+		err = generateConfigFile(opts.configPath, attributions)
+	} else {
+		err = generateConfigFile(fmt.Sprintf("%s/.sauced.yaml", opts.path), attributions)
+	}
+
 	if err != nil {
 		_ = opts.telemetry.CaptureFailedOffboard()
 		return fmt.Errorf("error generating config file: %v", err)
