@@ -202,7 +202,7 @@ func (p *PosthogCliClient) CaptureOffboard() error {
 	if p.activated {
 		return p.client.Enqueue(posthog.Capture{
 			DistinctId: p.uniqueID,
-			Event: "pizza_cli_offboard",
+			Event:      "pizza_cli_offboard",
 		})
 	}
 
@@ -213,7 +213,7 @@ func (p *PosthogCliClient) CaptureFailedOffboard() error {
 	if p.activated {
 		return p.client.Enqueue(posthog.Capture{
 			DistinctId: p.uniqueID,
-			Event: "pizza_cli_failed_to_offboard",
+			Event:      "pizza_cli_failed_to_offboard",
 		})
 	}
 

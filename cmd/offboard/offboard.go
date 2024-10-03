@@ -62,8 +62,10 @@ func NewConfigCommand() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringP("path", "p", "", "the path to the repository")
-	cmd.MarkFlagRequired("path")
+	cmd.PersistentFlags().StringP("path", "p", "", "the path to the repository (required)")
+	if err := cmd.MarkPersistentFlagRequired("path"); err != nil {
+		fmt.Printf("error MarkPersistentFlagRequired: %v", err)
+	}
 	return cmd
 }
 
@@ -71,19 +73,16 @@ func run(opts *Options) error {
 	var spec *config.Spec
 	var err error
 	if len(opts.configPath) != 0 {
-		fmt.Printf("IF != 0 %s", opts.configPath)
 		spec, _, err = config.LoadConfig(opts.configPath)
 	} else {
-		var dir string
-		if (strings.Compare(string(opts.path[len(opts.path)-1]), "/") == 0) {
-			dir = fmt.Sprintf("%s.sauced.yaml", opts.path)
+		var configPath string
+		if strings.Compare(string(opts.path[len(opts.path)-1]), "/") == 0 {
+			configPath = opts.path + ".sauced.yaml"
 		} else {
-			dir = fmt.Sprintf("%s/.sauced.yaml", opts.path)
+			configPath = opts.path + "/.sauced.yaml"
 		}
-		fmt.Printf("ELSE %s", dir)
-		spec, _, err = config.LoadConfig(dir)
+		spec, _, err = config.LoadConfig(configPath)
 	}
-
 
 	if err != nil {
 		_ = opts.telemetry.CaptureFailedOffboard()
@@ -112,11 +111,16 @@ func run(opts *Options) error {
 		}
 	}
 
-
 	if len(opts.configPath) != 0 {
 		err = generateConfigFile(opts.configPath, attributions)
 	} else {
-		err = generateConfigFile(fmt.Sprintf("%s/.sauced.yaml", opts.path), attributions)
+		var configPath string
+		if strings.Compare(string(opts.path[len(opts.path)-1]), "/") == 0 {
+			configPath = opts.path + ".sauced.yaml"
+		} else {
+			configPath = opts.path + "/.sauced.yaml"
+		}
+		err = generateConfigFile(configPath, attributions)
 	}
 
 	if err != nil {
