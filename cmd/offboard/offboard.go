@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/open-sauced/pizza-cli/v2/pkg/config"
+	"github.com/open-sauced/pizza-cli/v2/pkg/constants"
+	"github.com/open-sauced/pizza-cli/v2/pkg/utils"
 )
 
 type Options struct {
@@ -21,6 +23,9 @@ type Options struct {
 
 	// from global config
 	ttyDisabled bool
+
+	// telemetry for capturing CLI events via PostHog
+	telemetry *utils.PosthogCliClient
 }
 
 const offboardLongDesc string = `[WIP] Removes a user from the \".sauced.yaml\" config and \"CODEOWNERS\" files.
@@ -44,13 +49,15 @@ func NewConfigCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			opts.ttyDisabled, _ = cmd.Flags().GetBool("tty-disable")
 			opts.configPath, _ = cmd.Flags().GetString("config")
+			disableTelem, _ := cmd.Flags().GetBool(constants.FlagNameTelemetry)
+
+			opts.telemetry = utils.NewPosthogCliClient(!disableTelem)
 
 			opts.path, _ = cmd.Flags().GetString("path")
 			err := run(opts)
-			if err != nil {
-				return err
-			}
-			return nil
+			_ = opts.telemetry.Done()
+
+			return err
 		},
 	}
 
@@ -62,6 +69,7 @@ func run(opts *Options) error {
 	spec, _, err := config.LoadConfig(opts.configPath)
 
 	if err != nil {
+		_ = opts.telemetry.CaptureFailedOffboard()
 		return fmt.Errorf("error loading config: %v", err)
 	}
 
@@ -89,13 +97,16 @@ func run(opts *Options) error {
 
 	err = generateConfigFile(opts.configPath, attributions)
 	if err != nil {
+		_ = opts.telemetry.CaptureFailedOffboard()
 		return fmt.Errorf("error generating config file: %v", err)
 	}
 
 	err = generateOwnersFile(opts.path, offboardingNames)
 	if err != nil {
+		_ = opts.telemetry.CaptureFailedOffboard()
 		return fmt.Errorf("error generating owners file: %v", err)
 	}
 
+	_ = opts.telemetry.CaptureOffboard()
 	return nil
 }
