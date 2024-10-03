@@ -28,14 +28,14 @@ type Options struct {
 	telemetry *utils.PosthogCliClient
 }
 
-const offboardLongDesc string = `[WIP] Removes a user from the \".sauced.yaml\" config and \"CODEOWNERS\" files.
-Requires the user's name OR email.`
+const offboardLongDesc string = `CAUTION: Experimental Command. Removes users from the \".sauced.yaml\" config and \"CODEOWNERS\" files.
+Requires the users' name OR email.`
 
 func NewConfigCommand() *cobra.Command {
 	opts := &Options{}
 	cmd := &cobra.Command{
 		Use:   "offboard <username/email> [flags]",
-		Short: "[WIP] Removes a user from the \".sauced.yaml\" config and \"CODEOWNERS\" files.",
+		Short: "CAUTION: Experimental Command. Removes users from the \".sauced.yaml\" config and \"CODEOWNERS\" files.",
 		Long:  offboardLongDesc,
 		Args: func(_ *cobra.Command, args []string) error {
 			if !(len(args) > 0) {
