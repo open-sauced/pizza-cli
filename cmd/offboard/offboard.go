@@ -39,7 +39,7 @@ func NewConfigCommand() *cobra.Command {
 		Short: "CAUTION: Experimental Command. Removes users from the \".sauced.yaml\" config and \"CODEOWNERS\" files.",
 		Long:  offboardLongDesc,
 		Args: func(_ *cobra.Command, args []string) error {
-			if (len(args) <= 0) {
+			if len(args) == 0 {
 				return errors.New("you must provide at least one argument: the offboarding user's email/username")
 			}
 
