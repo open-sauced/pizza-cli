@@ -198,6 +198,28 @@ func (p *PosthogCliClient) CaptureFailedConfigGenerate() error {
 	return nil
 }
 
+func (p *PosthogCliClient) CaptureOffboard() error {
+	if p.activated {
+		return p.client.Enqueue(posthog.Capture{
+			DistinctId: p.uniqueID,
+			Event:      "pizza_cli_offboard",
+		})
+	}
+
+	return nil
+}
+
+func (p *PosthogCliClient) CaptureFailedOffboard() error {
+	if p.activated {
+		return p.client.Enqueue(posthog.Capture{
+			DistinctId: p.uniqueID,
+			Event:      "pizza_cli_failed_to_offboard",
+		})
+	}
+
+	return nil
+}
+
 // CaptureInsights gathers telemetry on successful Insights command runs
 func (p *PosthogCliClient) CaptureInsights() error {
 	if p.activated {
