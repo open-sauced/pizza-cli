@@ -15,6 +15,9 @@ func generateOutputFile(outputPath string, attributionMap map[string][]string) e
 	}
 	defer file.Close()
 
+	// write the header preamble
+	_, err = file.WriteString("# Configuration for attributing commits with emails to GitHub user profiles\n# Used during codeowners generation.\n\n# List the emails associated with the given username\n# The commits associated with these emails will be attributed to\n# the username in this yaml map. Any number of emails may be listed\n\n") 
+
 	var config config.Spec
 	config.Attributions = attributionMap
 
