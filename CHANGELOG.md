@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [2.2.0-beta.4](https://github.com/open-sauced/pizza-cli/compare/v2.2.0-beta.3...v2.2.0-beta.4) (2024-10-11)
+
+
+### 🍕 Features
+
+* add comment preamble to generated config ([#214](https://github.com/open-sauced/pizza-cli/issues/214)) ([deb22a2](https://github.com/open-sauced/pizza-cli/commit/deb22a247f6aa3f1a64e1ed13f6554060e67a533))
+
 ## [2.2.0-beta.3](https://github.com/open-sauced/pizza-cli/compare/v2.2.0-beta.2...v2.2.0-beta.3) (2024-09-20)
 
 
