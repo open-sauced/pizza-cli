@@ -26,5 +26,6 @@ pizza <command> <subcommand> [flags]
 * [pizza generate](pizza_generate.md)	 - Generates documentation and insights from your codebase
 * [pizza insights](pizza_insights.md)	 - Gather insights about git contributors, repositories, users and pull requests
 * [pizza login](pizza_login.md)	 - Log into the CLI via GitHub
+* [pizza offboard](pizza_offboard.md)	 - CAUTION: Experimental Command. Removes users from the ".sauced.yaml" config and "CODEOWNERS" files.
 * [pizza version](pizza_version.md)	 - Displays the build version of the CLI
 
