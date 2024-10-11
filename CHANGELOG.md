@@ -5,6 +5,14 @@
 
 > All notable changes to this project will be documented in this file
 
+## [2.3.0-beta.1](https://github.com/open-sauced/pizza-cli/compare/v2.2.0...v2.3.0-beta.1) (2024-10-11)
+
+
+### 🍕 Features
+
+* add comment preamble to generated config ([#214](https://github.com/open-sauced/pizza-cli/issues/214)) ([deb22a2](https://github.com/open-sauced/pizza-cli/commit/deb22a247f6aa3f1a64e1ed13f6554060e67a533))
+* Add quick start section ([#203](https://github.com/open-sauced/pizza-cli/issues/203)) ([eec884b](https://github.com/open-sauced/pizza-cli/commit/eec884b816404fdbbc5fb5445cb44fe211b8b0c8))
+
 ## [2.2.0](https://github.com/open-sauced/pizza-cli/compare/v2.1.0...v2.2.0) (2024-09-18)
 
 
@@ -12,6 +20,15 @@
 
 * shortcut to skip rest of emails for `pizza generate config` ([#197](https://github.com/open-sauced/pizza-cli/issues/197)) ([6e96fff](https://github.com/open-sauced/pizza-cli/commit/6e96fffb3d8bec5384118f3dedc499d164384ca5))
 * Upgrades to v2 packages to track with v2 git tag ([#198](https://github.com/open-sauced/pizza-cli/issues/198)) ([5a0995d](https://github.com/open-sauced/pizza-cli/commit/5a0995d8fb1405ab1d405aef0fd0f20327e2fd53))
+* add comment preamble to generated config ([#214](https://github.com/open-sauced/pizza-cli/issues/214)) ([deb22a2](https://github.com/open-sauced/pizza-cli/commit/deb22a247f6aa3f1a64e1ed13f6554060e67a533))
+
+## [2.2.0-beta.3](https://github.com/open-sauced/pizza-cli/compare/v2.2.0-beta.2...v2.2.0-beta.3) (2024-09-20)
+
+
+### 🍕 Features
+
+* Add quick start section ([#203](https://github.com/open-sauced/pizza-cli/issues/203)) ([eec884b](https://github.com/open-sauced/pizza-cli/commit/eec884b816404fdbbc5fb5445cb44fe211b8b0c8))
+
 
 ## [2.2.0-beta.2](https://github.com/open-sauced/pizza-cli/compare/v2.2.0-beta.1...v2.2.0-beta.2) (2024-09-18)
 
