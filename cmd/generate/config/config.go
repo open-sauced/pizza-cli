@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/go-git/go-git/v5"
@@ -27,6 +28,9 @@ type Options struct {
 
 	// whether to use interactive mode
 	isInteractive bool
+
+	// number of days to look back
+	previousDays int
 
 	// from global config
 	ttyDisabled bool
@@ -75,6 +79,7 @@ func NewConfigCommand() *cobra.Command {
 			opts.outputPath, _ = cmd.Flags().GetString("output-path")
 			opts.isInteractive, _ = cmd.Flags().GetBool("interactive")
 			opts.ttyDisabled, _ = cmd.Flags().GetBool("tty-disable")
+			opts.previousDays, _ = cmd.Flags().GetInt("range")
 
 			err := run(opts)
 			_ = opts.telemetry.Done()
@@ -85,6 +90,7 @@ func NewConfigCommand() *cobra.Command {
 
 	cmd.PersistentFlags().StringP("output-path", "o", "./", "Directory to create the `.sauced.yaml` file.")
 	cmd.PersistentFlags().BoolP("interactive", "i", false, "Whether to be interactive")
+	cmd.PersistentFlags().IntP("range", "r", 90, "The number of days to analyze commit history (default 90)")
 	return cmd
 }
 
@@ -105,10 +111,17 @@ func run(opts *Options) error {
 		return fmt.Errorf("error opening repo commits: %w", err)
 	}
 
+	now := time.Now()
+	previousTime := now.AddDate(0, 0, -opts.previousDays)
+
 	var uniqueEmails []string
 	err = commitIter.ForEach(func(c *object.Commit) error {
 		name := c.Author.Name
 		email := c.Author.Email
+
+		if c.Author.When.Before(previousTime) {
+			return nil
+		}
 
 		if strings.Contains(name, "[bot]") {
 			return nil
