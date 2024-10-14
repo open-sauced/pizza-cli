@@ -19,6 +19,7 @@ pizza generate config path/to/repo [flags]
   -h, --help                       help for config
   -i, --interactive                Whether to be interactive
   -o, --output-path .sauced.yaml   Directory to create the .sauced.yaml file. (default "./")
+  -r, --range int                  The number of days to analyze commit history (default 90) (default 90)
 ```
 
 ### Options inherited from parent commands
