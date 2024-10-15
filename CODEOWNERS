@@ -8,7 +8,7 @@
 .github/ISSUE_TEMPLATE/config.yaml @jpmcb
 .github/ISSUE_TEMPLATE/feature_request.yaml @jpmcb
 .github/workflows/auto-add-to-project.yml @jpmcb
-.github/workflows/pizza.yml @nickytonline @jpmcb @zeucapua
+.github/workflows/pizza.yml @jpmcb @nickytonline @zeucapua
 .github/workflows/release.yaml @jpmcb @nickytonline @zeucapua
 .github/workflows/test.yaml @jpmcb @zeucapua
 .golangci.yaml @jpmcb @zeucapua
@@ -46,7 +46,7 @@ cmd/auth/success.html @jpmcb
 cmd/auth/success.html @jpmcb
 cmd/bake/bake.go @jpmcb
 cmd/bake/bake_test.go @jpmcb
-cmd/docs/docs.go @nickytonline @jpmcb @zeucapua
+cmd/docs/docs.go @jpmcb @zeucapua @nickytonline
 cmd/docs/docs_test.go @nickytonline @jpmcb @zeucapua
 cmd/generate/codeowners/codeowners.go @jpmcb @zeucapua
 cmd/generate/codeowners/output.go @jpmcb @zeucapua @brandonroberts
@@ -54,8 +54,8 @@ cmd/generate/codeowners/output_test.go @jpmcb @brandonroberts @zeucapua
 cmd/generate/codeowners/spec.go @jpmcb
 cmd/generate/codeowners/traversal.go @jpmcb
 cmd/generate/config/config.go @zeucapua @jpmcb @zeucapua
-cmd/generate/config/output.go @zeucapua @jpmcb @zeucapua
-cmd/generate/config/spec.go @zeucapua @zeucapua @jpmcb
+cmd/generate/config/output.go @jpmcb @zeucapua @zeucapua
+cmd/generate/config/spec.go @zeucapua @jpmcb @zeucapua
 cmd/generate/generate.go @jpmcb @zeucapua
 cmd/generate/insight/insight.go @jpmcb
 cmd/insights/contributors.go @jpmcb @zeucapua
@@ -63,6 +63,8 @@ cmd/insights/insights.go @jpmcb @brandonroberts
 cmd/insights/repositories.go @jpmcb @zeucapua
 cmd/insights/user-contributions.go @jpmcb @zeucapua
 cmd/insights/utils.go @jpmcb
+cmd/offboard/offboard.go @jpmcb @zeucapua @zeucapua
+cmd/offboard/output.go @jpmcb @zeucapua @zeucapua
 cmd/repo-query/repo-query.go @jpmcb
 cmd/root/root.go @jpmcb @brandonroberts @zeucapua
 cmd/show/constants.go @jpmcb
@@ -71,14 +73,14 @@ cmd/show/dashboard.go @jpmcb
 cmd/show/show.go @jpmcb
 cmd/show/tui.go @jpmcb
 cmd/version/version.go @jpmcb @nickytonline
-docs/pizza.md @jpmcb @nickytonline @zeucapua
+docs/pizza.md @jpmcb @zeucapua @nickytonline
 docs/pizza_completion.md @jpmcb @nickytonline @zeucapua
-docs/pizza_completion_bash.md @jpmcb @zeucapua @nickytonline
-docs/pizza_completion_fish.md @jpmcb @nickytonline @zeucapua
+docs/pizza_completion_bash.md @jpmcb @nickytonline @zeucapua
+docs/pizza_completion_fish.md @jpmcb @zeucapua @nickytonline
 docs/pizza_completion_powershell.md @jpmcb @nickytonline @zeucapua
 docs/pizza_completion_zsh.md @jpmcb @nickytonline @zeucapua
 docs/pizza_generate.md @jpmcb @nickytonline @zeucapua
-docs/pizza_generate_codeowners.md @jpmcb
+docs/pizza_generate_codeowners.md @jpmcb @nickytonline
 docs/pizza_generate_config.md @jpmcb
 docs/pizza_generate_insight.md @jpmcb
 docs/pizza_insights.md @jpmcb @zeucapua @nickytonline
@@ -86,6 +88,7 @@ docs/pizza_insights_contributors.md @jpmcb @nickytonline @zeucapua
 docs/pizza_insights_repositories.md @jpmcb @zeucapua @nickytonline
 docs/pizza_insights_user-contributions.md @jpmcb @nickytonline @zeucapua
 docs/pizza_login.md @jpmcb @nickytonline @zeucapua
+docs/pizza_offboard.md @jpmcb
 docs/pizza_version.md @jpmcb @nickytonline @zeucapua
 go.mod @jpmcb @nickytonline @zeucapua
 go.sum @jpmcb @zeucapua @nickytonline
