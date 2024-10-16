@@ -38,6 +38,9 @@ pizza generate codeowners . --owners-style-file
 
 # Specify a custom location for the .sauced.yaml file
 pizza generate codeowners . --config /path/to/.sauced.yaml
+
+# Specify a custom output location for the CODEOWNERS file
+pizza generate codeowners . --output-path /path/to/directory
 		
 ```
 
@@ -45,8 +48,9 @@ pizza generate codeowners . --config /path/to/.sauced.yaml
 
 ```
   -h, --help                help for codeowners
+  -o, --output-path string  Directory to create the output file.
       --owners-style-file   Generate an agnostic OWNERS style file instead of CODEOWNERS.
-  -r, --range int           The number of days to analyze commit history (default 90) (default 90)
+  -r, --range int           The number of days to analyze commit history (default 90)
 ```
 
 ### Options inherited from parent commands

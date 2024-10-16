@@ -15,6 +15,15 @@ import (
 )
 
 func generateOutputFile(fileStats FileStats, outputPath string, opts *Options, cmd *cobra.Command) error {
+
+	// Create specified output directories if necessary
+	err := os.MkdirAll(filepath.Dir(outputPath), os.ModePerm)
+	if err != nil {
+		if !os.IsExist(err) {
+			return fmt.Errorf("error creating directory at %s filepath: %w", outputPath, err)
+		}
+	}
+
 	// Open the file for writing
 	file, err := os.Create(outputPath)
 	if err != nil {

@@ -26,6 +26,9 @@ type Options struct {
 	// The default should be to generate a GitHub style "CODEOWNERS" file.
 	ownersStyleFile bool
 
+	// where the output file will go
+	outputPath string
+
 	// the number of days to look back
 	previousDays int
 
@@ -74,6 +77,9 @@ pizza generate codeowners . --owners-style-file
 
 # Specify a custom location for the .sauced.yaml file
 pizza generate codeowners . --config /path/to/.sauced.yaml
+
+# Specify a custom output location for the CODEOWNERS file
+pizza generate codeowners . --output-path /path/to/directory
 		`,
 		Args: func(_ *cobra.Command, args []string) error {
 			if len(args) != 1 {
@@ -113,6 +119,13 @@ pizza generate codeowners . --config /path/to/.sauced.yaml
 			}
 
 			opts.ownersStyleFile, _ = cmd.Flags().GetBool("owners-style-file")
+			opts.outputPath, _ = cmd.Flags().GetString("output-path")
+
+			// Default the outputPath to the base path if no flag value is given
+			if opts.outputPath == "" {
+				opts.outputPath = opts.path
+			}
+
 			opts.previousDays, _ = cmd.Flags().GetInt("range")
 			opts.tty, _ = cmd.Flags().GetBool("tty-disable")
 
@@ -139,6 +152,7 @@ pizza generate codeowners . --config /path/to/.sauced.yaml
 
 	cmd.PersistentFlags().IntP("range", "r", 90, "The number of days to analyze commit history (default 90)")
 	cmd.PersistentFlags().Bool("owners-style-file", false, "Generate an agnostic OWNERS style file instead of CODEOWNERS.")
+	cmd.PersistentFlags().StringP("output-path", "o", "", "Directory to create the output file.")
 
 	return cmd
 }
@@ -176,21 +190,23 @@ func run(opts *Options, cmd *cobra.Command) error {
 		return fmt.Errorf("error traversing git log: %w", err)
 	}
 
-	// Bootstrap codeowners
-	var outputPath string
+	// Define which file to generate based on a flag
+	var fileType string
 	if opts.ownersStyleFile {
-		outputPath = filepath.Join(opts.path, "OWNERS")
+		fileType = "OWNERS"
 	} else {
-		outputPath = filepath.Join(opts.path, "CODEOWNERS")
+		fileType = "CODEOWNERS"
 	}
 
-	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Processing codeowners file at: %s\n", outputPath)
-	err = generateOutputFile(codeowners, outputPath, opts, cmd)
+	opts.logger.V(logging.LogDebug).Style(0, colors.FgBlue).Infof("Processing codeowners file at: %s\n", opts.outputPath)
+
+	err = generateOutputFile(codeowners, filepath.Join(opts.outputPath, fileType), opts, cmd)
 	if err != nil {
 		_ = opts.telemetry.CaptureFailedCodeownersGenerate()
 		return fmt.Errorf("error generating github style codeowners file: %w", err)
 	}
-	opts.logger.V(logging.LogInfo).Style(0, colors.FgGreen).Infof("Finished generating file: %s\n", outputPath)
+
+	opts.logger.V(logging.LogInfo).Style(0, colors.FgGreen).Infof("Finished generating file: %s\n", filepath.Join(opts.outputPath, fileType))
 	_ = opts.telemetry.CaptureCodeownersGenerate()
 
 	opts.logger.V(logging.LogInfo).Style(0, colors.FgCyan).Infof("\nCreate an OpenSauced Contributor Insight to get metrics and insights on these codeowners:\n")
