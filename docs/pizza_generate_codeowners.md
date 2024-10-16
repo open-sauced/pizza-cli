@@ -47,10 +47,10 @@ pizza generate codeowners . --output-path /path/to/directory
 ### Options
 
 ```
-  -h, --help                help for codeowners
-  -o, --output-path string  Directory to create the output file.
-      --owners-style-file   Generate an agnostic OWNERS style file instead of CODEOWNERS.
-  -r, --range int           The number of days to analyze commit history (default 90)
+  -h, --help                 help for codeowners
+  -o, --output-path string   Directory to create the output file.
+      --owners-style-file    Generate an agnostic OWNERS style file instead of CODEOWNERS.
+  -r, --range int            The number of days to analyze commit history (default 90) (default 90)
 ```
 
 ### Options inherited from parent commands
