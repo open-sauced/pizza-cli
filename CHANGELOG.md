@@ -5,6 +5,13 @@
 
 > All notable changes to this project will be documented in this file
 
+## [2.4.0-beta.1](https://github.com/open-sauced/pizza-cli/compare/v2.3.0...v2.4.0-beta.1) (2024-10-16)
+
+
+### 🍕 Features
+
+* `--output-path` flag for `pizza generate codeowners` ([#223](https://github.com/open-sauced/pizza-cli/issues/223)) ([1c5ce09](https://github.com/open-sauced/pizza-cli/commit/1c5ce0906f459bdf81b75855840ceb1f3492b1a9))
+
 ## [2.3.0](https://github.com/open-sauced/pizza-cli/compare/v2.2.0...v2.3.0) (2024-10-11)
 
 
