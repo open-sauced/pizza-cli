@@ -46,7 +46,7 @@ cmd/auth/success.html @jpmcb
 cmd/auth/success.html @jpmcb
 cmd/bake/bake.go @jpmcb
 cmd/bake/bake_test.go @jpmcb
-cmd/docs/docs.go @jpmcb @zeucapua @nickytonline
+cmd/docs/docs.go @nickytonline @jpmcb @zeucapua
 cmd/docs/docs_test.go @nickytonline @jpmcb @zeucapua
 cmd/generate/codeowners/codeowners.go @jpmcb @zeucapua
 cmd/generate/codeowners/output.go @jpmcb @zeucapua @brandonroberts
@@ -55,7 +55,7 @@ cmd/generate/codeowners/spec.go @jpmcb
 cmd/generate/codeowners/traversal.go @jpmcb
 cmd/generate/config/config.go @zeucapua @jpmcb @zeucapua
 cmd/generate/config/output.go @jpmcb @zeucapua @zeucapua
-cmd/generate/config/spec.go @zeucapua @jpmcb @zeucapua
+cmd/generate/config/spec.go @zeucapua @zeucapua @jpmcb
 cmd/generate/generate.go @jpmcb @zeucapua
 cmd/generate/insight/insight.go @jpmcb
 cmd/insights/contributors.go @jpmcb @zeucapua
@@ -74,18 +74,18 @@ cmd/show/show.go @jpmcb
 cmd/show/tui.go @jpmcb
 cmd/version/version.go @jpmcb @nickytonline
 docs/pizza.md @jpmcb @zeucapua @nickytonline
-docs/pizza_completion.md @jpmcb @nickytonline @zeucapua
+docs/pizza_completion.md @jpmcb @zeucapua @nickytonline
 docs/pizza_completion_bash.md @jpmcb @nickytonline @zeucapua
-docs/pizza_completion_fish.md @jpmcb @zeucapua @nickytonline
+docs/pizza_completion_fish.md @jpmcb @nickytonline @zeucapua
 docs/pizza_completion_powershell.md @jpmcb @nickytonline @zeucapua
-docs/pizza_completion_zsh.md @jpmcb @nickytonline @zeucapua
+docs/pizza_completion_zsh.md @jpmcb @zeucapua @nickytonline
 docs/pizza_generate.md @jpmcb @nickytonline @zeucapua
-docs/pizza_generate_codeowners.md @jpmcb @nickytonline
+docs/pizza_generate_codeowners.md @jpmcb @zeucapua
 docs/pizza_generate_config.md @jpmcb
 docs/pizza_generate_insight.md @jpmcb
-docs/pizza_insights.md @jpmcb @zeucapua @nickytonline
-docs/pizza_insights_contributors.md @jpmcb @nickytonline @zeucapua
-docs/pizza_insights_repositories.md @jpmcb @zeucapua @nickytonline
+docs/pizza_insights.md @jpmcb @nickytonline @zeucapua
+docs/pizza_insights_contributors.md @jpmcb @zeucapua @nickytonline
+docs/pizza_insights_repositories.md @jpmcb @nickytonline @zeucapua
 docs/pizza_insights_user-contributions.md @jpmcb @nickytonline @zeucapua
 docs/pizza_login.md @jpmcb @nickytonline @zeucapua
 docs/pizza_offboard.md @jpmcb
